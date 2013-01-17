@@ -185,7 +185,7 @@ config options "iterations", and "chunk". test_eac.cfg will process the first 50
 
     ./exec_record.pl config=test_eac.cfg &
 
-Output EAD-CPF will be in the directory specified by config optios "output_dir", and "chunk_prefix" with
+Output EAD-CPF will be in the directory specified by config options "output_dir", and "chunk_prefix" with
 numeric suffixes. For example ./devx_1, ./devx_2 and so on. Messages from the scripts will be in "log_file",
 which is tmp_test_er.log for test_eac.cfg. You can monitor the progress of the run with "tail" and the log file.
 

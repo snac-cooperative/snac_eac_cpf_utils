@@ -137,7 +137,7 @@
         <xsl:variable name="record_id" 
                       select="concat('OCLC-', normalize-space(marc:controlfield[@tag='001']))"/>
         <xsl:variable name="date" 
-                      select="date:date-time()"/>
+                      select="current-dateTime()"/>
         <xsl:variable name="chunk_dir">
             <xsl:choose>
                 <xsl:when test="$use_chunks=1">
