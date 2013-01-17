@@ -2,25 +2,24 @@
 
 Table of contents
 -----------------
-* [Where is the code?](#where is the code)
+* [Where is the code?](#where_is_the_code)
 * [Overview](#overview)
-* [Creating or obtaining the XML data files](#Creating or obtaining the XML data files)
-* [What are the other files?](#What are the other files)
-* [What is the easy way to run the code?](#What is the easy way to run the code)
-* [How do I get a block of records from the MARC input?](#How do I get a block of records from the MARC input)
-* [How do I manually run the xsl?](#How do I manually run the xsl)
-* [Example config file](#Example config file)
-* [QA notes](#QA notes)
+* [Creating or obtaining the XML data files](#Creating_or_obtaining_the_XML_data_files)
+* [What are the other files?](#What_are_the_other_files)
+* [What is the easy way to run the code?](#What_is_the_easy_way_to_run_the_code)
+* [How do I get a block of records from the MARC input?](#How_do_I_get_a_block_of_records_from_the_MARC_input)
+* [How do I manually run the xsl?](#How_do_I_manually_run_the_xsl)
+* [Example config file](#Example_config_file)
+* [QA notes](#QA_notes)
 
 
-<a id="where is the code"/>
+<a id="where_is_the_code"/>
 Where is the code?
 ------------------
 
 Stable code is on GitHub at:
 
-[http://gitub.com/twl8n/eac_cpf_utils/]()
-
+[https://github.com/twl8n/ead_cpf_utils]()
 
 <a id="overview"/>
 Overview
@@ -104,7 +103,7 @@ See the extensive comments in the source code files.
 
 
 
-<a id="Creating or obtaining the XML data files"/>
+<a id="Creating_or_obtaining_the_XML_data_files"/>
 Creating or obtaining the XML data files
 ----------------------------------------
 
@@ -162,7 +161,7 @@ subsequently modified by Tom Laudeman to add singular forms to simplify name mat
 
 
 
-<a id="What are the other files"/>
+<a id="What_are_the_other_files"/>
 What are the other files?
 -------------------------
 
@@ -172,7 +171,7 @@ handy for QA, especially try_date_regex.xsl which relies on lib.xsl.
 
 
 
-<a id="What is the easy way to run the code"/>
+<a id="What_is_the_easy_way_to_run_the_code"/>
 What is the easy way to run the code?
 -------------------------------------
 
@@ -228,7 +227,7 @@ Below is one form of a command used to run jing. Note the + in "find" instead of
 
 
 
-<a id="How do I get a block of records from the MARC input"/>
+<a id="How_do_I_get_a_block_of_records_from_the_MARC_input"/>
 How do I get a block of records from the MARC input?
 ----------------------------------------------------
 
@@ -242,7 +241,7 @@ retrieve the record 235.
     ./get_record.pl file=snac.xml offset=235 limit=1 > record_235.xml
 
 
-<a id="How do I manually run the xsl"/>
+<a id="How_do_I_manually_run_the_xsl"/>
 How do I manually run the xsl?
 ------------------------------
 
@@ -250,7 +249,7 @@ How do I manually run the xsl?
 
 
 
-<a id="Example config file"/>
+<a id="Example_config_file"/>
 Example config file
 -------------------
 
@@ -295,7 +294,7 @@ Example config file
 
 
 
-<a id="QA Notes"/>
+<a id="QA_Notes"/>
 QA Notes
 --------
 
