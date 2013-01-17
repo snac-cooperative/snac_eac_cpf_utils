@@ -312,8 +312,9 @@ find ./qa -maxdepth 1 -name "qa_*.xml" -exec saxon {} oclc_marc2cpf.xsl \;
 The 700 should be the creatorOf in the cpfRelation, which happens to be the
 second datafield so it is the .r01 since not1xx records .r numbering starts
 with .r00.
-<namePart>Sharps, Turney, Mrs.</namePart>
-<roleTerm valueURI="http://id.loc.gov/vocabulary/relators/cre">Creator</roleTerm>
+
+    <namePart>Sharps, Turney, Mrs.</namePart>
+    <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/cre">Creator</roleTerm>
 
     -rw-r--r-- 1 twl8n snac  1994 Dec  3 15:56 qa_11422625_not1xx_has_600_has_700.xml
     less OCLC-11422625.r00.xml
@@ -329,14 +330,15 @@ Not creatorOf, but should have 6 .r files for the 6xx datafields
 ---
 
 The 700 should be the creatorOf in the .r01
-<datafield tag="700" ind1="1" ind2=" ">
-  <subfield code="a">Morrill, Dan L.</subfield>
-</datafield>
 
-<namePart>Morrill, Dan L.</namePart>
-<role>
-  <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/cre">Creator</roleTerm>
-</role>
+    <datafield tag="700" ind1="1" ind2=" ">
+      <subfield code="a">Morrill, Dan L.</subfield>
+    </datafield>
+
+    <namePart>Morrill, Dan L.</namePart>
+    <role>
+      <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/cre">Creator</roleTerm>
+    </role>
 
     -rw-r--r-- 1 twl8n snac  3527 Dec  3 15:51 qa_26891471_not1xx_has_700.xml
     less OCLC-26891471.r01.xml
@@ -369,7 +371,7 @@ date is not processed.
 
 ---
 
-<date localType="questionable">1735-1???.</date>
+    <date localType="questionable">1735-1???.</date>
 
     -rw-r--r-- 1 twl8n snac 20333 Nov 26 14:55 qa_122542862_date_nqqq.xml
     less OCLC-122542862.r76.xml
@@ -381,17 +383,18 @@ date is not processed.
 Is the record really like this, or did I change it to create a test? Regardless, these two 657 elements are
 identical.
 
-                 <datafield tag="657" ind1=" " ind2="7">
-                     <subfield code="a">Administration of nonprofit organizations.</subfield>
-                     <subfield code="2">lcsh</subfield>
-                  </datafield>
-                  <datafield tag="657" ind1=" " ind2="7">
-                     <subfield code="a">Administration of nonprofit organizations.</subfield>
-                     <subfield code="2">lcsh</subfield>
-                  </datafield>
-         <function>
-            <term>Administration of nonprofit organizations</term>
-         </function>
+    <datafield tag="657" ind1=" " ind2="7">
+        <subfield code="a">Administration of nonprofit organizations.</subfield>
+        <subfield code="2">lcsh</subfield>
+    </datafield>
+    <datafield tag="657" ind1=" " ind2="7">
+        <subfield code="a">Administration of nonprofit organizations.</subfield>
+        <subfield code="2">lcsh</subfield>
+    </datafield>
+
+    <function>
+        <term>Administration of nonprofit organizations</term>
+    </function>
          
      -rw-r--r-- 1 twl8n snac 21212 Oct 26 13:31 qa_123408061_dupe_function_657.xml
      less OCLC-123408061.c.xml
@@ -400,10 +403,10 @@ identical.
 
 245$f dates are parsed for families.
 
-<subfield code="f">1917-1960.</subfield>
+    <subfield code="f">1917-1960.</subfield>
 
-<fromDate standardDate="1917" localType="active">active 1917</fromDate>
-<toDate standardDate="1960" localType="active">1960</toDate>
+    <fromDate standardDate="1917" localType="active">active 1917</fromDate>
+    <toDate standardDate="1960" localType="active">1960</toDate>
 
     -rw-r--r-- 1 twl8n snac  5041 Oct 18 09:54 qa_123410709_family_245f_date.xml
     less OCLC-123410709.c.xml
@@ -414,8 +417,8 @@ identical.
 ---
 
 d. 767 or 8.
-<fromDate/>
-<toDate standardDate="0767" localType="died" notBefore="0767" notAfter="0768">-0767 or 0768</toDate>
+    <fromDate/>
+    <toDate standardDate="0767" localType="died" notBefore="0767" notAfter="0768">-0767 or 0768</toDate>
                
     -rw-r--r-- 1 twl8n snac  4013 Oct  3 11:40 qa_123415456_died_or.xml
     less OCLC-123415456.c.xml
@@ -493,7 +496,7 @@ dpt isn't in any of our authority lists, but col is.
 
 ----    
 
-<languageDeclaration><language languageCode="swe">Swedish</language>
+    <languageDeclaration><language languageCode="swe">Swedish</language>
 
     -rw-r--r-- 1 twl8n snac  1375 Nov 13 10:51 qa_209838303_lang_040b_swe.xml
     less OCLC-209838303.c.xml
@@ -552,8 +555,8 @@ subject.
 
 ---
 
-<subfield code="d">fl. 2nd cent.</subfield>
-<date localType="active " notBefore="0101" notAfter="0200">active 2nd century</date>
+    <subfield code="d">fl. 2nd cent.</subfield>
+    <date localType="active " notBefore="0101" notAfter="0200">active 2nd century</date>
 
     -rw-r--r-- 1 twl8n snac  2536 Oct 11 09:29 qa_233844794_fl_2nd_cent_date.xml
     less OCLC-233844794.c.xml
@@ -567,16 +570,16 @@ Multi 1xx has no output at this time.
 
 ---
 
-<subfield code="d">d. 1601/2.</subfield>
-<toDate standardDate="1601" localType="died" notBefore="1601" notAfter="1602">-1601 or 1602</toDate>
+    <subfield code="d">d. 1601/2.</subfield>
+    <toDate standardDate="1601" localType="died" notBefore="1601" notAfter="1602">-1601 or 1602</toDate>
 
     -rw-r--r-- 1 twl8n snac  1508 Oct  4 15:49 qa_270617660_date_slash.xml
     less OCLC-270617660.c.xml
 
 ---
 
-<subfield code="d">fl. 1724/25.</subfield>
-<date standardDate="1724" localType="active" notBefore="1724" notAfter="1725">active 1724 or 1725</date>
+    <subfield code="d">fl. 1724/25.</subfield>
+    <date standardDate="1724" localType="active" notBefore="1724" notAfter="1725">active 1724 or 1725</date>
 
     -rw-r--r-- 1 twl8n snac  1738 Oct  8 10:07 qa_270657317_fl_date_slash_n.xml
     less OCLC-270657317.c.xml
@@ -585,33 +588,33 @@ Multi 1xx has no output at this time.
 
 The questionable date is output in the .r01 file.
 
-<subfield code="d">1834-1876 or later.</subfield>
-<date localType="questionable">1834-1876 or later.</date>
+    <subfield code="d">1834-1876 or later.</subfield>
+    <date localType="questionable">1834-1876 or later.</date>
 
     -rw-r--r-- 1 twl8n snac  2573 Nov 26 10:40 qa_270873349_date_or_later.xml
     less OCLC-270873349.r01.xml
 
 ---
 
-<subfield code="d">19th/20th cent.</subfield>
-<date notBefore="1801" notAfter="2000">19th/20th century</date>
+    <subfield code="d">19th/20th cent.</subfield>
+    <date notBefore="1801" notAfter="2000">19th/20th century</date>
 
     -rw-r--r-- 1 twl8n snac  2428 Oct  3 08:58 qa_281846814_19th_slash_20th.xml
     less OCLC-281846814.c.xml
 
 ---
 
-<subfield code="d">1837-[1889?]</subfield>
-<fromDate standardDate="1837" localType="born">1837</fromDate>
-<toDate standardDate="1889" localType="died" notBefore="1888" notAfter="1890">1889</toDate>
+    <subfield code="d">1837-[1889?]</subfield>
+    <fromDate standardDate="1837" localType="born">1837</fromDate>
+    <toDate standardDate="1889" localType="died" notBefore="1888" notAfter="1890">1889</toDate>
 
     -rw-r--r-- 1 twl8n snac  4505 Oct  3 14:41 qa_313817562_sq_bracket_date.xml
     less OCLC-313817562.c.xml
 
 ---
 
-<subfield code="d">194l-</subfield>
-<date localType="questionable">194l-</date>
+    <subfield code="d">194l-</subfield>
+    <date localType="questionable">194l-</date>
 
     -rw-r--r-- 1 twl8n snac  1829 Oct  3 14:51 qa_3427618_date_194ell.xml
     less OCLC-3427618.c.xml
@@ -621,14 +624,14 @@ The questionable date is output in the .r01 file.
 I think this test exists to make sure subfields are concatenated in order, even if that order is a, c, a, d,
 as opposed to a, a, c, d as errant XSLT did at one point.
 
-<subfield code="a">Jones,</subfield>
-<subfield code="c">Mrs.</subfield>
-<subfield code="a">J.C.,</subfield>
-<subfield code="d">1854-</subfield>
+    <subfield code="a">Jones,</subfield>
+    <subfield code="c">Mrs.</subfield>
+    <subfield code="a">J.C.,</subfield>
+    <subfield code="d">1854-</subfield>
 
 results in:
 
-           <part>Jones, Mrs. J.C., 1854-</part>
+    <part>Jones, Mrs. J.C., 1854-</part>
 
     -rw-r--r-- 1 twl8n snac 2112 Jan 14 15:14 qa/qa_367559635_100_acad_concat.xml
     less OCLC-367559635.c.xml
@@ -637,8 +640,8 @@ results in:
 
 Tests proper de-duping that ignores trailing punctuation.
 
-<subfield code="a">Hachimonji, Kumezô.</subfield>
-<subfield code="a">Hachimonji, Kumezô</subfield>
+    <subfield code="a">Hachimonji, Kumezô.</subfield>
+    <subfield code="a">Hachimonji, Kumezô</subfield>
 
     -rw-r--r-- 1 twl8n snac  6104 Oct 26 14:09 qa_39793761_punctation_name.xml
     less OCLC-39793761.c.xml
@@ -647,13 +650,13 @@ Tests proper de-duping that ignores trailing punctuation.
 
 One of two examples of a 100 family with no 100$d date, so it used the 245$f date as an "active" date.
 
-                  <datafield tag="245" ind1="1" ind2="0">
-                     <subfield code="a">Waterman family papers,</subfield>
-                     <subfield code="f">1839-1906.</subfield>
-                  </datafield>
+    <datafield tag="245" ind1="1" ind2="0">
+        <subfield code="a">Waterman family papers,</subfield>
+        <subfield code="f">1839-1906.</subfield>
+    </datafield>
 
-               <fromDate standardDate="1839" localType="active">active 1839</fromDate>
-               <toDate standardDate="1906" localType="active">1906</toDate>
+    <fromDate standardDate="1839" localType="active">active 1839</fromDate>
+    <toDate standardDate="1906" localType="active">1906</toDate>
 
     -rw-r--r-- 1 twl8n snac 3826 Dec 19 11:14 qa/qa_42714894_waterman_245f_date.xml
     less OCLC-42714894.c.xml
@@ -663,10 +666,10 @@ One of two examples of a 100 family with no 100$d date, so it used the 245$f dat
 Has a lone comma in 700$a which broke the code at one point. I can't remember why I called it
 "multi_sequence".
 
-<datafield tag="700" ind1="1" ind2=" ">
-  <subfield code="a">,</subfield>
-  <subfield code="e">interviewer.</subfield>
-</datafield>
+    <datafield tag="700" ind1="1" ind2=" ">
+        <subfield code="a">,</subfield>
+        <subfield code="e">interviewer.</subfield>
+    </datafield>
 
     -rw-r--r-- 1 twl8n snac  3589 Nov 19 21:03 qa_44529109_multi_sequence.xml
     less OCLC-44529109.c.xml
@@ -674,7 +677,8 @@ Has a lone comma in 700$a which broke the code at one point. I can't remember wh
 ---
 
 Only in the .r01 file.
-<date localType="questionable">date -</date>
+
+    <date localType="questionable">date -</date>
 
     -rw-r--r-- 1 twl8n snac  2912 Nov 26 14:46 qa_495568547_date_hyphen_only.xml
     less OCLC-495568547.c.xml
@@ -682,23 +686,23 @@ Only in the .r01 file.
 
 ---
 
-<date localType="questionable">b. 1870s.</date>
+    <date localType="questionable">b. 1870s.</date>
 
     -rw-r--r-- 1 twl8n snac  2615 Oct  9 10:24 qa_505818582_date_1870s.xml
     less OCLC-505818582.c.xml
 
 ---
 
-                  <datafield tag="100" ind1="1" ind2=" ">
-                     <subfield code="a">Whipple, John Adams,</subfield>
-                     <subfield code="d">1822-1891,</subfield>
-                     <subfield code="e">photographer.</subfield>
-                     <subfield code="4">att</subfield>
-                  </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+        <subfield code="a">Whipple, John Adams,</subfield>
+        <subfield code="d">1822-1891,</subfield>
+        <subfield code="e">photographer.</subfield>
+        <subfield code="4">att</subfield>
+    </datafield>
 
-         <occupation>
-            <term>Photographers.</term>
-         </occupation>
+    <occupation>
+        <term>Photographers.</term>
+    </occupation>
 
     -rw-r--r-- 1 twl8n snac  2662 Nov  2 08:25 qa_51451353_e4_occupation.xml
     less OCLC-51451353.c.xml
@@ -766,16 +770,16 @@ comma caused it to process as a sequence and not as a string and that made saxon
 
 "Donors" is not an occupation in our authority files. "Authors" is.
 
-         <datafield tag="100" ind1="1" ind2=" ">
-            <subfield code="a">Jacobs, Jo,</subfield>
-            <subfield code="d">1933-</subfield>
-            <subfield code="e">donor</subfield>
-            <subfield code="e">author.</subfield>
-         </datafield>
+    <datafield tag="100" ind1="1" ind2=" ">
+        <subfield code="a">Jacobs, Jo,</subfield>
+        <subfield code="d">1933-</subfield>
+        <subfield code="e">donor</subfield>
+        <subfield code="e">author.</subfield>
+    </datafield>
 
-         <occupation>
-            <term>Authors.</term>
-         </occupation>
+    <occupation>
+        <term>Authors.</term>
+    </occupation>
 
     -rw-r--r-- 1 twl8n snac  2282 Nov  2 08:52 qa_768242927_multi_e_occupation.xml
     less OCLC-768242927.c.xml
