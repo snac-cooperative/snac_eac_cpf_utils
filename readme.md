@@ -709,13 +709,13 @@ This may exist to exercise 650$b multiple values which maybe is supposed to be n
 repeat, so we concatenate. At one point it broke something, perhaps a string function by sending a sequence
 instead of a single string.
 
-<datafield tag="650" ind1="1" ind2="7">
-  <subfield code="a">CHILE</subfield>
-  <subfield code="b">MINISTERIO DE TIERRAS Y COLONIZACION</subfield>
-  <subfield code="b">DEPARTAMENTO JURIDICO Y DE INPECCION DE SERVICIOS.</subfield>
-  <subfield code="2">renib</subfield>
-</datafield>
-<term>CHILE--MINISTERIO DE TIERRAS Y COLONIZACION--DEPARTAMENTO JURIDICO Y DE INPECCION DE SERVICIOS</term>
+    <datafield tag="650" ind1="1" ind2="7">
+        <subfield code="a">CHILE</subfield>
+        <subfield code="b">MINISTERIO DE TIERRAS Y COLONIZACION</subfield>
+        <subfield code="b">DEPARTAMENTO JURIDICO Y DE INPECCION DE SERVICIOS.</subfield>
+        <subfield code="2">renib</subfield>
+    </datafield>
+    <term>CHILE--MINISTERIO DE TIERRAS Y COLONIZACION--DEPARTAMENTO JURIDICO Y DE INPECCION DE SERVICIOS</term>
 
     -rw-r--r-- 1 twl8n snac  2348 Nov 19 11:17 qa_55316797_650_multi_b.xml
     less OCLC-55316797.c.xml
