@@ -1,0 +1,3606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<madsCollection xmlns="http://www.loc.gov/mads/"
+	        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+	        xsi:schemaLocation="http://www.loc.gov/mads/ http://www.loc.gov/standards/mads/mads.xsd">
+    <mads>
+	<authority>
+	    <occupation >Abolitionists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>abolitionist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Accountants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>accountant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Actors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>actor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Actresses.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>actress</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Actuaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>actuary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Administrators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>administrator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Adventurers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>adventurer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Advertisers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>advertiser</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Advertising executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>advertising executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Aeronauts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>aeronaut</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Aerospace engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>aerospace engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Agriculturists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>agriculturist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Air Force officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>air force officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Aircraft designers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>aircraft designer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Aircraft manufacturers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>aircraft manufacturer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Airline executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>airline executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Airplane manufacturers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>airplane manufacturer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Alchemists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>alchemist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ambassadors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>ambassador</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >American loyalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>american loyalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Analysands.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>analysand</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Anatomists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>anatomist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Anesthesiologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>anesthesiologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Animal rights activists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>animal rights activist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Anthologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>anthologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Anthropologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>anthropologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Antiquarians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>antiquarian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Archaeologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>archaeologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Architects.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>architect</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Architectural historians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>architectural historian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Archivists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>archivist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Armaments experts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>armaments expert</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Armorers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>armorer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Army Air Corps officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>army air corps officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Army clerks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>army clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Army officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>army officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Army paymasters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>army paymaster</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Army prosecutors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>army prosecutor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Army surgeons.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>army surgeon</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art collectors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art collector</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art connoisseurs.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art connoisseur</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art consultants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art consultant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art critics.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art critic</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art dealers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art dealer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art directors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art director</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Art historians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>art historian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Artists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>artist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Assassins.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>assassin</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Astronomers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>astronomer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Astrophysicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>astrophysicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Atomic energy commissioners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>atomic energy commissioner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Attorneys general.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>attorneys general</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Authors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>author</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Aviators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>aviator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Balloonists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>balloonist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Bankers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>banker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Baseball executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>baseball executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Baseball managers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>baseball manager</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Baseball players.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>baseball player</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Bibliographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>bibliographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Bibliophiles.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>bibliophile</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Biochemists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>biochemist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Biographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>biographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Biologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>biologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Biophysicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>biophysicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Biotechnologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>biotechnologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Blacksmiths.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>blacksmith</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Boatswains.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>boatswain</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Book designers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>book designer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Bookbinders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>bookbinder</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Booksellers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>bookseller</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Botanists</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>botanists</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Brickmakers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>brickmaker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Broadcast executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>broadcast executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Brokers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>broker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Builders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>builder</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Businessmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>businessman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Businesswomen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>businesswoman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cabinet officers (State government).</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cabinet officers (state government)</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cabinet officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cabinet officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cameramen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cameraman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Campaign workers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>campaign worker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Canal officials.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>canal official</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cannon makers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cannon maker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Capitalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>capitalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Capitol pages.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>capitol page</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Carpenters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>carpenter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cartographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cartographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cartoonists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cartoonist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chancellors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chancellor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chaplains, Military.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chaplain, military</occupation>
+        </variant>
+	<variant>
+	    <occupation >Military chaplains.</occupation>
+	</variant>
+	<variant>
+	    <occupation >military chaplain</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chaplains, U.S. Senate.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chaplain, u.s. senate</occupation>
+        </variant>
+	<variant>
+	    <occupation >U.S. Senate chaplains.</occupation>
+	</variant>
+	<variant>
+	    <occupation >u.s. senate chaplain</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chaplains.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chaplain</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chauffeurs.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chauffeur</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chemical engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chemical engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chemists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chemist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Chess players.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>chess player</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Child psychologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>child psychologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cinematographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cinematographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Circus owners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>circus owner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Civic leaders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>civic leader</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Civil engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>civil engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Civil libertarians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>civil libertarian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Civil rights activists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>civil rights activist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Civil rights leaders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>civil rights leader</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Civil servants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>civil servant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Classicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>classicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clergy.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>clergy</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clerks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clerks of court.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>clerks of court</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clerks, U.S. Army.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>clerk, u.s. army</occupation>
+        </variant>
+	<variant>
+	    <occupation>U.S. Army clerks.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>u.s. army clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clerks, U.S. House of Representatives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>clerk, u.s. house of representatives</occupation>
+        </variant>
+	<variant>
+	    <occupation>U.S. House of Representatives clerks.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>u.s. house of representatives clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clerks, U.S. Supreme Court.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>clerk, u.s. supreme court</occupation>
+        </variant>
+	<variant>
+	    <occupation>U.S. Supreme Court clerks.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>u.s. supreme court clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Clubwomen.</occupation>
+	</authority>
+	<variant>
+	    <occupation >Clubwoman.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >clubwoman</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Collectors, Autograph.</occupation>
+	</authority>
+	<variant>
+	    <occupation >Authograph collectors.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >collector, autograph</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >authograph collector</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Collectors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>collector</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >College administrators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>college administrator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >College presidents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>college president</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Colonial administrators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>colonial administrator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Colonial agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>colonial agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Colonial officials.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>colonial official</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Colonists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>colonist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Colonizers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>colonizer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Comedians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>comedian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Commentators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>commentator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Commercial agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>commercial agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Communists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>communist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Compilers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>compiler</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Composers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>composer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Computer scientists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>computer scientist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Conquerors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>conqueror</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Conservationists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>conservationist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Conspirators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>conspirator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Consuls.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>consul</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Consultants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>consultant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Consulting engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>consulting engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Contractors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>contractor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Cooks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cook</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Coopers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>cooper</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Coppersmiths.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>coppersmith</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >County clerks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>county clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Critics.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>critic</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Curators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>curator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Customs agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>customs agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Customs inspectors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>customs inspector</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Dancers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>dancer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Deacons.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>deacon</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation>Delegates, U.S. Continental Congress.</occupation>
+	</authority>
+	<variant>
+	    <occupation >U.S. Continental Congress Delegates.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >u.s. continental congress delegate</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >delegate, u.s. continental congress</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Demographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>demographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Dental surgeons.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>dental surgeon</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Dentists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>dentist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Designers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>designer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Desperadoes.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>desperado</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Dictators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>dictator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Diplomats.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>diplomat</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Drafters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>drafter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Dramatists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>dramatist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Economists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>economist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Editors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>editor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Educators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>educator</occupation>
+        </variant>
+	<variant>
+	    <occupation >Professors.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >professor</occupation>
+	</variant>
+	<variant>
+	    <occupation >Deans.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >dean</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Electrical engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>electrical engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Electricians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>electrician</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Electrochemists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>electrochemist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Emperors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>emperor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Empresses.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>empresse</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Engravers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>engraver</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Entertainers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>entertainer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Entomologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>entomologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Entrepreneurs.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>entrepreneur</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Epidemiologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>epidemiologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Essayists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>essayist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ethnologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>ethnologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Evangelists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>evangelist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Examiners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>examiner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Examiners, U.S. Patent Office.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>examiner, u.s. patent office</occupation>
+        </variant>
+	<variant>
+	    <occupation >U.S. Patent Office examiners.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >u.s. patent office examiner</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Executors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>executor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Expatriates.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>expatriate</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Explorers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>explorer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Expressmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>expressman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Farmers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>farmer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >FBI agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>fbi agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Federalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>federalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Financiers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>financier</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Football coaches.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>football coach</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Foreign correspondents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>foreign correspondent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Foreign service officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>foreign service officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Forest rangers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>forest ranger</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Foresters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>forester</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Freight rate specialists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>freight rate specialist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Frontiersmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>frontiersman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Gay rights activists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>gay rights activist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Gemologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>gemologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Geographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>geographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Geologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>geologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Geophysicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>geophysicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Government employees.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>government employee</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Governors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>governor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Governors general.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>governors general</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Governors' spouses.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>governors' spouse</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Grammarians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>grammarian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Heads of state.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>head of state</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Healers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>healer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Mercenaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>mercenary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Historians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>historian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Horticulturists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>horticulturist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Hospital directors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>hospital director</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Housekeepers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>housekeeper</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Housekeepers, White House.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>housekeeper, white house</occupation>
+        </variant>
+	<variant>
+	    <occupation >White House housekeepers.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >white house housekeeper</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Humorists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>humorist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Hymnologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>hymnologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Illustrators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>illustrator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Immigration inspectors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>immigration inspector</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Importers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>importer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Indian agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>indian agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Indian chiefs.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>indian chief</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Indian commissioners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>indian commissioner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Indian fighters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>indian fighter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Industrial designers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>industrial designer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Industrial physicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>industrial physicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Industrialists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>industrialist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Insurance brokers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>insurance broker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Insurance executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>insurance executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Intelligence officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>intelligence officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Internationalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>internationalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Inventors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>inventor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Iron manufacturers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>iron manufacturer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Journalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>journalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Jurists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>jurist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Justices of the peace.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>justice of the peace</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Kings.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>king</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Labor leaders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>labor leader</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Laborers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>laborer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Land agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>land agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Land speculators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>land speculator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Landowners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>landowner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Landscape architects.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>landscape architect</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Lawyers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>lawyer</occupation>
+        </variant>
+	<variant>
+	    <occupation >Attorneys.</occupation>
+	</variant>
+	<variant type="other" otherType="singular">
+	    <occupation >attorney</occupation>
+	</variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Lecturers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>lecturer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Legislative reporters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>legislative reporter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Legislators (State government).</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>legislator (state government)</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Lexicographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>lexicographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Librarians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>librarian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Librarians of Congress.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>librarian of congress</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Linguists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>linguist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Literary agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>literary agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Loan officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>loan officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Lobbyists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>lobbyist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Lumbermen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>lumberman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Lyricists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>lyricist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Marine biologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>marine biologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Marine Corps officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>marine corps officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Marine engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>marine engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Mariners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>mariner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Marines.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>marine</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Marshals.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>marshal</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Mathematicians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>mathematician</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Mayors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>mayor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Merchants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>merchant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Metaphysicians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>metaphysician</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Meteorologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>meteorologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Microbiologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>microbiologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Midshipmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>midshipman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Military historians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>military historian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Military scouts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>military scout</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Militia officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>militia officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Mill owners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>mill owner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Missionaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>missionary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Mistresses.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>mistress</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Monks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>monk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Motion picture directors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>motion picture director</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Motion picture producers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>motion picture producer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Musicians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>musician</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Musicologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>musicologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Nationalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>nationalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Naturalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>naturalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Naval architects.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>naval architect</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Naval constructors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>naval constructor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Naval historians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>naval historian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Naval officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>naval officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Neurologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>neurologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Neuropsychiatrists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>neuropsychiatrist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Newspaper editors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>newspaper editor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Newspapermen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>newspaperman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Notaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>notary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Novelists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>novelist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Nuclear chemists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>nuclear chemist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Nuclear physicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>nuclear physicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Nurses.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>nurse</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Oceanographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>oceanographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ophthalmologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>ophthalmologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Orators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>orator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ornithologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>ornithologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Painters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>painter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Paleographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>paleographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Palmists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>palmist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Pathologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>pathologist</occupation>
+        </variant>
+         
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Patriots.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>patriot</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Pharmacologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>pharmacologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Philanthropists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>philanthropist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Philologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>philologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Philosophers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>philosopher</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Photographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>photographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Photographic assistants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>photographic assistant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Physicians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>physician</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Physicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>physicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Physiologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>physiologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Pianists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>pianist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Pilgrims.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>pilgrim</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Pioneers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>pioneer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Plant pathologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>plant pathologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Plantation owners</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>plantation owners</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Poets.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>poet</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Police chiefs.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>police chief</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Political activists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>political activist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Political commentators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>political commentator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Political consultants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>political consultant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Political scientists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>political scientist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Politicians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>politician</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Postal clerks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>postal clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Postmasters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>postmaster</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Presidential advisors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>presidential advisor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Presidents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>president</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Prime ministers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>prime minister</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Princes.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>prince</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Printers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>printer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Prison wardens.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>prison warden</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Privateers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>privateer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Promoters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>promoter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Prospectors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>prospector</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Prothonotaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>prothonotary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Psychiatrists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>psychiatrist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Psychoanalysts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>psychoanalyst</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Psychologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>psychologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Psychotherapists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>psychotherapist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Public officials.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>public official</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Public relations consultants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>public relations consultant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Publicists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>publicist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Publishers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>publisher</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Purser's clerks.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>purser's clerk</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Quakers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>quaker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Queens.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>queen</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Radio directors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>radio director</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Radio journalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>radio journalist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Radio producers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>radio producer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Railroad executives.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>railroad executive</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Railroad officials.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>railroad official</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ranchers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>rancher</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Reformers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>reformer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Religious leaders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>religious leader</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Religious workers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>religious worker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Representatives, U.S. Congress.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>representative, u.s. congress</occupation>
+        </variant>
+         
+	<variant>
+	    <occupation >U.S. Congress Representatives.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>u.s. congress representative</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Research analysts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>research analyst</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Research superintendents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>research superintendent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Revenue-cutter service officers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>revenue-cutter service officer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Revolutionaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>revolutionary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >River pilots.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>river pilot</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Royal consorts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>royal consort</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Sailors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>sailor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Salesmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>salesman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Scholars.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>scholar</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Scientists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>scientist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Scouts.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>scout</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Sculptors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>sculptor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Sea captains.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>sea captain</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Seamen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>seaman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Secret service agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>secret service agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Secretaries, Presidential.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>secretary, presidential</occupation>
+        </variant>
+         
+	<variant>
+	    <occupation >Presidential Secretaries.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>presidential secretary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Secretaries, U.S. Senate.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>secretary, u.s. senate</occupation>
+        </variant>
+         
+	<variant>
+	    <occupation >U.S. Senate Secretaries.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>u.s. senate secretary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Secretaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>secretary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Senators, U.S. Congress.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>senator, u.s. congress</occupation>
+        </variant>
+         
+	<variant>
+	    <occupation >U.S. Congresss Senators.</occupation>
+	</variant>
+        <variant type="other" otherType="singular">
+            <occupation>u.s. congresss senator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Servants.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>servant</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Set designers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>set designer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ship captains.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>ship captain</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Shipbuilders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>shipbuilder</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Shipowners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>shipowner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Shipwrights.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>shipwright</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Shoemakers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>shoemaker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Silversmiths.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>silversmith</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Singers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>singer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Slaveholders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>slaveholder</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Slaves.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>slave</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Social activists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>social activist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Social leaders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>social leader</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Social secretaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>social secretary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Social workers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>social worker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Socialists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>socialist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Socialites.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>socialite</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Sociologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>sociologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Soldiers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>soldier</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Songwriters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>songwriter</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Speculators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>speculator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Spies.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>spy</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Spiritualists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>spiritualist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Statesmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>statesman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Stenographers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>stenographer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Stonemasons.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>stonemason</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Students.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>student</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Suffragists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>suffragist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Supercargos.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>supercargo</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Superintendents of schools.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>superintendent of schools</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Superintendents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>superintendent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Surgeons.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>surgeon</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Surveyors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>surveyor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Swordmakers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>swordmaker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Tailors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>tailor</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Talent agents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>talent agent</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Tanners.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>tanner</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Teachers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>teacher</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Telegraphers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>telegrapher</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Television directors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>television director</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Television personalities.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>television personality</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Television producers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>television producer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Theatrical directors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>theatrical director</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Theatrical managers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>theatrical manager</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Theatrical producers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>theatrical producer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Theologians.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>theologian</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Theosophists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>theosophist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Topographical engineers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>topographical engineer</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Traders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>trader</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Tradesmen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>tradesman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Translators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>translator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Travelers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>traveler</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Undertakers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>undertaker</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Ushers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>usher</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Vice presidents.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>vice president</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Viceroys.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>viceroy</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Violinists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>violinist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Virologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>virologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Visionaries.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>visionary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Whalers (Persons)</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>whaler (person)</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Whaling masters.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>whaling master</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Wood-carvers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>wood-carver</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Yeomen.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>yeoman</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Zoologists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>zoologist</occupation>
+        </variant>
+    </mads>
+</madsCollection>
