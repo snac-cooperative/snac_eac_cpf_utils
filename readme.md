@@ -176,8 +176,8 @@ What is the easy way to run the code?
 -------------------------------------
 
 Copy the config file test_eac.cfg to a new config file (or not, as appropriate). Choose a small value for
-config options "iterations", and "chunk". test_eac.cfg will process the first 5000 records, in other words 1000
-* 5.
+config options "iterations", and "chunk". test_eac.cfg will process the first 5000 records, in other words
+'1000 * 5'.
 
     chunk = 1000
 
