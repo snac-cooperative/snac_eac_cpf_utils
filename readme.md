@@ -4,13 +4,13 @@ Table of contents
 -----------------
 * [Where is the code?](#where-is-the-code)
 * [Overview](#overview)
-* [Creating or obtaining the XML data files](#Creating-or-obtaining-the-XML-data-files)
-* [What are the other files?](#What-are-the-other-files)
-* [What is the easy way to run the code?](#What-is-the-easy-way-to-run-the-code)
-* [How do I get a block of records from the MARC input?](#How-do-I-get-a-block-of-records-from-the-MARC-input)
-* [How do I manually run the xsl?](#How-do-I-manually-run-the-xsl)
-* [Example config file](#Example-config-file)
-* [QA notes](#QA-notes)
+* [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
+* [What are the other files?](#what-are-the-other-files)
+* [What is the easy way to run the code?](#what-is-the-easy-way-to-run-the-code)
+* [How do I get a block of records from the MARC input?](#how-do-i-get-a-block-of-records-from-the-marc-input)
+* [How do I manually run the xsl?](#how-do-i-manually-run-the-xsl)
+* [Example config file](#example-config-file)
+* [QA notes](#qa-notes)
 
 
 <a id="where-is-the-code"/>
@@ -103,7 +103,7 @@ See the extensive comments in the source code files.
 
 
 
-<a id="Creating-or-obtaining-the-XML-data-files"/>
+<a id="creating-or-obtaining-the-xml-data-files"/>
 Creating or obtaining the XML data files
 ----------------------------------------
 
@@ -161,7 +161,7 @@ subsequently modified by Tom Laudeman to add singular forms to simplify name mat
 
 
 
-<a id="What-are-the-other-files"/>
+<a id="what-are-the-other-files"/>
 What are the other files?
 -------------------------
 
@@ -171,7 +171,7 @@ handy for QA, especially try_date_regex.xsl which relies on lib.xsl.
 
 
 
-<a id="What-is-the-easy-way-to-run-the-code"/>
+<a id="what-is-the-easy-way-to-run-the-code"/>
 What is the easy way to run the code?
 -------------------------------------
 
@@ -227,7 +227,7 @@ Below is one form of a command used to run jing. Note the + in "find" instead of
 
 
 
-<a id="How-do-I-get-a-block-of-records-from-the-MARC-input"/>
+<a id="how-do-i-get-a-block-of-records-from-the-marc-input"/>
 How do I get a block of records from the MARC input?
 ----------------------------------------------------
 
@@ -241,7 +241,7 @@ retrieve the record 235.
     ./get_record.pl file=snac.xml offset=235 limit=1 > record_235.xml
 
 
-<a id="How-do-I-manually-run-the-xsl"/>
+<a id="how-do-i-manually-run-the-xsl"/>
 How do I manually run the xsl?
 ------------------------------
 
@@ -249,7 +249,7 @@ How do I manually run the xsl?
 
 
 
-<a id="Example-config-file"/>
+<a id="example-config-file"/>
 Example config file
 -------------------
 
@@ -294,7 +294,7 @@ Example config file
 
 
 
-<a id="QA-Notes"/>
+<a id="qa-notes"/>
 QA Notes
 --------
 
