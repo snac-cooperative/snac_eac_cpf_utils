@@ -725,7 +725,7 @@ instead of a single string.
 This .r56 should be a questionable date. It broke the code by trying to turn a null string into a
 number. Either it made 0000 which is questionable (wrong), or saxon died with an error.
 
-<date localType="questionable">1714 or -15-1757.</date>
+    <date localType="questionable">1714 or -15-1757.</date>
 
     -rw-r--r-- 1 twl8n snac 14958 Nov 26 10:35 qa_611138843_date_or_hyphen_15_hyphen_1757.xml
     less OCLC-611138843.c.xml
@@ -733,7 +733,7 @@ number. Either it made 0000 which is questionable (wrong), or saxon died with an
 
 ---
 
-<fromDate standardDate="1834" localType="born" notBefore="1834" notAfter="1835">1834- or 1835</fromDate>
+    <fromDate standardDate="1834" localType="born" notBefore="1834" notAfter="1835">1834- or 1835</fromDate>
 
     -rw-r--r-- 1 twl8n snac  3278 Oct  8 10:27 qa_671812214_b_dot_or.xml
     less OCLC-671812214.c.xml
@@ -742,14 +742,14 @@ number. Either it made 0000 which is questionable (wrong), or saxon died with an
 
 is (and should be) questionable, make sure it doesn't crash the script
 
-<date localType="questionable">16uu-17uu.</date>
+    <date localType="questionable">16uu-17uu.</date>
 
     -rw-r--r-- 1 twl8n snac  3801 Oct  9 11:57 qa_678631801_date_16uu.xml
     less OCLC-678631801.c.xml
 
 ---
 
-<date notBefore="0001" notAfter="0100">1st century</date>
+    <date notBefore="0001" notAfter="0100">1st century</date>
 
     -rw-r--r-- 1 twl8n snac  3347 Nov 20 10:44 qa_702176575_date_1st_cent.xml
     less OCLC-702176575.c.xml
@@ -766,12 +766,12 @@ comma caused it to process as a sequence and not as a string and that made saxon
 
 "Donors" is not an occupation in our authority files. "Authors" is.
 
-                  <datafield tag="100" ind1="1" ind2=" ">
-                     <subfield code="a">Jacobs, Jo,</subfield>
-                     <subfield code="d">1933-</subfield>
-                     <subfield code="e">donor</subfield>
-                     <subfield code="e">author.</subfield>
-                  </datafield>
+         <datafield tag="100" ind1="1" ind2=" ">
+            <subfield code="a">Jacobs, Jo,</subfield>
+            <subfield code="d">1933-</subfield>
+            <subfield code="e">donor</subfield>
+            <subfield code="e">author.</subfield>
+         </datafield>
 
          <occupation>
             <term>Authors.</term>
@@ -784,7 +784,7 @@ comma caused it to process as a sequence and not as a string and that made saxon
 
 verify that .r08 future date is questionable, even if it is probably a typo.
 
-<date localType="questionable">8030-1857.</date>
+    <date localType="questionable">8030-1857.</date>
 
     -rw-r--r-- 1 twl8n snac  7190 Nov 26 10:45 qa_777390959_date_greater_than_2012.xml
     less OCLC-777390959.c.xml
@@ -809,13 +809,13 @@ MODS abstract is all 520$a concatented with space.
 
 verify geo "Ohio--Ashtabula County" from concat 650 with multi $z
 
-<datafield tag="650" ind1=" " ind2="0">
-  <subfield code="a">Real property</subfield>
-  <subfield code="z">Ohio</subfield>
-  <subfield code="z">Ashtabula County.</subfield>
-</datafield>
+    <datafield tag="650" ind1=" " ind2="0">
+        <subfield code="a">Real property</subfield>
+        <subfield code="z">Ohio</subfield>
+        <subfield code="z">Ashtabula County.</subfield>
+    </datafield>
 
-<placeEntry>Ohio--Ashtabula County</placeEntry>
+    <placeEntry>Ohio--Ashtabula County</placeEntry>
 
     -rw-r--r-- 1 twl8n snac  5389 Sep 27 10:26 qa_8562615_multi_650_multi_z.xml
     less OCLC-8562615.c.xml
@@ -831,16 +831,16 @@ verify geo "Ohio--Ashtabula County" from concat 650 with multi $z
 
 noRegistryResults
 
-<maintenanceAgency>
-  <agencyName>BANC</agencyName>
-    <descriptiveNote>
-      <p>
-        <span localType="noRegistryResults"/>
-        <span localType="original">BANC</span>
-      </p>
-  </descriptiveNote>
-</maintenanceAgency>
-
+    <maintenanceAgency>
+      <agencyName>BANC</agencyName>
+        <descriptiveNote>
+          <p>
+            <span localType="noRegistryResults"/>
+            <span localType="original">BANC</span>
+          </p>
+      </descriptiveNote>
+    </maintenanceAgency>
+        
     -rw-r--r-- 1 twl8n snac  4192 Nov 15 12:44 qa_86132608_marc_040a_BANC_no_result.xml
     less OCLC-86132608.c.xml
 
