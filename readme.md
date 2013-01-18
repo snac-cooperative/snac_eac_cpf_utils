@@ -2,7 +2,7 @@
 
 Table of contents
 -----------------
-* [Where is the code?](#where-is-the-code)
+* [Where is the code?](#)
 * [Overview](#overview)
 * [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
 * [What are the other files?](#what-are-the-other-files)
