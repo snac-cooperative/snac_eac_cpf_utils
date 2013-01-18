@@ -7,7 +7,7 @@ Table of contents
 * [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
 * [What are the other files?](#what-are-the-other-files)
 * [What is the easy way to run the code?](#what-is-the-easy-way-to-run-the-code)
-* [Command line params of oclc_marc2cpf.xsl](#command-line-params-of-oclc-marc2cpf-xsl)
+* [Command line params of oclc_marc2cpf.xsl](#command-line-params-of-oclc_marc2cpfxsl)
 * [How do I get a block of records from the MARC input?](#how-do-i-get-a-block-of-records-from-the-marc-input)
 * [How do I manually run the xsl?](#how-do-i-manually-run-the-xsl)
 * [Example config file](#example-config-file)
@@ -324,7 +324,6 @@ Below is one form of a command used to run jing. Note the + in "find" instead of
     > ls -l test_validation.txt
     -rw-r--r-- 1 twl8n snac 0 Sep 7 08:52 test_validation.txt
 
-<a id="command-line-params-of-oclc"/>
 
 Command line params of oclc_marc2cpf.xsl
 ----------------------------------------
