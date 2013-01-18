@@ -7,6 +7,7 @@
                 >
     <!-- 
          Author: Tom Laudeman
+         The Institute for Advanced Technology in the Humanities
          
          Copyright 2013 University of Virginia. Licensed under the Educational Community License, Version 2.0
          (the "License"); you may not use this file except in compliance with the License. You may obtain a

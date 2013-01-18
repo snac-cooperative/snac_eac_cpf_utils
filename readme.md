@@ -218,9 +218,9 @@ running worldcat_code.pl and verifying the results.
 The file "occupations.xml" was created by Daniel Pitti from a spreadsheet supplied by the LoC. The XML was
 subsequently modified by Tom Laudeman to add singular forms to simplify name matching.
 
-[http://id.loc.gov/static/data/vocabularylanguages.rdfxml.zip]()
+(http://id.loc.gov/static/data/vocabularylanguages.rdfxml.zip)
 
-[http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip]()
+http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
 
 
     > ls -l *.rdf occupations.xml worldcat_code.xml 
