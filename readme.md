@@ -2,7 +2,7 @@
 
 Table of contents
 -----------------
-* [Where is the code?](#)
+* [Where is the code?](#where-is-the-code)
 * [Overview](#overview)
 * [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
 * [What are the other files?](#what-are-the-other-files)
@@ -94,7 +94,6 @@ bash/zsh format:
 
 
 
-<a id="overview"/>
 Overview
 --------
 
@@ -177,7 +176,6 @@ See the extensive comments in the source code files.
 
 
 
-<a id="creating-or-obtaining-the-xml-data-files"/>
 Creating or obtaining the XML data files
 ----------------------------------------
 
@@ -247,7 +245,7 @@ data set, you may not need the Perl scripts at all.
 
 
 
-<a id="what-are-the-other-files"/>
+
 What are the other files?
 -------------------------
 
@@ -257,7 +255,7 @@ handy for QA, especially try_date_regex.xsl which relies on lib.xsl.
 
 
 
-<a id="what-is-the-easy-way-to-run-the-code"/>
+
 What is the easy way to run the code?
 -------------------------------------
 
@@ -363,7 +361,7 @@ debug  default false()
 The debug param enables some verbose output. This is developers and debugging.
 
 
-<a id="how-do-i-get-a-block-of-records-from-the-marc-input"/>
+
 How do I get a block of records from the MARC input?
 ----------------------------------------------------
 
@@ -377,7 +375,7 @@ retrieve the record 235.
     ./get_record.pl file=snac.xml offset=235 limit=1 > record_235.xml
 
 
-<a id="how-do-i-manually-run-the-xsl"/>
+
 How do I manually run the xsl?
 ------------------------------
 
@@ -385,7 +383,7 @@ How do I manually run the xsl?
 
 
 
-<a id="example-config-file"/>
+
 Example config file
 -------------------
 
@@ -430,7 +428,7 @@ Example config file
 
 
 
-<a id="qa-notes"/>
+
 QA Notes
 --------
 
