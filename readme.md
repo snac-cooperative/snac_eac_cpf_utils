@@ -19,11 +19,11 @@ Where is the code?
 
 Stable code is on GitHub at:
 
-[https://github.com/twl8n/ead_cpf_utils]()
+https://github.com/twl8n/ead_cpf_utils
 
 The direct link is:
 
-[https://github.com/twl8n/ead_cpf_utils/archive/master.zip]()
+https://github.com/twl8n/ead_cpf_utils/archive/master.zip
 
 You can download from a web browser as zip, or use the git command line. When using the web browser on the
 repository page, look for a button with a cloud and arrow and "ZIP". The downloaded file is called
@@ -59,11 +59,11 @@ Update later on:
 
 Git for MacOS:
 
-[http://git-osx-installer.googlecode.com/files/git-1.8.1-intel-universal-snow-leopard.dmg]()
+http://git-osx-installer.googlecode.com/files/git-1.8.1-intel-universal-snow-leopard.dmg
 
 Saxon for Java:
 
-[http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip]()
+http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip
 
 (You will need Java. Most modern computers have it pre-installed.)
 
@@ -218,7 +218,7 @@ running worldcat_code.pl and verifying the results.
 The file "occupations.xml" was created by Daniel Pitti from a spreadsheet supplied by the LoC. The XML was
 subsequently modified by Tom Laudeman to add singular forms to simplify name matching.
 
-(http://id.loc.gov/static/data/vocabularylanguages.rdfxml.zip)
+http://id.loc.gov/static/data/vocabularylanguages.rdfxml.zip
 
 http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
 
