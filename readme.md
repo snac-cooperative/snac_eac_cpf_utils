@@ -67,16 +67,30 @@ Saxon for Java:
 
 (You will need Java. Most modern computers have it pre-installed.)
 
+The included script saxon.sh expects saxon to be in $HOME/bin/saxon9he.jar. If you are installing
+saxons9he.jar, please put it in ~/bin, otherwise you must edit saxon.sh to reflect the correct location of
+saxon.
+
 After download, you'll do something like:
 
     mkdir ~/bin
     cd ~/bin
     unzip ~/Downloads/SaxonHE9-4-0-6J.zip
 
-Edit your .bashrc or .zshrc, (or relevant shell rc file) to add aliases for 'git' and 'saxon'. These are bash/zsh format:
+Check that your $PATH environment variable has a path to git. Find git with with 'which', 'locate' or by
+examining the installer log. Look at the values in $PATH to verify that git path is a default (or not). The
+MacOS installer puts git in /usr/local/git/bin. Linux users using a package manager (yum, apt, KDE software
+center, etc.) can skip this step since their git will be in a standard path.
 
-    alias saxon='java -jar ~/bin/saxon9he.jar'
-    alias git=/usr/local/git/bin/git
+    which git
+    locate git
+    echo $PATH
+
+You may wish to edit your shell rc file (.bashrc) to add the path to git to PATH. This is
+bash/zsh format:
+
+    export PATH=$PATH:/usr/local/git/bin
+
 
 
 
