@@ -21,6 +21,65 @@ Stable code is on GitHub at:
 
 [https://github.com/twl8n/ead_cpf_utils]()
 
+The direct link is:
+
+[https://github.com/twl8n/ead_cpf_utils/archive/master.zip]()
+
+You can download from a web browser as zip, or use the git command line. When using the web browser on the
+repository page, look for a button with a cloud and arrow and "ZIP". The downloaded file is called
+ead_cpf_utils-master.zip and when unzipped it creates a directory named "ead_cpf_utils-master". Note that the
+directory name is different than if you used git from the command line.
+
+    > unzip -l ~/Downloads/ead_cpf_utils-master.zip 
+    Archive:  /Users/twl8n/Downloads/ead_cpf_utils-master.zip
+    c07a9f3201b034e7e7b990879d69eaec9e0526e8
+     Length     Date   Time    Name
+    --------    ----   ----    ----
+           0  01-17-13 13:04   ead_cpf_utils-master/
+        1057  01-17-13 13:04   ead_cpf_utils-master/agency.cfg
+          32  01-17-13 13:04   ead_cpf_utils-master/agency_test.txt
+        1048  01-17-13 13:04   ead_cpf_utils-master/all_eac.cfg
+        8647  01-17-13 13:04   ead_cpf_utils-master/eac_cpf.xsl
+    ...
+
+
+
+Using the git command:
+
+    git clone https://github.com/twl8n/ead_cpf_utils.git
+
+The git command automatically creates a directory "ead_cpf_utils" and downloads the most recent versions of
+all files.
+
+Update later on:
+
+    cd eac_cpf_utils
+    git pull
+
+
+Git for MacOS:
+
+[http://git-osx-installer.googlecode.com/files/git-1.8.1-intel-universal-snow-leopard.dmg]()
+
+Saxon for Java:
+
+[http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip]()
+
+(You will need Java. Most modern computers have it pre-installed.)
+
+After download, you'll do something like:
+
+    mkdir ~/bin
+    cd ~/bin
+    unzip ~/Downloads/SaxonHE9-4-0-6J.zip
+
+Edit your .bashrc or .zshrc, (or relevant shell rc file) to add aliases for 'git' and 'saxon'. These are bash/zsh format:
+
+    alias saxon='java -jar ~/bin/saxon9he.jar'
+    alias git=/usr/local/git/bin/git
+
+
+
 <a id="overview"/>
 Overview
 --------

@@ -27,6 +27,19 @@ use session_lib;
 # (which might not be so bad).
 
 my $line_buffer = "";
+
+# The saxon command line argument convention was changed between 8 and 9, so we must have a shell wrapper
+# script and a printf format string to handle the command line argument substitution. We strongly suggest that
+# you install saxon9he.jar. 
+
+# Version 9he
+# http://www.saxonica.com/documentation/using-xsl/commandline.xml
+my $saxon_fmt = "saxon.sh -s:%s %s";
+
+# Version 8
+# http://saxon.sourceforge.net/saxon6.5.2/using-xsl.html
+# my $saxon_fmt = "saxon.sh -s %s %s";
+
 main();
 exit();
 
@@ -172,13 +185,13 @@ sub main
         if ($use_args)
         {
             my $args = sprintf("use_chunks=1 chunk_prefix=$chunk_prefix output_dir=$output_dir chunk_size=$xsl_chunk_size offset=%d", $recs_processed+1);
-            my $cmd = "saxon - $xsl_script $args >> $log_file 2>&1";
+            my $cmd = sprintf("$saxon_fmt  $args >> $log_file 2>&1", '-',  $xsl_script);
             log_message($log_file, $cmd);
             open($pipe, "|-", $cmd) || die "Cannot open pipe for command $cmd\n";
         }
         else
         {
-            my $cmd = "saxon - $xsl_script >> $log_file 2>&1";
+            my $cmd = sprintf("$saxon_fmt >> $log_file 2>&1",  '-', $xsl_script);
             log_message($log_file, $cmd);
             open($pipe, "|-", $cmd) || die "Cannot open pipe for $cmd\n";
         }
