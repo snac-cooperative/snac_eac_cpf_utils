@@ -99,7 +99,8 @@ Overview
 --------
 
 Due to the length of the absolute path of the input file, I created symbolic link, and use that throughout the
-code and configuration files. For more information about this file, see [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files).
+code and configuration files. For more information about this file, see the end of the section
+[Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files).
 
     > ls -l snac.xml  
     lrwxrwxrwx 1 twl8n snac 30 Aug 20 13:31 snac.xml -> /data/source/WorldCat/snac.xml
@@ -230,9 +231,19 @@ subsequently modified by Tom Laudeman to add singular forms to simplify name mat
     -rw-r--r-- 1 twl8n snac  674261 Nov  5 09:53 vocabularyrelators.rdf
     -rw-r--r-- 1 twl8n snac  819145 Jan 15 14:14 worldcat_code.xml
 
-snac.xml
+The file snac.xml is an export of over 1.3 million WorldCat records supplied to us by OCLC. Due to the large
+size of this file, we "chunk" it with one of two Perl scripts. The Perl scripts are exec_record.pl and
+get_record.pl. These scripts expect an input file in this format. The file is simply '<record>' elements, one
+record per line, concatenated together without an outer wrapping element such as '<collection>'. The Perl
+scripts supply a wrapper element. Incidentally, while our input has one record per line, that is not a
+requirement.
 
+    <record xmlns="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"><leader>00000cpc a  00000Ia     </leader><controlfield tag="001">
+    ...
+    </record>
 
+Naturally, the XSLT script oclc_marc2cpf.xsl expects an outer '<collection>' element. If you have a smaller
+data set, you may not need the Perl scripts at all.
 
 
 
