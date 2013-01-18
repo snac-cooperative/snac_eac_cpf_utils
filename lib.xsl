@@ -26,10 +26,7 @@
          distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
          the License for the specific language governing permissions and limitations under the License.
 
-         This is a library of xml templates and functions shared by QA and
-         production scripts. Since QA is testing the same code used by the
-         productions xsl scripts, the testing is more robust and promotes
-         sanity. 
+         This is a library of xml templates and functions shared by several XSLT scripts.
          
          xsl:function name="lib:edate_core"
          xsl:template name="tpt_file_suffix"

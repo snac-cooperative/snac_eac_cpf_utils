@@ -28,24 +28,25 @@
     -->
 
     <!--
+        
+        oclc_marc2cpf.xsl reads individual MARC xml records and writes out EAD-CFP XML. 
+        
+        saxon marc.xml oclc_marc2cpf.xsl
 
-        oclc_marc2cpf.xsl reads individual MARC xml records and writes out
-        EAD-CFP XML. Relies one either of 2 small Perl scripts to turn the WorldCat
-        XML into well-formed XML. The following will write the results of the
-        first 40 records into a directory ./devx_1/.
+        For large batches of records, it relies one either of 2 small Perl scripts to turn the WorldCat XML
+        into well-formed XML. The following will write the results of the first 40 records into a directory
+        ./devx_1/.
         
-        get_record.pl file=snac.xml offset=1 limit=40 | saxon - oclc_marc2cpf.xsl chunk_prefix=devx output_dir=. 2>&1
+        get_record.pl file=snac.xml offset=1 limit=40 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_prefix=devx output_dir=. 2>&1
         
-        It is recommended that you use exec_record.pl for real work. It is more
-        efficient, and uses a configuration file which allows better historical
-        tracking of how data was transformed or generated.
+        It is recommended that you use exec_record.pl for real work. It is more efficient, and uses a
+        configuration file which allows better historical tracking of how data was transformed or generated.
         
-        See readme.txt for details.
-
-        There is no point in doing omit-xml-declaration="yes" with Saxon,
-        because it won't omit it for xml output to stdout. However, if set to
-        "yes" it will omit the declaration for result-document() output to a
-        file, which could be bad.
+        See readme.md for details.
+        
+        There is no point in doing omit-xml-declaration="yes" with Saxon, because it won't omit it for xml
+        output to stdout. However, if set to "yes" it will omit the declaration for result-document() output
+        to a file, which could be bad.
 
         Templates in this file:
 
