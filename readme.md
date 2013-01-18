@@ -324,7 +324,7 @@ Below is one form of a command used to run jing. Note the + in "find" instead of
     > ls -l test_validation.txt
     -rw-r--r-- 1 twl8n snac 0 Sep 7 08:52 test_validation.txt
 
-<a id="command-line-params-of-oclc-marc2cpf-xsl"/>
+<a id="command-line-params-of-oclc"/>
 
 Command line params of oclc_marc2cpf.xsl
 ----------------------------------------
