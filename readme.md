@@ -99,7 +99,7 @@ Overview
 --------
 
 Due to the length of the absolute path of the input file, I created symbolic link, and use that throughout the
-code and configuration files.
+code and configuration files. For more information about this file, see [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files).
 
     > ls -l snac.xml  
     lrwxrwxrwx 1 twl8n snac 30 Aug 20 13:31 snac.xml -> /data/source/WorldCat/snac.xml
@@ -229,6 +229,8 @@ subsequently modified by Tom Laudeman to add singular forms to simplify name mat
     -rw-r--r-- 1 twl8n snac 2217050 Nov  6 11:03 vocabularylanguages.rdf
     -rw-r--r-- 1 twl8n snac  674261 Nov  5 09:53 vocabularyrelators.rdf
     -rw-r--r-- 1 twl8n snac  819145 Jan 15 14:14 worldcat_code.xml
+
+snac.xml
 
 
 
