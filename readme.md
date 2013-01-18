@@ -14,7 +14,6 @@ Table of contents
 * [QA notes](#qa-notes)
 
 
-<a id="where-is-the-code"/>
 Where is the code?
 ------------------
 
