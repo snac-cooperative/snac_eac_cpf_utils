@@ -7,6 +7,7 @@ Table of contents
 * [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
 * [What are the other files?](#what-are-the-other-files)
 * [What is the easy way to run the code?](#what-is-the-easy-way-to-run-the-code)
+* [Command line params of oclc_marc2cpf.xsl](#command-line-params-of-oclc-marc2cpf-xsl)
 * [How do I get a block of records from the MARC input?](#how-do-i-get-a-block-of-records-from-the-marc-input)
 * [How do I manually run the xsl?](#how-do-i-manually-run-the-xsl)
 * [Example config file](#example-config-file)
@@ -261,6 +262,17 @@ handy for QA, especially try_date_regex.xsl which relies on lib.xsl.
 What is the easy way to run the code?
 -------------------------------------
 
+
+    saxon.sh marc.xml oclc_marc2cpf.xsl
+
+
+If you have a very large number of files, you may wish to use the Perl script exec_record.pl to chunk your
+data. The chunking is necesary to prevent Saxon from running out of memory (RAM). There are two usages of
+"chunk". The first is 'chunk' and refers to the number of records that will be sent to saxon. The second is
+'xsl_chunk_size' and this is how many records saxons processes before it creates a new output directory.
+
+The default behavior of oclc_marc2cpf.xsl is to ignore chunking and put all files in the current directory.
+
 Copy the config file test_eac.cfg to a new config file (or not, as appropriate). Choose a small value for
 config options "iterations", and "chunk". test_eac.cfg will process the first 5000 records, in other words
 '1000 * 5'.
@@ -278,7 +290,8 @@ which is tmp_test_er.log for test_eac.cfg. You can monitor the progress of the r
     watch tail tmp_test_er.log
 
 
-The older, alternative method uses get_record.pl, and to run all the data requires several commands.
+The older, alternative method uses get_record.pl, and to run a very large set of records requires several
+commands.
 
 The command below starts with record 1. Get 1000 records. Start a new directory every 1000 records. Start counting with record 1
 (since offset change for later chunks). Work goes in directories named "test_nnn" where _nnn is a numerical
@@ -311,6 +324,43 @@ Below is one form of a command used to run jing. Note the + in "find" instead of
     > ls -l test_validation.txt
     -rw-r--r-- 1 twl8n snac 0 Sep 7 08:52 test_validation.txt
 
+<a id="command-line-params-of-oclc-marc2cpf-xsl"/>
+Command line params of oclc_marc2cpf.xsl
+----------------------------------------
+
+The command line params understood by oclc_marc2cpf.xsl are normally not necessary. If you wanted to use the
+Perl script get_records.pl to run a test with a subset of your data, the params could be useful. The Perl
+script exec_record.pl relies on these params, but they are automatically managed based on configuration values
+from a supplied .cfg file.
+
+chunk_size  default 100
+
+The chunk_size is the number of records input before a new output directory is created, taking in account the
+param 'offset'. The Perl script exec_record.pl supplies a corresponding 'offset' param so that
+oclc_marc2cpf.xsl can adjust when to chunk.
+
+chunk_prefix default zzz
+
+The directory suffix is chunk_prefix plus a digit. For example zzz_1, zzz_2, and so on. It is a prefix in the
+sense that it comes before the numeric chunk suffix. The full directory is a concatenated string of: output_dir, '/', chunk_prefix, '_', chunk_suffix.
+
+offset default 1
+
+The offset is automatically supplied by exec_record.pl. If you are running oclc_marc2cpf.xsl, you will almost
+always use 1 or just leave the param off the command line so that it defaults to 1.
+
+output_dir  default ./
+
+Output CPF files will be created in subdirectories of the output_dir, based on the full directory string (see above).
+
+use_chunks 0 (also may depend on chunk_prefix)
+
+Normally chunks default to be off, but you can enable them with use_chunks=1 on the command line. If you
+change the chunk_prefix from default, use_chunks will be enabled.
+
+debug  default false()
+
+The debug param enables some verbose output. This is developers and debugging.
 
 
 <a id="how-do-i-get-a-block-of-records-from-the-marc-input"/>

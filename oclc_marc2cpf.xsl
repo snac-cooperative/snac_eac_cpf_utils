@@ -82,13 +82,13 @@
          Chunking related. The prefix does not include _ or /.
     -->
     <xsl:param name="chunk_size" select="100"/>
-    <xsl:param name="chunk_prefix" select="'xxx'"/>
+    <xsl:param name="chunk_prefix" select="'zzz'"/>
     <xsl:param name="offset" select="1"/>
-    <xsl:param name="output_dir" select="'/uva-working/twl8n'"/>
+    <xsl:param name="output_dir" select="'./'"/>
 
     <xsl:param name="use_chunks">
         <xsl:choose>
-            <xsl:when test="not($chunk_prefix='xxx')">
+            <xsl:when test="not($chunk_prefix='zzz')">
                 <xsl:value-of select="1"/>
             </xsl:when>
             <xsl:otherwise>
