@@ -233,8 +233,8 @@ subsequently modified by Tom Laudeman to add singular forms to simplify name mat
 
 The file snac.xml is an export of over 1.3 million WorldCat records supplied to us by OCLC. Due to the large
 size of this file, we "chunk" it with one of two Perl scripts. The Perl scripts are exec_record.pl and
-get_record.pl. These scripts expect an input file in this format. The file is simply '<record>' elements, one
-record per line, concatenated together without an outer wrapping element such as '<collection>'. The Perl
+get_record.pl. These scripts expect an input file in this format. The file is simply `<record>` elements, one
+record per line, concatenated together without an outer wrapping element such as `<collection>`. The Perl
 scripts supply a wrapper element. Incidentally, while our input has one record per line, that is not a
 requirement.
 
@@ -242,7 +242,7 @@ requirement.
     ...
     </record>
 
-Naturally, the XSLT script oclc_marc2cpf.xsl expects an outer '<collection>' element. If you have a smaller
+Naturally, the XSLT script oclc_marc2cpf.xsl expects an outer `<collection>` element. If you have a smaller
 data set, you may not need the Perl scripts at all.
 
 
