@@ -67,9 +67,9 @@ http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip
 
 (You will need Java. Most modern computers have it pre-installed.)
 
-The included script saxon.sh expects saxon to be in $HOME/bin/saxon9he.jar. If you are installing
+The included script saxon.sh expects Saxon to be in $HOME/bin/saxon9he.jar. If you are installing
 saxons9he.jar, please put it in ~/bin, otherwise you must edit saxon.sh to reflect the correct location of
-saxon.
+Saxon.
 
 After download, you'll do something like:
 
@@ -136,7 +136,7 @@ An example command line is:
     ./exec_record.pl config=test_eac.cfg &
 
 The Perl script exec_record.pl pulls records from the original WorldCat data and pipes those records to a
-saxon command. Before output, the set of records is surrounded by a `<collection>` element in order to create valid
+Saxon command. Before output, the set of records is surrounded by a `<collection>` element in order to create valid
 XML. The WorldCat data as it exists is not valid XML (no surrounding element), but the Perl code deals with
 that. The script exec_record.pl uses a combination of regular expressions and state variables to find a 
 `<record>` element regardless of intervening whitespace (or not).
@@ -158,7 +158,23 @@ The second, older system uses get_record.pl in place of exec_record.pl. This sys
 lacks the automated chunking of exec_record.pl. This older system does not use a config file, so tracking
 history is more of a challenge. Necessary configuration is handled via command line arguments.
 
-    get_record.pl file=snac.xml offset=1 limit=1000 | saxon - oclc_marc2cpf.xsl chunk_size=100 offset=1 chunk_prefix=test output_dir=/uva-working/twl8n
+Here are a couple of examples. There is more detail below.
+
+    > get_record.pl file=snac.xml offset=1 limit=10 | saxon.sh -s:- oclc_marc2cpf.xsl
+    not_167xx: 8560473
+
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    twl8n@d-128-167-227 Fri Jan 18 15:01:41 EST 2013
+    /Users/twl8n/ead_cpf_utils
+    > ls -l OCLC-85*
+    -rw-r--r--  1 twl8n  staff   7403 Jan 18 15:01 OCLC-8559898.c.xml
+    -rw-r--r--  1 twl8n  staff  10989 Jan 18 15:01 OCLC-8560008.c.xml
+    -rw-r--r--  1 twl8n  staff   9653 Jan 18 15:01 OCLC-8560008.r01.xml
+    -rw-r--r--  1 twl8n  staff   9403 Jan 18 15:01 OCLC-8560008.r02.xml
+
+
+    > get_record.pl file=snac.xml offset=1 limit=1000 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_size=100 offset=1 chunk_prefix=test output_dir=. > tmp.log 2>&1 &
 
     > ls -l get_record.pl oclc_marc2cpf.xsl eac_cpf.xsl lib.xsl 
     -rw-r--r-- 1 twl8n snac   7885 Jan  7 11:16 eac_cpf.xsl
@@ -265,8 +281,8 @@ What is the easy way to run the code?
 
 If you have a very large number of files, you may wish to use the Perl script exec_record.pl to chunk your
 data. The chunking is necesary to prevent Saxon from running out of memory (RAM). There are two usages of
-"chunk". The first is 'chunk' and refers to the number of records that will be sent to saxon. The second is
-'xsl_chunk_size' and this is how many records saxons processes before it creates a new output directory.
+"chunk". The first is 'chunk' and refers to the number of records that will be sent to Saxon. The second is
+'xsl_chunk_size' and this is how many records Saxon processes before it creates a new output directory.
 
 The default behavior of oclc_marc2cpf.xsl is to ignore chunking and put all files in the current directory.
 
@@ -294,12 +310,12 @@ The command below starts with record 1. Get 1000 records. Start a new directory 
 (since offset change for later chunks). Work goes in directories named "test_nnn" where _nnn is a numerical
 suffix. Put the output directories in /uva-working/twl8n.
 
-    get_record.pl file=snac.xml offset=1 limit=1000 | saxon - oclc_marc2cpf.xsl chunk_size=100 offset=1 chunk_prefix=test output_dir=/uva-working/twl8n
+    get_record.pl file=snac.xml offset=1 limit=1000 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_size=100 offset=1 chunk_prefix=test output_dir=/uva-working/twl8n
 
 During debugging it may help to not use chunking. This command runs a single QA xml file and creates a single
 .c output file.
 
-    > saxon qa_155448889_date_leading_hyphen.xml oclc_marc2cpf.xsl use_chunks=0
+    > saxon.sh qa_155448889_date_leading_hyphen.xml oclc_marc2cpf.xsl use_chunks=0
     <?xml version="1.0" encoding="UTF-8"?>
     > ls -l OCLC*
     -rw-r--r-- 1 twl8n snac 5893 Oct  8 14:48 OCLC-155448889.c.xml
@@ -308,7 +324,7 @@ The command below starts with record 1001. Get 20000 records. Start a new direct
 counting with record 1 (since offset change for later chunks). Work goes in directories named "test_nnn" where
 _nnn is a numerical suffix. Put the output directories in /uva-working/twl8n.
 
-    get_record.pl file=snac.xml offset=1001 limit=2000 | saxon - oclc_marc2cpf.xsl chunk_size=1000 offset=1001 chunk_prefix=test output_dir=/uva-working/twl8n
+    get_record.pl file=snac.xml offset=1001 limit=2000 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_size=1000 offset=1001 chunk_prefix=test output_dir=/uva-working/twl8n
 
 Below is one form of a command used to run jing. Note the + in "find" instead of the very slow and traditional
 "\;".
@@ -396,7 +412,7 @@ Example config file
     xsl_script = oclc_marc2cpf.xsl
     
     # 1 or 0. When we're running oclc_marc2cpf.xsl, we need a bunch of args (params)
-    # for the saxon command line.
+    # for the Saxon command line.
     use_args = 1
 
     # input xml file. 
@@ -861,7 +877,7 @@ instead of a single string.
 ---
 
 This .r56 should be a questionable date. It broke the code by trying to turn a null string into a
-number. Either it made 0000 which is questionable (wrong), or saxon died with an error.
+number. Either it made 0000 which is questionable (wrong), or Saxon died with an error.
 
     <date localType="questionable">1714 or -15-1757.</date>
 
@@ -895,7 +911,7 @@ is (and should be) questionable, make sure it doesn't crash the script
 ---
 
 The 100$e doesn't hit any occupation, but I think at one point trying to resolve a string with a leading
-comma caused it to process as a sequence and not as a string and that made saxon die with an error.
+comma caused it to process as a sequence and not as a string and that made Saxon die with an error.
 
     -rw-r--r-- 1 twl8n snac  6825 Nov 20 14:05 qa_733102265_comma_interviewee.xml
     less OCLC-733102265.c.xml
