@@ -265,10 +265,8 @@ data set, you may not need the Perl scripts at all.
 What are the other files?
 -------------------------
 
-The try_*.xsl files are examples from algorithm development. Some of them are
-handy for QA, especially try_date_regex.xsl which relies on lib.xsl.
-
-
+The repository will eventually include some files that are useful as learing examples, or perform some
+function related to either understanding the data, or developing algorithms.
 
 
 
@@ -336,6 +334,12 @@ Below is one form of a command used to run jing. Note the + in "find" instead of
 
     > ls -l test_validation.txt
     -rw-r--r-- 1 twl8n snac 0 Sep 7 08:52 test_validation.txt
+
+You can find the cpf.rng file on the web at:
+
+http://socialarchive.iath.virginia.edu/shared/cpf.rng
+
+
 
 
 Command line params of oclc_marc2cpf.xsl
