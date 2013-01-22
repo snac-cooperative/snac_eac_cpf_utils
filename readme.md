@@ -208,14 +208,14 @@ values from your data.
 
     ./exec_record.pl config=agency.cfg &
 
-Get the values from the log file and create a unique list. This exciting command with a Perl one-liner is
-fairly standard practice in the Linux world.
+Get the values from the log file and create a unique list. The exciting command below using a Perl one-liner
+is fairly standard practice in the Linux world.
 
     cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
 
-The script worldcat_code.pl reads agency_unique.txt and writes worldcat_code.xml. It also creates a
-directory of cached results "./wc_data". Results from http requests to the WorldCat web API are cached as
-files in ./wc_data and therefore if you repeat a run, it will be much, much faster the second time.
+The script "worldcat_code.pl" reads the file "agency_unique.txt" and writes a new file "worldcat_code.xml". It
+also creates a directory of cached results "./wc_data". Results from http requests to the WorldCat web API are
+cached as files in ./wc_data and therefore if you repeat a run, it will be much, much faster the second time.
 
     ./worldcat_code.pl > tmp.log
 

@@ -64,7 +64,9 @@ sub main
     my $good_hit = 0;
     while (defined(my $marc_code = get_marc()))
     {
-        # Get the first query back from worldcat. Sleep 250 milliseconds aka 1/4 second between queries.
+        # Get the first query back from worldcat. Sleep 250 milliseconds aka 1/4 second aka 250000
+        # microseconds between queries in order to be polite to the server.
+
         my $first;
         my @rid_list;
         if ($marc_code)
@@ -87,14 +89,14 @@ sub main
             next;
         }
 
-        # If we have a resourceID then get a second query. Sleep 250 milliseconds aka 1/4 second between queries.
+        # If we have a resourceID then get a second query. Sleep 250 milliseconds aka 1/4 second between
+        # queries to be polite to the server.
 
-        # ALM does not return a record with an exact match for ALM. In fact,
-        # that exact match is the third record, so we have to check all the returned records.
+        # Code ALM does not return a record with an exact match for ALM. In fact, that exact match is the
+        # third record, so we have to check all the returned records.
 
-        # Cache second queries. These seem more likely to repeat than first
-        # queries since each first is based on a unique marc code, and first
-        # returns multiple potiential hits.
+        # Cache second queries. These seem more likely to repeat than first queries since each first is based
+        # on a unique marc code, and first returns multiple potiential hits.
 
         my $second = "";
         $good_hit = 0;
@@ -228,9 +230,9 @@ sub get_rid
 {
     my $first = $_[0];
 
-    # It seems to be the case that the exact match is the first record. In the
-    # future we might want to foreach on resourceID because there can be more
-    # than one, but only one of them will have an exact match for the symbol.
+    # Initially I thought that the exact match was the first record, but I found cases where that is not
+    # true. Use a /g regex so we check all the possible matches. I think later code checks for exact matches
+    # as the "best" choice.
 
     # <adminData:resourceID>info:rfa/localhost/Institutions/50042</adminData:resourceID>
 
@@ -277,19 +279,12 @@ sub parse_second
     my %res;
     my $exact = 0;
 
-    # if ($second =~ m/<oclcSymbol>\Q$marc_query\E<\/oclcSymbol>/i ||
-    #     $second =~ m/<marcOrgCode>\Q$marc_query\E<\/marcOrgCode>/i ||
-    #     $second =~ m/<oclcSymbol.*?>\Q$marc_query\E<\/oclcSymbol>/i)
-
     # <oclcSymbol status="inactive">AEM</oclcSymbol>
 
-    # Look for an exact match as any element value, case insensitive. In
-    # addition to above, could be <cobissLettersCode>BMSNS</cobissLettersCode>
-    # although that seems to stretch credibility. One record I checked seemed
-    # rational in that 040$a BMSNS was with a record that could be Serbian, and
-    # 040$b is srp.
-
-    # if ($second =~ m/(<.*?>\Q$marc_query\E<\/.*?>)/i)
+    # Look for an exact match as any element value, case insensitive. In addition to the example above, a
+    # match could (theoretically) be <cobissLettersCode>BMSNS</cobissLettersCode> although that seems to
+    # stretch credibility. One record I checked seemed rational in that 040$a BMSNS was with a record that
+    # could be Serbian, and 040$b is srp.
 
     if ($second =~ m/(<marcOrgCode>\Q$marc_query\E<\/marcOrgCode>)/i ||
         $second =~ m/(<oclcSymbol.*?>\Q$marc_query\E<\/oclcSymbol>)/i)
