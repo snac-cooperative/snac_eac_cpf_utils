@@ -93,9 +93,11 @@
      
      <xsl:template name="tpt_lang_decl" xmlns="urn:isbn:1-931666-33-4">
          <!--
-             control/languageDeclaration. I'm pretty sure there is only a single
+             This is control/languageDeclaration. I'm pretty sure there is only a single
              040$b per record, but for-each sets the context, so that is
              good. When we have an 040$b, use it, otherwise default to English.
+             
+             (description/languageUsed is derived from the 041$a; see tpt_language)
          -->
          <xsl:choose>
              <xsl:when test="boolean(marc:datafield[@tag='040']/marc:subfield[@code='b'])">
@@ -335,21 +337,6 @@
      </xsl:template>
      
      <xsl:template name="tpt_rules">
-         <!-- 
-              The input namespace is marc, but we call it ns.
-         -->
-         <!-- <xsl:message> -->
-         <!--     <xsl:text>rules: </xsl:text> -->
-         <!--     <xsl:value-of select="marc:controlfield[@tag='008']"/> -->
-         <!--     <xsl:text>&#x0A;</xsl:text> -->
-         <!--     <xsl:text>marc   012345678901234567890123</xsl:text> -->
-         <!--     <xsl:text>&#x0A;</xsl:text> -->
-         <!--     <xsl:text>xstl   123456789012345678901234</xsl:text> -->
-         <!--     <xsl:text>&#x0A;</xsl:text> -->
-         <!--     <xsl:copy-of select="substring(marc:controlfield[@tag='008'],11,1)" /> -->
-         <!--     <xsl:text>&#x0A;</xsl:text> -->
-         <!-- </xsl:message> -->
-
 	 <xsl:choose>
 	     <xsl:when test="substring(marc:controlfield[@tag='008'],11,1)='b'">
 		 <xsl:text>aacr1</xsl:text>
@@ -441,8 +428,10 @@
      <xsl:template name="tpt_language"
                    xmlns="urn:isbn:1-931666-33-4">
         <!-- 
-             First put each 041$a lang into var $all, then dedup $all and wrap
-             each lang with languageUsed.
+             This is description/languageUsed. First put each 041$a lang into var $all, then dedup $all and
+             wrap each lang with languageUsed to go into description.
+             
+             (control/languageDeclaration is derived 040$b; see tpt_lang_decl)
 
              <subfield code="a">gereng</subfield>
              
@@ -479,7 +468,6 @@
         <xsl:for-each select="$all/*[string-length() > 0]">
             <xsl:variable name="curr" select="."/>
             <xsl:if test="not(preceding::eac:language[text() = $curr/text()])">
-                <!-- removed namespace="urn:isbn:1-931666-33-4" -->
                 <languageUsed>
                     <xsl:copy-of select="$curr"/>
                     <script scriptCode="Zyyy">
@@ -1003,6 +991,21 @@
         </xsl:choose>
     </xsl:template> <!-- end tpt_show_date -->
 
+    
+    <xsl:template name="simple_date_range" xmlns="urn:isbn:1-931666-33-4">
+        <xsl:param name="from" />
+        <xsl:param name="from_type"/>
+        <xsl:param name="to" />
+        <xsl:param name="to_type" />
+        <dateRange>
+            <xsl:if test="string-length($from) > 0">
+                <fromDate standardDate="{$from}" localType="{$from_type}"><xsl:value-of select="$from"/></fromDate>
+            </xsl:if>
+            <xsl:if test="string-length($to) > 0">
+                <toDate standardDate="{$to}" localType="{$to_type}"><xsl:value-of select="$to"/></toDate>
+            </xsl:if>
+        </dateRange>
+    </xsl:template>
 
 
     <xsl:template name="tpt_exist_dates">
@@ -1183,13 +1186,9 @@
         <xsl:param name="xx_tag"/>
         <xsl:param name="count"/>
         <xsl:param name="status"/>
-        <!-- context is the full marc record, so we should have access to anything we need. -->
-
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>tes context: </xsl:text> -->
-        <!--     <xsl:copy-of select="marc:datafield[@tag='580']"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
+        <!--
+            context is the full marc record, so we should have access to anything we need.
+        -->
         <xsl:choose>
             <xsl:when test="$status='a' or $status='c' or $status='n' or $status='C'">
                 <xsl:text>A</xsl:text>
@@ -1481,11 +1480,12 @@
         <xsl:param name="creator_info"/>
         <xsl:param name="status"/>
         <!-- 
-             Recurse over all the [167]xx records creatin a var containing a node set we will eventually use
-             to create potentially multiple output files. We deduplicate during the recursion by checking the
-             current value against values we have already accumulated. Unfortunately, this recusive algorithm
-             prevents us from looking ahead for things like a 700 record to use as a creatorOf arcrole. The
-             non-recursive method with post-node-set-creation de-duplication is more flexible.
+             Recurse over all the [167]xx records creating a var containing a node set we will eventually use
+             to create potentially multiple output files. We de-duplicate (dedupe) during the recursion by
+             checking the current value against values we have already accumulated. Unfortunately, this
+             recusive algorithm prevents us from looking ahead for things like a 700 record to use as a
+             creatorOf arcrole. The non-recursive method with post-node-set-creation de-duplication is more
+             flexible.
              
              Var $df is working because the context is the original record for all depths of recursion. (At
              least in this case since we don't change the context.)
@@ -2033,8 +2033,9 @@
     <xsl:function name="lib:max_ess" as="xs:string">
         <xsl:param name="date" as="xs:string?"/>
         <!--
-            Return the max number for 1800s. For now we only handle 100s or 10s,
-            for example 1800s or 1820s. Companion to min_ess() above.
+            Return the max number for 1800s. For now we only handle 100s or 10s, for example 1800s or
+            1820s. Companion to min_ess() above. Returning zero upon failure is dubious, and I don't think it
+            will ever happen. Saxon 8 didn't care, but 9he knows when there's no xsl:otherwise.
         -->
         <xsl:choose>
             <xsl:when test="(number($date) mod 100) = 0">
@@ -2043,6 +2044,9 @@
             <xsl:when test="(number($date) mod 10) = 0">
                 <xsl:value-of select="number($date) + 9"/>
             </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>0</xsl:text>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
 
@@ -2093,6 +2097,31 @@
                 <xsl:text>corporateBody</xsl:text>
             </xsl:when>
         </xsl:choose>
+    </xsl:template>
+
+
+    <!-- 
+         Deep copy via identity replacing the existing namespace with a new one. This is not a common thing to
+         do since usually you would want to use the value of the input document element as an element with a
+         new name in the output. This does want people wish copy-namespace="no" or something similar would do,
+         but does not. 
+
+         <xsl:call-template name="renamespace">
+         <xsl:with-param name="ns" select="'urn:isbn:1-931666-33-4'" />
+         </xsl:call-template>
+    -->
+    <xsl:template name="renamespace" >
+        <xsl:param name="ns"/>
+        <xsl:element name="{local-name(.)}" namespace="{$ns}">
+            <xsl:copy-of select="@*"/>	
+            <!--
+                Use for-each to set the context to the children elements of '.'. It iterates once for each
+                child.
+            -->
+            <xsl:for-each select="./*">
+                <xsl:call-template name="renamespace"/>
+            </xsl:for-each>
+        </xsl:element>
     </xsl:template>
 
 

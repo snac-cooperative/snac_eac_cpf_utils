@@ -51,13 +51,12 @@
         <xsl:param name="original"/>
         <xsl:param name="agency_info" />
         <xsl:param name="lang_decl" />
-        <xsl:param name="authorized_form" />
         <xsl:param name="topical_subject"/>
         <xsl:param name="geographic_subject"/>
         <xsl:param name="occupation" />
         <xsl:param name="language" />
         <xsl:param name="function" />
-        <xsl:param name="rules" />
+        <xsl:param name="param_data"/>
         
         <xsl:processing-instruction name="oxygen">RNGSchema="http://socialarchive.iath.virginia.edu/shared/cpf.rng" type="xml"</xsl:processing-instruction>
         <xsl:text>&#x0A;</xsl:text>        
@@ -69,10 +68,6 @@
                     <xsl:copy-of select="$agency_info"/>
                 </maintenanceAgency>
                 <xsl:copy-of select="$lang_decl"/>
-                <!-- <languageDeclaration> -->
-                <!--     <language languageCode="eng">English</language> -->
-                <!--     <script scriptCode="Latn">Latin Alphabet</script> -->
-                <!-- </languageDeclaration> -->
                 <maintenanceHistory>
                     <maintenanceEvent>
                         <eventType>created</eventType>
@@ -88,12 +83,12 @@
                             <xsl:text> </xsl:text>
                             <xsl:value-of select="$xslt_vendor_url"/>
                         </agent>
-                        <eventDescription>Derived from MARC</eventDescription>
+                        <eventDescription><xsl:value-of select="$param_data/eac:ev_desc"/></eventDescription>
                     </maintenanceEvent>
                 </maintenanceHistory>
                 <sources>
                     <source xmlns:xlink="http://www.w3.org/1999/xlink"
-                            xlink:href="http://www.worldcat.org/oclc/{$controlfield_001}"
+                            xlink:href="{$param_data/eac:resource_href}{$controlfield_001}"
                             xlink:type="simple">
                         <xsl:if test="true()"> <!-- enable in .c only with $is_c_flag, or disable for all with false() -->
                             <objectXMLWrap>
@@ -108,7 +103,7 @@
                     <entityType><xsl:value-of select="$entity_type"/></entityType>
                     <nameEntry xml:lang="en-Latn">
                         <part><xsl:value-of select="$entity_name"/></part>
-                        <authorizedForm><xsl:value-of select="$rules"/></authorizedForm>
+                        <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
                     </nameEntry>
                 </identity>
                 <xsl:if test="$is_c_flag">
@@ -157,7 +152,7 @@
                                       xlink:arcrole="{$arc_role}"
                                       xlink:role="archivalDescriptionMARC"
                                       xlink:type="simple"
-                                      xlink:href="http://www.worldcat.org/oclc/{$controlfield_001}">
+                                      xlink:href="{$param_data/eac:resource_href}{$controlfield_001}">
                         <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
                         <xsl:copy-of select="$mods"/>
 			<descriptiveNote>

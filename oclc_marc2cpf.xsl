@@ -230,12 +230,11 @@
         </xsl:variable>
 
         <!--
-            authorizedForm is hard coded in in eac_cpf.xml to OCLC-WorldCat, so we aren't using this. If we keep not
-            using it, simply delete it and all param references to it.
+            authorizedForm has been replaced by $rules.
         -->
-        <xsl:variable name="authorized_form">
-            <xsl:text>OCLC-WorldCat</xsl:text>
-        </xsl:variable>
+        <!-- <xsl:variable name="authorized_form"> -->
+        <!--     <xsl:text>OCLC-WorldCat</xsl:text> -->
+        <!-- </xsl:variable> -->
         
         <xsl:variable name="topical_subject">
             <xsl:call-template name="tpt_topical_subject">
@@ -489,7 +488,7 @@
             <xsl:with-param name="original" select="$original"/>
             <xsl:with-param name="agency_info" select="$agency_info"/>
             <xsl:with-param name="lang_decl" select="$lang_decl"/>
-            <xsl:with-param name="authorized_form" select="$authorized_form"/>
+            <!-- <xsl:with-param name="authorized_form" select="$authorized_form"/> -->
             <xsl:with-param name="topical_subject" select="$topical_subject"/>
             <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
             <xsl:with-param name="language" select="$language"/>
@@ -501,7 +500,7 @@
     
     <!-- tpt_geo, tpt_65x_geo moved to lib.xsl -->
 
-    <xsl:template name="tpt_container" match="/eac:container">
+    <xsl:template name="tpt_container" match="/eac:container" xmlns="urn:isbn:1-931666-33-4">
 
         <!-- 
              Generate files via result-document(). The <container> has an <e_name> for each unique [167]xx entry. Each
@@ -532,7 +531,7 @@
         <xsl:param name="tag_245" />
         <xsl:param name="xslt_script" />
         <xsl:param name="original" />
-        <xsl:param name="authorized_form" />
+        <!-- <xsl:param name="authorized_form" /> -->
         <xsl:param name="topical_subject" />
         <xsl:param name="geographic_subject" />
         <xsl:param name="agency_info" />
@@ -563,7 +562,11 @@
         </xsl:variable>
 
         <!-- 
-             Must declare xmlns. The documents will not validate with xmlns="". There is a note above that putting it in
+             New: We could probably just set the eac: namespace in the template element above and that would
+             take care of all this. Maybe do that and test this some day. In the meantime, the extra xmlns
+             namespace assignments may be redundant, but they are working.
+
+             Old: Must declare xmlns. The documents will not validate with xmlns="". There is a note above that putting it in
              the stylesheet declaration breaks <container> elements. Might follow that up some day.
         -->
         <xsl:variable name="cpf_relation" xmlns="urn:isbn:1-931666-33-4">
@@ -611,6 +614,18 @@
             </xsl:if>
         </xsl:variable>
 
+        <xsl:variable name="param_data">
+            <ev_desc>
+                <xsl:value-of select="'Derived from MARC'"/>
+            </ev_desc>
+            <rules>
+                <xsl:value-of select="$rules"/>
+            </rules>
+            <resource_href>
+                <xsl:value-of select="'http://www.worldcat.org/oclc/'"/>
+            </resource_href>
+        </xsl:variable>
+
         <!--
             Note: the context is a <container> node set. <container><e_name>...</e_name><existDates>...</existDates></container>
         -->
@@ -643,13 +658,13 @@
                 <xsl:with-param name="original" select="$original"/>
                 <xsl:with-param name="agency_info" select="$agency_info"/>
                 <xsl:with-param name="lang_decl" select="$lang_decl"/>
-                <xsl:with-param name="authorized_form" select="$authorized_form"/>
+                <!-- <xsl:with-param name="authorized_form" select="$authorized_form"/> -->
                 <xsl:with-param name="topical_subject" select="$topical_subject"/>
                 <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
                 <xsl:with-param name="occupation" select="$occupation"/>
                 <xsl:with-param name="language" select="$language"/>
                 <xsl:with-param name="function" select="$function"/>
-                <xsl:with-param name="rules" select="$rules"/>
+                <xsl:with-param name="param_data" select="$param_data" />
             </xsl:call-template>
         </xsl:result-document>
     </xsl:template> <!-- end tpt_container -->
