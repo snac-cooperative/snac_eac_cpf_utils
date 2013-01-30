@@ -997,14 +997,26 @@
         <xsl:param name="from_type"/>
         <xsl:param name="to" />
         <xsl:param name="to_type" />
-        <dateRange>
-            <xsl:if test="string-length($from) > 0">
-                <fromDate standardDate="{$from}" localType="{$from_type}"><xsl:value-of select="$from"/></fromDate>
-            </xsl:if>
-            <xsl:if test="string-length($to) > 0">
-                <toDate standardDate="{$to}" localType="{$to_type}"><xsl:value-of select="$to"/></toDate>
-            </xsl:if>
-        </dateRange>
+        <!--
+            If there is no "to" then we only have one date. Must always have at least one date.
+        -->
+        <xsl:choose>
+            <xsl:when test="string-length($to) = 0">
+                <date standardDate="{$from}" localType="{$from_type}">
+                    <xsl:value-of select="$from"/>
+                </date>
+            </xsl:when>
+            <xsl:otherwise>
+                <dateRange>
+                    <xsl:if test="string-length($from) > 0">
+                        <fromDate standardDate="{$from}" localType="{$from_type}"><xsl:value-of select="$from"/></fromDate>
+                    </xsl:if>
+                    <xsl:if test="string-length($to) > 0">
+                        <toDate standardDate="{$to}" localType="{$to_type}"><xsl:value-of select="$to"/></toDate>
+                    </xsl:if>
+                </dateRange>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
 
