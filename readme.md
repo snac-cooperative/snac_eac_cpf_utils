@@ -30,9 +30,15 @@ processed will exceed the memory of the computer.
 What you might need to get started
 ----------------------------------
 
-You will need all the files from the GitHub repository ead_cpf_utils, Saxon 9he (xslt processor), Java (to run
-Saxon). While you won't necessarily use every file from the eac_cpf_utils repository, many of the files cross
-reference each other.
+* All the files from the GitHub repository ead_cpf_utils. While you won't necessarily use every file from the
+eac_cpf_utils repository, many of the files cross reference each other.
+
+* Saxon 9he (xslt processor)
+
+* Java (to run Saxon)
+
+* The git command line utility. (Maybe)
+
 
 You will have to run some commands in the terminal window. For Linux I like xterm, although any terminal or
 console should be fine. Mac users should use Terminal: Applications -> Utilities -> Terminal.  If you are
@@ -99,10 +105,21 @@ Saxon for Java:
 
 http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip
 
-(You will need Java. Most modern computers have it pre-installed.)
+You will need Java. Most modern computers have it pre-installed. It is unclear if gcj or the openjdk will
+work. The link below is probably the correct page to download Oracle (formerly Sun) Java:
+
+http://www.java.com/en/download/index.jsp
+
+You can try this command to see if you already have Java:
+
+    > java -version
+    java version "1.6.0_37"
+    Java(TM) SE Runtime Environment (build 1.6.0_37-b06-434-10M3909)
+    Java HotSpot(TM) 64-Bit Server VM (build 20.12-b01-434, mixed mode)
+
 
 The included script saxon.sh expects Saxon to be in $HOME/bin/saxon9he.jar. For example
-/Users/mst3k/bin/saxon9he.jar. If you are installing saxons9he.jar, please put saxon9he.jar in ~/bin,
+/Users/mst3k/bin/saxon9he.jar. If you are installing saxons9he.jar, please put it in ~/bin,
 otherwise you must edit saxon.sh to reflect the correct location.
 
 After download, these will be typical commands:
