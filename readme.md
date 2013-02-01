@@ -31,7 +31,7 @@ What you might need to get started
 ----------------------------------
 
 * All the files from the GitHub repository ead_cpf_utils. While you won't necessarily use every file from the
-eac_cpf_utils repository, many of the files cross reference each other.
+ead_cpf_utils repository, many of the files cross reference each other.
 
 * Saxon 9he (xslt processor)
 
@@ -171,7 +171,7 @@ http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
     unzip ../Downloads/vocabularylanguages.rdfxml.zip
     unzip ../Downloads/vocabularyrelators.rdfxml.zip
 
-Assuming that you are in the eac_cpf_utils directory, you should be able to run 4 commands "git status", "ls
+Assuming that you are in the ead_cpf_utils directory, you should be able to run 4 commands "git status", "ls
 -l", "java -version", "saxon.sh -?" and get output similar to what follows:
 
     > git status
@@ -246,8 +246,8 @@ large (>100000) records.
 Building your own list of WorldCat agency codes
 -----------------------------------------------
 
-The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet
-each time. Essentially, this whole process is a way to cache the agency code data.
+The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet each
+time. Essentially, this process of building your own list is a way to cache the agency code data.
 
 Included in the repository is worldcat_code.xml which is a data file of the unique WorldCat agency codes found
 in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
@@ -374,6 +374,8 @@ permissions.
 
 Overview for large input files
 ------------------------------
+
+(This section is currently in development.)
 
 Due to the length of the absolute path of the input file, I created symbolic link, and use that throughout the
 code and configuration files. For more information about this file, see the end of the section
