@@ -291,12 +291,16 @@ won't hurt.
 Building your own list of WorldCat agency codes.
 -----------------------------------------------
 
+The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet
+each time. Essentially, this whole process is a way to cache the agency code data.
+
 Included in the repository is worldcat_code.xml which is a data file of the unique WorldCat agency codes found
 in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
 worldcat_code.xml. The process begins by getting all the 040$a from the MARC records. Next we look up those
 values up via the WorldCat web API. Finally, the unique values are written into worldcat_code.xml.
 
-Backup worldcat_code.xml.
+
+First, backup the original worldcat_code.xml.
 
     cp worldcat_code.xml worldcat_code.xml.back
 
@@ -325,29 +329,67 @@ is fairly standard practice in the Linux world.
 
     cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
 
-
-The script "worldcat_code.pl" reads the file "agency_unique.txt" and writes a new file "worldcat_code.xml". It
-also creates a directory of cached results "./wc_data". What worldcat_code.pl does it to make an http request
-to the WorldCat servers via a web API. Results from http requests to the WorldCat web API are cached as files
-in ./wc_data and therefore if you repeat a run, it will be much, much faster the second time.
+The final step involves looking up the codes from WorldCat's servers. The script "worldcat_code.pl" reads the
+file "agency_unique.txt" and writes a new file "worldcat_code.xml". It also creates a directory of cached
+results "./wc_data". What worldcat_code.pl does is to make an http request to the WorldCat servers via a web
+API. Results from http requests to the WorldCat web API are cached as files in ./wc_data and therefore if you
+repeat a run, it will be much, much faster the second time. The first run can be quite slow, partly because
+the script pauses briefly after each request so it does not overload the WorldCat servers.
 
     ./worldcat_code.pl > tmp.log
 
-The file tmp.log contains entries for codes that have multiple entries. Grep the log for 'multi mc:'.
+ After the run, you'll have tmp.log, a new directory wc_data, and the results in worldcat_code.xml.
 
-The files agency_code.log and agency_unique.txt are essentially temporary, and you may delete them after
-running worldcat_code.pl and verifying the results.
+    > ls -alt | head
+    total 18816
+    drwxr-xr-x+  92 twl8n  staff     3128 Feb  1 15:48 ..
+    drwxr-xr-x  375 twl8n  staff    12750 Feb  1 15:48 wc_data
+    -rw-r--r--    1 twl8n  staff    35526 Feb  1 15:48 worldcat_code.xml
+    -rw-r--r--    1 twl8n  staff      213 Feb  1 15:48 tmp.log
 
-    > ls -l agency.cfg worldcat_code.* extract_040a.xsl
-    -rw-r--r-- 1 mst3k snac   1057 Jan 15 14:06 agency.cfg
-    -rw-r--r-- 1 mst3k snac   2366 Jan 15 11:38 extract_040a.xsl
-    -rwxr-xr-x 1 mst3k snac  10427 Jan 15 11:42 worldcat_code.pl
-    -rw-r--r-- 1 mst3k snac 819145 Jan 15 14:14 worldcat_code.xml
+The results are in worldcat_code.xml, and here is the top few lines (via the "head" command):
+
+    > head worldcat_code.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <all xmlns="http://www.loc.gov/MARC21/slim">
+      <container>
+        <marc_query>AHJ</marc_query>
+        <marc_code>WyU-AH</marc_code>
+        <name>University of Wyoming, American Heritage Center</name>
+        <isil>OCLC-AHJ</isil>
+        <matching_element><oclcSymbol>AHJ</oclcSymbol></matching_element>
+      </container>
+      <container>
+
+
+The file tmp.log contains entries for codes that have multiple entries. 
+
+    > head tmp.log
+    Using cache dir wc_data
+    Ouput file is worldcat_code.xml
+    multi mc: COC
+    multi mc: CSt-H
+    multi mc: CtY
+    multi mc: CU
+    multi mc: DGW
+    multi mc: DLC
+    multi mc: GEU-S
+    multi mc: OHI
+
+You can get a count of the number of codes with multiple codes via "grep" and "wc":
+
+    > grep "multi mc:" tmp.log | wc -l
+          11
+
+Now you should have a valid worldcat_code.xml, ready for use in generating EAD-CPF.
+
+
 
 
 Build WorldCat agency codes from a very large input file
 --------------------------------------------------------
 
+(This section is currently in development.)
 
 Edit agency.cfg for your MARC input records, and run the command below. Your MARC input is the "file" config
 value, with the default being "file = snac.xml". The output "log_file = agency_code.log" which has all of the
