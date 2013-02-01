@@ -126,7 +126,8 @@ http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
     unzip ../Downloads/vocabularylanguages.rdfxml.zip
     unzip ../Downloads/vocabularyrelators.rdfxml.zip
 
-At this point, you should be able to run two commands "git status" and "ls -l" and get output similar to what follows:
+At this point, you should be able to run 4 commands "git status", "ls -l", "java -version", "saxon.sh -?" and
+get output similar to what follows:
 
     > git status
     # On branch master
@@ -158,6 +159,24 @@ At this point, you should be able to run two commands "git status" and "ls -l" a
     -rw-r--r--@ 1 mst3k  staff   674261 Jan 17 15:15 vocabularyrelators.rdf
     -rwxr-xr-x  1 mst3k  staff    10983 Feb  1 14:53 worldcat_code.pl
     -rw-r--r--  1 mst3k  staff   819145 Feb  1 14:55 worldcat_code.xml
+
+    > java -version
+    java version "1.6.0_37"
+    Java(TM) SE Runtime Environment (build 1.6.0_37-b06-434-10M3909)
+    Java HotSpot(TM) 64-Bit Server VM (build 20.12-b01-434, mixed mode)
+
+    > saxon.sh -?
+    Saxon-HE 9.4.0.6J from Saxonica
+    Usage: see http://www.saxonica.com/documentation/using-xsl/commandline.xml
+    Format: net.sf.saxon.Transform options params
+    Options available: -? -a -catalog -config -cr -dtd -expand -explain -ext -im -init -it -l -m -now -o -opt -or -outval -p -r -repeat -s -sa -strip -t -T -threads -TJ -TP -traceout -tree -u -val -versionmsg -warnings -x -xi -xmlversion -xsd -xsdversion -xsiloc -xsl -xsltversion -y
+    Use -XYZ:? for details of option XYZ
+    Params: 
+    param=value           Set stylesheet string parameter
+    +param=filename       Set stylesheet document parameter
+    ?param=expression     Set stylesheet parameter using XPath
+    !param=value          Set serialization parameter
+
 
 
 
@@ -195,7 +214,6 @@ or are known to have various issues such as not found, or multiple agencies for 
     > ls -l test_eac.cfg agency_test.txt
     -rw-r--r-- 1 mst3k snac   32 Nov  8 14:47 agency_test.txt
     -rw-r--r-- 1 mst3k snac 1055 Jan  8 15:13 test_eac.cfg
-
 
 
 An example command line is:
