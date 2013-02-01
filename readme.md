@@ -39,6 +39,10 @@ http://www.cygwin.com/
 You can retrieve the code from github with a web browser or via the command line utility "git". The command
 line utility is faster and easier to use for updates.
 
+Beginners may enjoy the introduction to Linux and MacOSX commands:
+
+http://defindit.com/readme_files/intro_unix.html
+
 
 Where is the code?
 ------------------
@@ -279,13 +283,23 @@ See the extensive comments in the source code files.
 
 
 
+What is the easy way to run the code?
+-------------------------------------
+
+
+    saxon.sh marc.xml oclc_marc2cpf.xsl
+
+
+
 Creating or obtaining the XML data files
 ----------------------------------------
 
 You must make the Perl scripts executable, if that has not already been done. Running chmod a second time
-won't hurt.
+won't hurt. Many people will want to run worldcat_code.pl. You will only need exec_record.pl if you have a
+large (>100000) records.
 
     chmod +x exec_record.pl get_record.pl worldcat_code.pl
+
 
 
 Building your own list of WorldCat agency codes.
@@ -384,6 +398,38 @@ You can get a count of the number of codes with multiple codes via "grep" and "w
 Now you should have a valid worldcat_code.xml, ready for use in generating EAD-CPF.
 
 
+Common error messages
+---------------------
+
+Error:
+
+    Can't locate DBI.pm in @INC (@INC contains: ...
+
+
+Solition: 
+
+You are missing a Perl module. Install the module via your package manager or see the
+soon-to-be-created docs on this topic.
+
+
+Error:
+
+> ./worldcat_code.pl > tmp.log
+bash: ./worldcat_code.pl: Permission denied
+
+Solution: 
+
+The script worldcat_code.pl is not executable. Verify with "ls -l" and fix with "chmod +x". Notice
+that there are no "x" permissions, only "rw" and "r". Verify the fix with a second "ls -l" where we see "x"
+permissions.
+
+> ls -l worldcat_code.pl 
+-rw-r--r--  1 twl8n  staff  10997 Feb  1 15:45 worldcat_code.pl
+
+> chmod +x worldcat_code.pl 
+> ls -l worldcat_code.pl 
+-rwxr-xr-x  1 twl8n  staff  10997 Feb  1 15:45 worldcat_code.pl
+
 
 
 Build WorldCat agency codes from a very large input file
@@ -459,12 +505,8 @@ function related to either understanding the data, or developing algorithms.
 
 
 
-What is the easy way to run the code?
--------------------------------------
-
-
-    saxon.sh marc.xml oclc_marc2cpf.xsl
-
+Handling large numbers of input records
+---------------------------------------
 
 If you have a very large number of files, you may wish to use the Perl script exec_record.pl to chunk your
 data. The chunking is necesary to prevent Saxon from running out of memory (RAM). There are two usages of
