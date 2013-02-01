@@ -5,7 +5,7 @@ Table of contents
 * [Overview of ead_cpf_utils](#overview-of-ead_cpf_utils)
 * [What you might need to get started](#what-you-might-need-to-get-started)
 * [Getting the code](#getting-the-code)
-* [Quickly run the code][#quickly-run-the-code}
+* [Quickly run the code](#quickly-run-the-code}
 * [Creating or obtaining the XML data files](#creating-or-obtaining-the-XML-data-files)
 * [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 * [Common error messages](#common-error-messages)
