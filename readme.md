@@ -300,9 +300,58 @@ Backup worldcat_code.xml.
 
     cp worldcat_code.xml worldcat_code.xml.back
 
+If your MARC data is in marc_sample.xml, run the following command which will extract all the agency codes
+into agency_code.log:
+
+    saxon.sh marc_sample.xml extract_040a.xsl > agency_code.log 2>&1
+
+Check that things worked more or less as expected with the "head" command:
+
+    > head agency_code.log 
+
+    040$a: YWM
+    040$a: YWM
+    040$a: WAT
+    040$a: WAT
+    040$a: RHI
+    040$a: OHI
+    040$a: PRE
+    040$a: PRE
+    040$a: PRE
+
+
+Next you get the values from the log file and create a unique list. The exciting command below using a Perl one-liner
+is fairly standard practice in the Linux world.
+
+    cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
+
+
+The script "worldcat_code.pl" reads the file "agency_unique.txt" and writes a new file "worldcat_code.xml". It
+also creates a directory of cached results "./wc_data". What worldcat_code.pl does it to make an http request
+to the WorldCat servers via a web API. Results from http requests to the WorldCat web API are cached as files
+in ./wc_data and therefore if you repeat a run, it will be much, much faster the second time.
+
+    ./worldcat_code.pl > tmp.log
+
+The file tmp.log contains entries for codes that have multiple entries. Grep the log for 'multi mc:'.
+
+The files agency_code.log and agency_unique.txt are essentially temporary, and you may delete them after
+running worldcat_code.pl and verifying the results.
+
+    > ls -l agency.cfg worldcat_code.* extract_040a.xsl
+    -rw-r--r-- 1 mst3k snac   1057 Jan 15 14:06 agency.cfg
+    -rw-r--r-- 1 mst3k snac   2366 Jan 15 11:38 extract_040a.xsl
+    -rwxr-xr-x 1 mst3k snac  10427 Jan 15 11:42 worldcat_code.pl
+    -rw-r--r-- 1 mst3k snac 819145 Jan 15 14:14 worldcat_code.xml
+
+
+Build WorldCat agency codes from a very large input file
+--------------------------------------------------------
+
+
 Edit agency.cfg for your MARC input records, and run the command below. Your MARC input is the "file" config
-value, with the default being "file = snac.xml". The output log file is agency_code.log which has all of the
-040$a values from your data.
+value, with the default being "file = snac.xml". The output "log_file = agency_code.log" which has all of the
+040$a values from your data. The XSLT script that is run is "xsl_script = extract_040a.xsl".
 
     ./exec_record.pl config=agency.cfg &
 
