@@ -2,20 +2,25 @@
 
 Table of contents
 -----------------
-* [Where is the code?](#where-is-the-code)
-* [Overview](#overview)
-* [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
+* [Overview of ead_cpf_utils](#overview-of-ead_cpf_utils)
+* [What you might need to get started](#what-you-might-need-to-get-started)
+* [Getting the code](#getting-the-code)
+* [Quickly run the code][#quickly-run-the-code}
+* [Creating or obtaining the XML data files](#creating-or-obtaining-the-XML-data-files)
+* [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
+* [Common error messages](#common-error-messages)
+* [Overview for large input files](#overview-for-large-input-files)
+* [Build WorldCat agency codes from a very large input file](#build-WorldCat-agency-codes-from-a-very-large-input-file)
 * [What are the other files?](#what-are-the-other-files)
-* [What is the easy way to run the code?](#what-is-the-easy-way-to-run-the-code)
+* [Handling large numbers of input records](#handling-large-numbers-of-input-records)
 * [Command line params of oclc_marc2cpf.xsl](#command-line-params-of-oclc_marc2cpfxsl)
 * [How do I get a block of records from the MARC input?](#how-do-i-get-a-block-of-records-from-the-marc-input)
-* [How do I manually run the xsl?](#how-do-i-manually-run-the-xsl)
 * [Example config file](#example-config-file)
 * [QA notes](#qa-notes)
 
 
-What is this repository?
-------------------------
+Overview of ead_cpf_utils
+-------------------------
 
 These are XSLT scripts that convert MARC into EAD-CPF (Corporations, Persons, and Families). Some sample data
 is included. There are also Perl scripts which are primarily used when the number of input records to be
@@ -44,8 +49,8 @@ Beginners may enjoy the introduction to Linux and MacOSX commands:
 http://defindit.com/readme_files/intro_unix.html
 
 
-Where is the code?
-------------------
+Getting the code
+----------------
 
 Stable code is on GitHub at:
 
@@ -77,7 +82,8 @@ Using the git command:
     git clone https://github.com/twl8n/ead_cpf_utils.git
 
 The git command automatically creates a directory "ead_cpf_utils" and downloads the most recent versions of
-all files.
+all files. Throughout this document I'll assume you used the git command, and that your files are in the
+directory ead_cpf_utils.
 
 To do an update later on:
 
@@ -105,21 +111,37 @@ After download, these will be typical commands:
     cd ~/bin
     unzip ~/Downloads/SaxonHE9-4-0-6J.zip
 
-Check that your $PATH environment variable has a path to git. Find git with with 'which', 'locate' or by
-examining the installer log. Look at the values in $PATH to verify that git path is a default (or not). The
-MacOS installer puts git in /usr/local/git/bin. Linux users using a package or software manager (yum, apt,
-dpkg, KDE software center, etc.) can skip this step since their git will be in a standard path.
+After installing git, if the "git --version" command works, then you are ready.
+
+    > git --version
+    git version 1.8.1
+
+
+If git --version did not work, then check that your $PATH environment variable has a path to git. Find git
+with with 'which', 'locate' or by examining the installer log. Look at the values in $PATH to verify that git
+path is a default (or not). The MacOS installer puts git in /usr/local/git/bin. Linux users using a package or
+software manager (yum, apt, dpkg, KDE software center, etc.) can skip this step since their git will be in a
+standard path. Here are some typical commands:
 
     which git
     locate git
     echo $PATH
 
-You may wish to edit your shell rc file (.bashrc) to add the path to git to PATH. Add this line to .bashrc
-(bash) or .zshrc (zsh). This is bash/zsh format:
+The most common problem is simply that your default path doesn't include git's directory. You may wish to edit
+your shell rc file (.bashrc) to add the path to git to PATH. Add this line to .bashrc (bash) or .zshrc
+(zsh). This is bash/zsh format:
 
     export PATH=$PATH:/usr/local/git/bin
 
-   
+After editing your .bashrc (or .zshrc), close and re-open the terminal. You might have to logout and login
+again. Or just try ". .bashrc"
+
+> cd ~/
+> . .bashrc
+> echo $PATH
+.:/Users/mst3k/bin:.:/Users/twl8n/bin:.:/Users/twl8n/bin:.:/Users/twl8n/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/X11/bin:/Users/twl8n/bin:.:/usr/local/git/bin:/usr/local/git/bin:/usr/local/ncbi:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin
+
+
 You will need two rdf xml files, which can be downloaded from loc.gov, and unzipped. Below I give the unzip
 command, but feel free to unzip with your favorite utility, and copy the files into the ead_cpf_utils
 directory.
@@ -184,10 +206,157 @@ Assuming that you are in the eac_cpf_utils directory, you should be able to run 
     !param=value          Set serialization parameter
 
 
+Quickly run the code
+--------------------
 
 
-Overview
---------
+    saxon.sh marc.xml oclc_marc2cpf.xsl
+
+
+
+
+Creating or obtaining the XML data files
+----------------------------------------
+
+You must make the Perl scripts executable, if that has not already been done. Running chmod a second time
+won't hurt. Many people will want to run worldcat_code.pl. You will only need exec_record.pl if you have a
+large (>100000) records.
+
+    chmod +x exec_record.pl get_record.pl worldcat_code.pl
+
+
+
+Building your own list of WorldCat agency codes
+-----------------------------------------------
+
+The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet
+each time. Essentially, this whole process is a way to cache the agency code data.
+
+Included in the repository is worldcat_code.xml which is a data file of the unique WorldCat agency codes found
+in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
+worldcat_code.xml. The process begins by getting all the 040$a from the MARC records. Next we look up those
+values up via the WorldCat web API. Finally, the unique values are written into worldcat_code.xml.
+
+
+First, backup the original worldcat_code.xml.
+
+    cp worldcat_code.xml worldcat_code.xml.back
+
+If your MARC data is in marc_sample.xml, run the following command which will extract all the agency codes
+into agency_code.log:
+
+    saxon.sh marc_sample.xml extract_040a.xsl > agency_code.log 2>&1
+
+Check that things worked more or less as expected with the "head" command:
+
+    > head agency_code.log 
+
+    040$a: YWM
+    040$a: YWM
+    040$a: WAT
+    040$a: WAT
+    040$a: RHI
+    040$a: OHI
+    040$a: PRE
+    040$a: PRE
+    040$a: PRE
+
+
+Next you get the values from the log file and create a unique list. The exciting command below using a Perl one-liner
+is fairly standard practice in the Linux world.
+
+    cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
+
+The final step involves looking up the codes from WorldCat's servers. The script "worldcat_code.pl" reads the
+file "agency_unique.txt" and writes a new file "worldcat_code.xml". It also creates a directory of cached
+results "./wc_data". What worldcat_code.pl does is to make an http request to the WorldCat servers via a web
+API. Results from http requests to the WorldCat web API are cached as files in ./wc_data and therefore if you
+repeat a run, it will be much, much faster the second time. The first run can be quite slow, partly because
+the script pauses briefly after each request so it does not overload the WorldCat servers.
+
+    ./worldcat_code.pl > tmp.log
+
+ After the run, you'll have tmp.log, a new directory wc_data, and the results in worldcat_code.xml.
+
+    > ls -alt | head
+    total 18816
+    drwxr-xr-x+  92 mst3k  staff     3128 Feb  1 15:48 ..
+    drwxr-xr-x  375 mst3k  staff    12750 Feb  1 15:48 wc_data
+    -rw-r--r--    1 mst3k  staff    35526 Feb  1 15:48 worldcat_code.xml
+    -rw-r--r--    1 mst3k  staff      213 Feb  1 15:48 tmp.log
+
+The results are in worldcat_code.xml, and here is the top few lines (via the "head" command):
+
+    > head worldcat_code.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <all xmlns="http://www.loc.gov/MARC21/slim">
+      <container>
+        <marc_query>AHJ</marc_query>
+        <marc_code>WyU-AH</marc_code>
+        <name>University of Wyoming, American Heritage Center</name>
+        <isil>OCLC-AHJ</isil>
+        <matching_element><oclcSymbol>AHJ</oclcSymbol></matching_element>
+      </container>
+      <container>
+
+
+The file tmp.log contains entries for codes that have multiple entries. 
+
+    > head tmp.log
+    Using cache dir wc_data
+    Ouput file is worldcat_code.xml
+    multi mc: COC
+    multi mc: CSt-H
+    multi mc: CtY
+    multi mc: CU
+    multi mc: DGW
+    multi mc: DLC
+    multi mc: GEU-S
+    multi mc: OHI
+
+You can get a count of the number of codes with multiple codes via "grep" and "wc":
+
+    > grep "multi mc:" tmp.log | wc -l
+          11
+
+Now you should have a valid worldcat_code.xml, ready for use in generating EAD-CPF.
+
+
+Common error messages
+---------------------
+
+Error:
+
+    Can't locate DBI.pm in @INC (@INC contains: ...
+
+
+Solition: 
+
+You are missing a Perl module. Install the module via your package manager or see the
+soon-to-be-created docs on this topic.
+
+
+Error:
+
+> ./worldcat_code.pl > tmp.log
+bash: ./worldcat_code.pl: Permission denied
+
+Solution: 
+
+The script worldcat_code.pl is not executable. Verify with "ls -l" and fix with "chmod +x". Notice
+that there are no "x" permissions, only "rw" and "r". Verify the fix with a second "ls -l" where we see "x"
+permissions.
+
+> ls -l worldcat_code.pl 
+-rw-r--r--  1 mst3k  staff  10997 Feb  1 15:45 worldcat_code.pl
+
+> chmod +x worldcat_code.pl 
+> ls -l worldcat_code.pl 
+-rwxr-xr-x  1 mst3k  staff  10997 Feb  1 15:45 worldcat_code.pl
+
+
+Overview for large input files
+------------------------------
 
 Due to the length of the absolute path of the input file, I created symbolic link, and use that throughout the
 code and configuration files. For more information about this file, see the end of the section
@@ -280,155 +449,6 @@ records is surrounded by a `<collection>...</collection>` in order to create val
 All the xsl is currently 2.0 due to use of several XSLT 2.0 features.
 
 See the extensive comments in the source code files.
-
-
-
-What is the easy way to run the code?
--------------------------------------
-
-
-    saxon.sh marc.xml oclc_marc2cpf.xsl
-
-
-
-Creating or obtaining the XML data files
-----------------------------------------
-
-You must make the Perl scripts executable, if that has not already been done. Running chmod a second time
-won't hurt. Many people will want to run worldcat_code.pl. You will only need exec_record.pl if you have a
-large (>100000) records.
-
-    chmod +x exec_record.pl get_record.pl worldcat_code.pl
-
-
-
-Building your own list of WorldCat agency codes.
------------------------------------------------
-
-The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet
-each time. Essentially, this whole process is a way to cache the agency code data.
-
-Included in the repository is worldcat_code.xml which is a data file of the unique WorldCat agency codes found
-in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
-worldcat_code.xml. The process begins by getting all the 040$a from the MARC records. Next we look up those
-values up via the WorldCat web API. Finally, the unique values are written into worldcat_code.xml.
-
-
-First, backup the original worldcat_code.xml.
-
-    cp worldcat_code.xml worldcat_code.xml.back
-
-If your MARC data is in marc_sample.xml, run the following command which will extract all the agency codes
-into agency_code.log:
-
-    saxon.sh marc_sample.xml extract_040a.xsl > agency_code.log 2>&1
-
-Check that things worked more or less as expected with the "head" command:
-
-    > head agency_code.log 
-
-    040$a: YWM
-    040$a: YWM
-    040$a: WAT
-    040$a: WAT
-    040$a: RHI
-    040$a: OHI
-    040$a: PRE
-    040$a: PRE
-    040$a: PRE
-
-
-Next you get the values from the log file and create a unique list. The exciting command below using a Perl one-liner
-is fairly standard practice in the Linux world.
-
-    cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
-
-The final step involves looking up the codes from WorldCat's servers. The script "worldcat_code.pl" reads the
-file "agency_unique.txt" and writes a new file "worldcat_code.xml". It also creates a directory of cached
-results "./wc_data". What worldcat_code.pl does is to make an http request to the WorldCat servers via a web
-API. Results from http requests to the WorldCat web API are cached as files in ./wc_data and therefore if you
-repeat a run, it will be much, much faster the second time. The first run can be quite slow, partly because
-the script pauses briefly after each request so it does not overload the WorldCat servers.
-
-    ./worldcat_code.pl > tmp.log
-
- After the run, you'll have tmp.log, a new directory wc_data, and the results in worldcat_code.xml.
-
-    > ls -alt | head
-    total 18816
-    drwxr-xr-x+  92 twl8n  staff     3128 Feb  1 15:48 ..
-    drwxr-xr-x  375 twl8n  staff    12750 Feb  1 15:48 wc_data
-    -rw-r--r--    1 twl8n  staff    35526 Feb  1 15:48 worldcat_code.xml
-    -rw-r--r--    1 twl8n  staff      213 Feb  1 15:48 tmp.log
-
-The results are in worldcat_code.xml, and here is the top few lines (via the "head" command):
-
-    > head worldcat_code.xml
-    <?xml version="1.0" encoding="UTF-8"?>
-    <all xmlns="http://www.loc.gov/MARC21/slim">
-      <container>
-        <marc_query>AHJ</marc_query>
-        <marc_code>WyU-AH</marc_code>
-        <name>University of Wyoming, American Heritage Center</name>
-        <isil>OCLC-AHJ</isil>
-        <matching_element><oclcSymbol>AHJ</oclcSymbol></matching_element>
-      </container>
-      <container>
-
-
-The file tmp.log contains entries for codes that have multiple entries. 
-
-    > head tmp.log
-    Using cache dir wc_data
-    Ouput file is worldcat_code.xml
-    multi mc: COC
-    multi mc: CSt-H
-    multi mc: CtY
-    multi mc: CU
-    multi mc: DGW
-    multi mc: DLC
-    multi mc: GEU-S
-    multi mc: OHI
-
-You can get a count of the number of codes with multiple codes via "grep" and "wc":
-
-    > grep "multi mc:" tmp.log | wc -l
-          11
-
-Now you should have a valid worldcat_code.xml, ready for use in generating EAD-CPF.
-
-
-Common error messages
----------------------
-
-Error:
-
-    Can't locate DBI.pm in @INC (@INC contains: ...
-
-
-Solition: 
-
-You are missing a Perl module. Install the module via your package manager or see the
-soon-to-be-created docs on this topic.
-
-
-Error:
-
-> ./worldcat_code.pl > tmp.log
-bash: ./worldcat_code.pl: Permission denied
-
-Solution: 
-
-The script worldcat_code.pl is not executable. Verify with "ls -l" and fix with "chmod +x". Notice
-that there are no "x" permissions, only "rw" and "r". Verify the fix with a second "ls -l" where we see "x"
-permissions.
-
-> ls -l worldcat_code.pl 
--rw-r--r--  1 twl8n  staff  10997 Feb  1 15:45 worldcat_code.pl
-
-> chmod +x worldcat_code.pl 
-> ls -l worldcat_code.pl 
--rwxr-xr-x  1 twl8n  staff  10997 Feb  1 15:45 worldcat_code.pl
 
 
 
@@ -624,14 +644,6 @@ This is also handy to pulling out a single record into a separate file, often us
 retrieve the record 235.
 
     ./get_record.pl file=snac.xml offset=235 limit=1 > record_235.xml
-
-
-
-How do I manually run the xsl?
-------------------------------
-
-    saxon tmp.xml oclc_marc2cpf.xsl > tmp_eac.xml
-
 
 
 
