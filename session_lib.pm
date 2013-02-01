@@ -12,13 +12,39 @@ package session_lib;
 
 # $Id: session_lib.pm,v 1.88 2009/09/21 18:53:16 twl8n Exp $
 
-# Exporter must be in @ISA. Dynaloader seems to be optional.
-@ISA = qw(Exporter);
+use base qw( Exporter );
+
+# Superceded by 'use base' above, and use base is a better practice.
+# http://perldoc.perl.org/Exporter.html#Declaring-%40EXPORT_OK-and-Friends
+# # Exporter must be in @ISA. Dynaloader seems to be optional.
+# @ISA = qw(Exporter);
+
+# Create a 2 groups of exported functions :config with all 3 of the necessary subs for app_config and :all
+# with everything including app_config. There are other possible subsets.
+
+%EXPORT_TAGS = (config => [qw(app_config user_config check_config)], 
+                all => [qw(app_config err_stuff get_url version next_fasta get_db_handle commit_handle
+                clean_db_handles load_average busy check_config untaint capture_file login process_template
+                user_config keep_one run_session save_session update_cookie safe_file init_progress_meter
+                progress_meter multi_string save_upload_file index_url email exists_message final_message
+                read_file read_file_array write_log write_log2 write_log3 log2file daemon_log current_view
+                bs_view capture_url exp_time get_bitaccess_value big_mask happy_recs print_xml blast_qmh_lines
+                make_column_lines seq_line_break_with_htmltags get_xml_tag get_all_xml_tag_values session_id
+                dump_hash sl_list named_config)] );
+
+# See also Exporter::export_tags('foo'); 
+
+# add app_config user_config check_config to @EXPORT_OK
+Exporter::export_ok_tags('config'); 
+Exporter::export_ok_tags('all'); 
 
 # subs we export by default
-@EXPORT = qw(err_stuff get_url version next_fasta get_db_handle commit_handle clean_db_handles
+@EXPORT = qw();
+
+# Subs we will export if asked. 
+@EXPORT_OK = qw(app_config err_stuff get_url version next_fasta get_db_handle commit_handle clean_db_handles
 	     load_average busy check_config untaint
-	     capture_file login process_template user_config app_config keep_one
+	     capture_file login process_template user_config keep_one
 	     run_session save_session update_cookie
 	     safe_file init_progress_meter progress_meter multi_string 
 	     save_upload_file index_url email exists_message final_message 
@@ -26,11 +52,7 @@ package session_lib;
 	     current_view bs_view capture_url exp_time get_bitaccess_value big_mask
 	     happy_recs print_xml blast_qmh_lines make_column_lines seq_line_break_with_htmltags 
 	     get_xml_tag get_all_xml_tag_values session_id dump_hash
-	     sl_list named_config
-	     );
-
-# Subs we will export if asked. 
-#@EXPORT_OK = qw();
+	     sl_list named_config);
 
 # The "use" statement and $VERSION seem to be required.
 use vars qw($VERSION);

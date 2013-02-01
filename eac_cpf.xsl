@@ -20,8 +20,8 @@
          implied. See the License for the specific language governing permissions and limitations under the
          License.
          
-         Included in oclc_marc2cpf.xsl and written to files by template tpt_body. In general, only the minimum
-         amount of code is here, leaving this file as clean as possible.
+         This file is included in oclc_marc2cpf.xsl and called to write files by template tpt_body. In
+         general, only the minimum amount of code is here, leaving this file as clean as possible.
     -->
 
     <xsl:template name="tpt_body">
