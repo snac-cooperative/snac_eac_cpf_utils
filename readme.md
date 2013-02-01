@@ -116,7 +116,9 @@ You may wish to edit your shell rc file (.bashrc) to add the path to git to PATH
     export PATH=$PATH:/usr/local/git/bin
 
    
-You will need two rdf xml files, which can be downloaded from loc.gov, and unzipped.
+You will need two rdf xml files, which can be downloaded from loc.gov, and unzipped. Below I give the unzip
+command, but feel free to unzip with your favorite utility, and copy the files into the ead_cpf_utils
+directory.
 
 http://id.loc.gov/static/data/vocabularylanguages.rdfxml.zip
 
@@ -126,8 +128,8 @@ http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
     unzip ../Downloads/vocabularylanguages.rdfxml.zip
     unzip ../Downloads/vocabularyrelators.rdfxml.zip
 
-At this point, you should be able to run 4 commands "git status", "ls -l", "java -version", "saxon.sh -?" and
-get output similar to what follows:
+Assuming that you are in the eac_cpf_utils directory, you should be able to run 4 commands "git status", "ls
+-l", "java -version", "saxon.sh -?" and get output similar to what follows:
 
     > git status
     # On branch master
@@ -285,11 +287,22 @@ won't hurt.
 
     chmod +x exec_record.pl get_record.pl worldcat_code.pl
 
-First we need to create worldcat_code.xml by getting all the 040$a from the MARC records and run a script
-that will look up those values up via the WorldCat web API.
 
-Edit agency.cfg for your MARC input records, and run it to obtain agency_code.log which has all of the 040$a
-values from your data.
+Building your own list of WorldCat agency codes.
+-----------------------------------------------
+
+Included in the repository is worldcat_code.xml which is a data file of the unique WorldCat agency codes found
+in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
+worldcat_code.xml. The process begins by getting all the 040$a from the MARC records. Next we look up those
+values up via the WorldCat web API. Finally, the unique values are written into worldcat_code.xml.
+
+Backup worldcat_code.xml.
+
+    cp worldcat_code.xml worldcat_code.xml.back
+
+Edit agency.cfg for your MARC input records, and run the command below. Your MARC input is the "file" config
+value, with the default being "file = snac.xml". The output log file is agency_code.log which has all of the
+040$a values from your data.
 
     ./exec_record.pl config=agency.cfg &
 
