@@ -413,8 +413,8 @@ soon-to-be-created docs on this topic.
 
 Error:
 
-> ./worldcat_code.pl > tmp.log
-bash: ./worldcat_code.pl: Permission denied
+    > ./worldcat_code.pl > tmp.log
+    bash: ./worldcat_code.pl: Permission denied
 
 Solution: 
 
@@ -422,12 +422,12 @@ The script worldcat_code.pl is not executable. Verify with "ls -l" and fix with 
 that there are no "x" permissions, only "rw" and "r". Verify the fix with a second "ls -l" where we see "x"
 permissions.
 
-> ls -l worldcat_code.pl 
--rw-r--r--  1 mst3k  staff  10997 Feb  1 15:45 worldcat_code.pl
+    > ls -l worldcat_code.pl 
+    -rw-r--r--  1 mst3k  staff  10997 Feb  1 15:45 worldcat_code.pl
 
-> chmod +x worldcat_code.pl 
-> ls -l worldcat_code.pl 
--rwxr-xr-x  1 mst3k  staff  10997 Feb  1 15:45 worldcat_code.pl
+    > chmod +x worldcat_code.pl 
+    > ls -l worldcat_code.pl 
+    -rwxr-xr-x  1 mst3k  staff  10997 Feb  1 15:45 worldcat_code.pl
 
 
 Overview for large input files
