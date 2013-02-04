@@ -25,7 +25,7 @@ Overview of ead_cpf_utils
 -------------------------
 
 These are XSLT scripts that convert MARC into EAD-CPF (Corporations, Persons, and Families). Some sample data
-is included. There are also Perl scripts which are primarily used when the number of input records to be
+is (or soon will be) included. There are also Perl scripts which are primarily used when the number of input records to be
 processed will exceed the memory of the computer.
 
 Throughout this document we use the generic user id "mst3k" as your user id. 
