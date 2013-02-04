@@ -28,6 +28,8 @@ These are XSLT scripts that convert MARC into EAD-CPF (Corporations, Persons, an
 is included. There are also Perl scripts which are primarily used when the number of input records to be
 processed will exceed the memory of the computer.
 
+Throughout this document we use the generic user id "mst3k" as your user id. 
+
 
 What you might need to get started
 ----------------------------------
@@ -49,7 +51,7 @@ install and use cygwin.
 
 http://www.cygwin.com/
 
-You can retrieve the code from github with a web browser or via the command line utility "git". The command
+You can retrieve the EAD-CPF code from github with a web browser or via the command line utility "git". The command
 line utility is faster and easier to use for updates.
 
 Beginners may enjoy the introduction to Linux and MacOSX commands:
@@ -64,7 +66,7 @@ Stable code is on GitHub at:
 
 https://github.com/twl8n/ead_cpf_utils
 
-The direct link is:
+While we recommed that you use a git utility, you may also use the direct link to download a ZIP archive:
 
 https://github.com/twl8n/ead_cpf_utils/archive/master.zip
 
@@ -74,7 +76,7 @@ ead_cpf_utils-master.zip and when unzipped it creates a directory named "ead_cpf
 directory name is different than if you used git from the command line.
 
     > unzip -l ~/Downloads/ead_cpf_utils-master.zip 
-    Archive:  /Users/twl8n/Downloads/ead_cpf_utils-master.zip
+    Archive:  /Users/mst3k/Downloads/ead_cpf_utils-master.zip
     c07a9f3201b034e7e7b990879d69eaec9e0526e8
      Length     Date   Time    Name
     --------    ----   ----    ----
@@ -120,9 +122,9 @@ You can try this command to see if you already have Java:
     Java HotSpot(TM) 64-Bit Server VM (build 20.12-b01-434, mixed mode)
 
 
-The included script saxon.sh expects Saxon to be in $HOME/bin/saxon9he.jar. For example
-/Users/mst3k/bin/saxon9he.jar. If you are installing saxons9he.jar, please put it in ~/bin,
-otherwise you must edit saxon.sh to reflect the correct location.
+The included script saxon.sh expects Saxon to be in $HOME/bin/saxon9he.jar. For example on MacOS
+/Users/mst3k/bin/saxon9he.jar or for Linux /home/mst3k/bin/saxon9he.jar. When you install saxons9he.jar,
+please put it in ~/bin, otherwise you must edit saxon.sh to reflect the correct location.
 
 After download, these will be typical commands:
 
@@ -137,7 +139,7 @@ After installing git, if the "git --version" command works, then you are ready.
 
 
 If git --version did not work, then check that your $PATH environment variable has a path to git. Find git
-with with 'which', 'locate' or by examining the installer log. Look at the values in $PATH to verify that git
+with with 'which', or 'locate', or by examining the installer log. Look at the values in $PATH to verify that git
 path is a default (or not). The MacOS installer puts git in /usr/local/git/bin. Linux users using a package or
 software manager (yum, apt, dpkg, KDE software center, etc.) can skip this step since their git will be in a
 standard path. Here are some typical commands:
@@ -153,12 +155,12 @@ your shell rc file (.bashrc) to add the path to git to PATH. Add this line to .b
     export PATH=$PATH:/usr/local/git/bin
 
 After editing your .bashrc (or .zshrc), close and re-open the terminal. You might have to logout and login
-again. Or just try ". .bashrc"
+again. Or just try ". .bashrc" which is the same as "source .bashrc".
 
 > cd ~/
 > . .bashrc
 > echo $PATH
-.:/Users/mst3k/bin:.:/Users/twl8n/bin:.:/Users/twl8n/bin:.:/Users/twl8n/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/X11/bin:/Users/twl8n/bin:.:/usr/local/git/bin:/usr/local/git/bin:/usr/local/ncbi:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin
+.:/Users/mst3k/bin:.:/Users/mst3k/bin:.:/Users/mst3k/bin:.:/Users/mst3k/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/X11/bin:/Users/mst3k/bin:.:/usr/local/git/bin:/usr/local/git/bin:/usr/local/ncbi:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin
 
 
 Getting languages and relators rdf xml
@@ -236,8 +238,42 @@ Assuming that you are in the ead_cpf_utils directory, you should be able to run 
 Quickly run the code
 --------------------
 
+Just about the simplest method, relies on internal defaults:
 
     saxon.sh marc.xml oclc_marc2cpf.xsl
+
+A somewhat more real-world example. Override the default output directory, and write chunks of records to
+"test_N" where N is a counting number, and log results test.log:
+
+    saxon.sh working_marc.xml oclc_marc2cpf.xsl chunk_prefix=test > test.log 2>&1
+
+After that example, a couple of commands give an overview of what the log file and directories look like:
+
+    > head test.log
+    not_167xx: 8560473
+
+    not_167xx: 8561559
+
+    not_167xx: 8564868
+
+    not_167xx: 8571931
+
+    not_167xx: 8582413
+
+    > ls -ld test_*
+    drwxr-xr-x  199 twl8n  staff   6766 Feb  4 09:54 test_1
+    drwxr-xr-x  285 twl8n  staff   9690 Feb  4 09:55 test_10
+    drwxr-xr-x    8 twl8n  staff    272 Feb  4 09:55 test_11
+    drwxr-xr-x  203 twl8n  staff   6902 Feb  4 09:54 test_2
+    drwxr-xr-x  206 twl8n  staff   7004 Feb  4 09:54 test_3
+    drwxr-xr-x  174 twl8n  staff   5916 Feb  4 09:55 test_4
+    drwxr-xr-x  165 twl8n  staff   5610 Feb  4 09:55 test_5
+    drwxr-xr-x  336 twl8n  staff  11424 Feb  4 09:55 test_6
+    drwxr-xr-x  418 twl8n  staff  14212 Feb  4 09:55 test_7
+    drwxr-xr-x  280 twl8n  staff   9520 Feb  4 09:55 test_8
+    drwxr-xr-x  320 twl8n  staff  10880 Feb  4 09:55 test_9
+    -rw-r--r--    1 twl8n  staff   1055 Feb  1 14:54 test_eac.cfg
+
 
 
 Validate output with jing
@@ -245,7 +281,7 @@ Validate output with jing
 
 
 Below is one form of a command used to run jing. Note the + in "find" instead of the very slow and traditional
-"\;". The find with MacOS OSX may not support +
+"\;". The find with older versions MacOS OSX may not support +.
 
     find /uva-working/mst3k/test_* -name "*.xml" -exec java -jar /usr/share/jing/bin/jing.jar /projects/socialarchive/published/shared/cpf.rng {} + > test_validation.txt
 
