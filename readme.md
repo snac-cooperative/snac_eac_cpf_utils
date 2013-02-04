@@ -8,13 +8,13 @@ Table of contents
 * [Getting languages and relators rdf xml](#getting-languages-and-relators-rdf-xml)
 * [Review of files and applications](#review-of-files-and-applications)
 * [Quickly run the code](#quickly-run-the-code)
-* [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
+* [Validate output with jing](#validate-output-with-jing)
 * [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 * [Common error messages](#common-error-messages)
 * [Overview for large input files](#overview-for-large-input-files)
 * [Build WorldCat agency codes from a very large input file](#build-worldcat-agency-codes-from-a-very-large-input-file)
 * [What are the other files?](#what-are-the-other-files)
-* [Handling large numbers of input records](#handling-large-numbers-of-input-records)
+* [More about large numbers of input records](#more-about-large-numbers-of-input-records)
 * [Command line params of oclc_marc2cpf.xsl](#command-line-params-of-oclc_marc2cpfxsl)
 * [How do I get a block of records from the MARC input?](#how-do-i-get-a-block-of-records-from-the-marc-input)
 * [Example config file](#example-config-file)
@@ -240,16 +240,24 @@ Quickly run the code
     saxon.sh marc.xml oclc_marc2cpf.xsl
 
 
+Validate output with jing
+-------------------------
 
 
-Creating or obtaining the XML data files
-----------------------------------------
+Below is one form of a command used to run jing. Note the + in "find" instead of the very slow and traditional
+"\;". The find with MacOS OSX may not support +
 
-You must make the Perl scripts executable, if that has not already been done. Running chmod a second time
-won't hurt. Many people will want to run worldcat_code.pl. You will only need exec_record.pl if you have a
-large (>100000) records.
+    find /uva-working/mst3k/test_* -name "*.xml" -exec java -jar /usr/share/jing/bin/jing.jar /projects/socialarchive/published/shared/cpf.rng {} + > test_validation.txt
 
-    chmod +x exec_record.pl get_record.pl worldcat_code.pl
+    > ls -l snac.xml
+    lrwxrwxrwx 1 mst3k snac 30 Aug 20 13:31 snac.xml -> /data/source/WorldCat/snac.xml
+
+    > ls -l test_validation.txt
+    -rw-r--r-- 1 mst3k snac 0 Sep 7 08:52 test_validation.txt
+
+You can find the EAD-CPF schema cpf.rng file on the web at:
+
+http://socialarchive.iath.virginia.edu/shared/cpf.rng
 
 
 
@@ -263,6 +271,10 @@ Included in the repository is worldcat_code.xml which is a data file of the uniq
 in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
 worldcat_code.xml. The process begins by getting all the 040$a from the MARC records. Next we look up those
 values up via the WorldCat web API. Finally, the unique values are written into worldcat_code.xml.
+
+If worldcat_code.pl is not executable, make it so with chmod. 
+
+    chmod +x worldcat_code.pl
 
 
 First, backup the original worldcat_code.xml.
@@ -385,15 +397,22 @@ permissions.
 Overview for large input files
 ------------------------------
 
-(This section is currently in development.)
+If you have a large number of input MARC records, probably more than 100,000, then your computer may run out
+of memory during the xsl transformation when Saxon is running oclc_marc2cpf.xsl. In this case, you can use
+exec_record.pl to "chunk" the data into smaller runs avoiding the memory problems. The use of chunking applies
+to both generating CPF records, and to generating your list of agency codes.
 
-Due to the length of the absolute path of the input file, I created symbolic link, and use that throughout the
-code and configuration files. For more information about this file, see the end of the section
-[Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files).
+See the section detailing oclc_marc2cpf.xsl which briefly describes and internal chunking ability of
+oclc_marc2cpf.xsl. This internal chunking is useful if you wish to generate output in multiple directories
+each with a smaller number of files, as oppose to all the output files in a single, large, unwieldy directory.
 
-    > ls -l snac.xml  
-    lrwxrwxrwx 1 mst3k snac 30 Aug 20 13:31 snac.xml -> /data/source/WorldCat/snac.xml
+The script get_record.pl is also useful for chunking, but operates only on one subset of input records.
 
+Configuration of exec_record.pl is controlled via simple configuration files. Each config file serves a single
+purpose. Saving a copy of a given config file with the output provides a historical record of how the output
+was generated.
+
+Here is a list of the scripts and config files:
 
     > ls -l exec_record.pl oclc_marc2cpf.xsl eac_cpf.xsl lib.xsl session_lib.pm extract_040a.xsl agency.cfg all_eac.cfg
     -rw-r--r-- 1 mst3k snac   1057 Jan 15 14:06 agency.cfg
@@ -405,6 +424,7 @@ code and configuration files. For more information about this file, see the end 
     -rw-r--r-- 1 mst3k snac  35629 Jan 11 14:09 oclc_marc2cpf.xsl
     -rw-r--r-- 1 mst3k snac  58583 Nov 28 12:32 session_lib.pm
 
+These are necessary data files:
 
     > ls -l *.rdf occupations.xml worldcat_code.xml 
     -rw-r--r-- 1 mst3k snac   54936 Nov  5 09:17 occupations.xml
@@ -412,30 +432,34 @@ code and configuration files. For more information about this file, see the end 
     -rw-r--r-- 1 mst3k snac  674261 Nov  5 09:53 vocabularyrelators.rdf
     -rw-r--r-- 1 mst3k snac  819145 Jan 15 14:14 worldcat_code.xml
            
-Useful, but not required. File agency_test.txt has some select agency codes that exercise parts of the code,
-or are known to have various issues such as not found, or multiple agencies for the same code.
+Thes are useful, but not required config files. File agency_test.txt has some select agency codes that
+exercise parts of the code, or are known to have various issues such as not found, or multiple agencies for
+the same code.
 
     > ls -l test_eac.cfg agency_test.txt
     -rw-r--r-- 1 mst3k snac   32 Nov  8 14:47 agency_test.txt
     -rw-r--r-- 1 mst3k snac 1055 Jan  8 15:13 test_eac.cfg
 
 
-An example command line is:
+If your input data is in the same format as we used (MARC records without a container element), and the input
+file name is snac.xml, then this example command line is will read 5000 records in 1000 recor chunks, writing
+the output into directories with the prefix "devx_":
 
     ./exec_record.pl config=test_eac.cfg &
 
 The Perl script exec_record.pl pulls records from the original WorldCat data and pipes those records to a
-Saxon command. Before output, the set of records is surrounded by a `<collection>` element in order to create valid
-XML. The WorldCat data as it exists is not valid XML (no surrounding element), but the Perl code deals with
-that. The script exec_record.pl uses a combination of regular expressions and state variables to find a 
-`<record>` element regardless of intervening whitespace (or not).
+Saxon command. Before sending the MARC to Saxon, the set of records is surrounded by a `<collection>` element
+in order to create valid XML. The WorldCat data as it we have it is not valid XML (no surrounding element), but
+the Perl code deals with that. The script exec_record.pl uses a combination of regular expressions and state
+variables to find a `<record>` element regardless of intervening whitespace (or not).
 
-An XSLT script, oclc_marc2cpf.xsl reads marc each record, extracting relevant information and putting it into
+The XSLT script, oclc_marc2cpf.xsl reads marc each record, extracting relevant information and putting it into
 variables which are put into parameters for a final template that renders the EAD-CPF output. Each eac-cpf
 output is sent to a separate file. Files are put into a single depth directory hierarchy via some chunking
-code. The script oclc_marc2cpf.xsl includes a two files, eac_cpf.xsl and lib.xsl. The file eac_cpf.xsl is
-which is mostly just an eac-cpf template. It is wrapped in a XSLT named template with parameters, and has only
-the necessary XSL to fill in field values. All the programming logic is in oclc_marc2cpf.xsl and lib.xsl.
+code. The script oclc_marc2cpf.xsl includes a two additional XSLT files, eac_cpf.xsl and lib.xsl. The file
+eac_cpf.xsl is which is mostly just an eac-cpf template. It is wrapped in a XSLT named template with
+parameters, and has only the necessary XSL to fill in field values. All the programming logic is in
+oclc_marc2cpf.xsl and lib.xsl.
 
 The Perl module session_lib.pm has supporting functions, expecially config file reading.
 
@@ -443,11 +467,12 @@ All the xsl is currently 2.0 due to use of several XSLT 2.0 features.
 
 See the extensive comments in the source code files.
 
-The second, older system uses get_record.pl in place of exec_record.pl. This system is works in batches and
-lacks the automated chunking of exec_record.pl. This older system does not use a config file, so tracking
-history is more of a challenge. Necessary configuration is handled via command line arguments.
+The second, alternate system of chunking uses get_record.pl in place of exec_record.pl. This system is works
+in batches and lacks the automated chunking of exec_record.pl. This older system does not use a config file,
+so tracking history would require a record of the command line arguments. Necessary configuration is handled
+via command line arguments.
 
-Here are a couple of examples. There is more detail below.
+This example reads MARC input snac.xml, starts with record 1, and reads 10 records:
 
     > get_record.pl file=snac.xml offset=1 limit=10 | saxon.sh -s:- oclc_marc2cpf.xsl
     not_167xx: 8560473
@@ -462,6 +487,8 @@ Here are a couple of examples. There is more detail below.
     -rw-r--r--  1 mst3k  staff   9653 Jan 18 15:01 OCLC-8560008.r01.xml
     -rw-r--r--  1 mst3k  staff   9403 Jan 18 15:01 OCLC-8560008.r02.xml
 
+This example reads snac.xml, starts with record 1, reads 1000 records, sets the output chunk size to 100, will
+write output to "test_N" where N is a counting number:
 
     > get_record.pl file=snac.xml offset=1 limit=1000 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_size=100 offset=1 chunk_prefix=test output_dir=. > tmp.log 2>&1 &
 
@@ -471,9 +498,9 @@ Here are a couple of examples. There is more detail below.
     -rw-r--r-- 1 mst3k snac 108638 Jan  7 16:12 lib.xsl
     -rw-r--r-- 1 mst3k snac  36795 Jan  8 15:05 oclc_marc2cpf.xsl
 
-The Perl script get_record.pl pulls back one or more records from the original
-WorldCat data and pipes those records to stdout. Before output, the set of
-records is surrounded by a `<collection>...</collection>` in order to create valid XML. 
+The Perl script get_record.pl pulls back one or more records from the original data and pipes those records to
+stdout. We simply pipe stdout to a saxon.sh command. Before being piped to stdout, the set of records is
+surrounded by a `<collection>...</collection>` in order to create valid XML.
 
 All the xsl is currently 2.0 due to use of several XSLT 2.0 features.
 
@@ -484,7 +511,11 @@ See the extensive comments in the source code files.
 Build WorldCat agency codes from a very large input file
 --------------------------------------------------------
 
-(This section is currently in development.)
+Just as with generating CPF from a large number of input records
+[Overview for large input files](#overview-for-large-input-files) you can use exec_record.pl to get agency
+codes from a large number if input records. Please read the "Overview section first".  Please also see the
+section on building your own agency codes:
+[Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes).
 
 Edit agency.cfg for your MARC input records, and run the command below. Your MARC input is the "file" config
 value, with the default being "file = snac.xml". The output "log_file = agency_code.log" which has all of the
@@ -492,8 +523,8 @@ value, with the default being "file = snac.xml". The output "log_file = agency_c
 
     ./exec_record.pl config=agency.cfg &
 
-Get the values from the log file and create a unique list. The exciting command below using a Perl one-liner
-is fairly standard practice in the Linux world.
+Assuming that everthing worked, the command below will get the values from the log file and create a unique
+list. This exciting command using a Perl one-liner is fairly standard practice in the Linux world.
 
     cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
 
@@ -518,44 +549,19 @@ running worldcat_code.pl and verifying the results.
 The file "occupations.xml" was created by Daniel Pitti from a spreadsheet supplied by the LoC. The XML was
 subsequently modified by Tom Laudeman to add singular forms to simplify name matching.
 
-http://id.loc.gov/static/data/vocabularylanguages.rdfxml.zip
-
-http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
-
-
-    > ls -l *.rdf occupations.xml worldcat_code.xml 
-    -rw-r--r-- 1 mst3k snac   54936 Nov  5 09:17 occupations.xml
-    -rw-r--r-- 1 mst3k snac 2217050 Nov  6 11:03 vocabularylanguages.rdf
-    -rw-r--r-- 1 mst3k snac  674261 Nov  5 09:53 vocabularyrelators.rdf
-    -rw-r--r-- 1 mst3k snac  819145 Jan 15 14:14 worldcat_code.xml
-
-The file snac.xml is an export of over 1.3 million WorldCat records supplied to us by OCLC. Due to the large
-size of this file, we "chunk" it with one of two Perl scripts. The Perl scripts are exec_record.pl and
-get_record.pl. These scripts expect an input file in this format. The file is simply `<record>` elements, one
-record per line, concatenated together without an outer wrapping element such as `<collection>`. The Perl
-scripts supply a wrapper element. Incidentally, while our input has one record per line, that is not a
-requirement.
-
-    <record xmlns="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"><leader>00000cpc a  00000Ia     </leader><controlfield tag="001">
-    ...
-    </record>
-
-Naturally, the XSLT script oclc_marc2cpf.xsl expects an outer `<collection>` element. If you have a smaller
-data set, you may not need the Perl scripts at all.
-
-
 
 
 What are the other files?
 -------------------------
 
-The repository will eventually include some files that are useful as learing examples, or perform some
-function related to either understanding the data, or developing algorithms.
+The repository will eventually include some files that are useful as learing examples, or that perform some
+function related to either understanding the data, or developing algorithms. We will also eventually include
+quality assurance (QA) files that we use during development to verify correct function of the code.
 
 
 
-Handling large numbers of input records
----------------------------------------
+More about large numbers of input records
+-----------------------------------------
 
 If you have a very large number of files, you may wish to use the Perl script exec_record.pl to chunk your
 data. The chunking is necesary to prevent Saxon from running out of memory (RAM). There are two usages of
@@ -579,45 +585,6 @@ numeric suffixes. For example ./devx_1, ./devx_2 and so on. Messages from the sc
 which is tmp_test_er.log for test_eac.cfg. You can monitor the progress of the run with "tail" and the log file.
 
     watch tail tmp_test_er.log
-
-
-The older, alternative method uses get_record.pl, and to run a very large set of records requires several
-commands.
-
-The command below starts with record 1. Get 1000 records. Start a new directory every 1000 records. Start counting with record 1
-(since offset change for later chunks). Work goes in directories named "test_nnn" where _nnn is a numerical
-suffix. Put the output directories in /uva-working/mst3k.
-
-    get_record.pl file=snac.xml offset=1 limit=1000 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_size=100 offset=1 chunk_prefix=test output_dir=/uva-working/mst3k
-
-During debugging it may help to not use chunking. This command runs a single QA xml file and creates a single
-.c output file.
-
-    > saxon.sh qa_155448889_date_leading_hyphen.xml oclc_marc2cpf.xsl use_chunks=0
-    <?xml version="1.0" encoding="UTF-8"?>
-    > ls -l OCLC*
-    -rw-r--r-- 1 mst3k snac 5893 Oct  8 14:48 OCLC-155448889.c.xml
-
-The command below starts with record 1001. Get 20000 records. Start a new directory every 1000 records. Start
-counting with record 1 (since offset change for later chunks). Work goes in directories named "test_nnn" where
-_nnn is a numerical suffix. Put the output directories in /uva-working/mst3k.
-
-    get_record.pl file=snac.xml offset=1001 limit=2000 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_size=1000 offset=1001 chunk_prefix=test output_dir=/uva-working/mst3k
-
-Below is one form of a command used to run jing. Note the + in "find" instead of the very slow and traditional
-"\;".
-
-    find /uva-working/mst3k/test_* -name "*.xml" -exec java -jar /usr/share/jing/bin/jing.jar /projects/socialarchive/published/shared/cpf.rng {} + > test_validation.txt
-
-    > ls -l snac.xml
-    lrwxrwxrwx 1 mst3k snac 30 Aug 20 13:31 snac.xml -> /data/source/WorldCat/snac.xml
-
-    > ls -l test_validation.txt
-    -rw-r--r-- 1 mst3k snac 0 Sep 7 08:52 test_validation.txt
-
-You can find the cpf.rng file on the web at:
-
-http://socialarchive.iath.virginia.edu/shared/cpf.rng
 
 
 
