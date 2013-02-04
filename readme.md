@@ -5,6 +5,8 @@ Table of contents
 * [Overview of ead_cpf_utils](#overview-of-ead_cpf_utils)
 * [What you might need to get started](#what-you-might-need-to-get-started)
 * [Getting the code](#getting-the-code)
+* [Getting languages and relators rdf xml](#getting-languages-and-relators-rdf-xml)
+* [Review of files and applications](#review-of-files-and-applications)
 * [Quickly run the code](#quickly-run-the-code)
 * [Creating or obtaining the XML data files](#creating-or-obtaining-the-xml-data-files)
 * [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
@@ -159,6 +161,10 @@ again. Or just try ". .bashrc"
 .:/Users/mst3k/bin:.:/Users/twl8n/bin:.:/Users/twl8n/bin:.:/Users/twl8n/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/X11/bin:/Users/twl8n/bin:.:/usr/local/git/bin:/usr/local/git/bin:/usr/local/ncbi:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin:/usr/local/ncbi:/usr/local/git/bin
 
 
+Getting languages and relators rdf xml
+--------------------------------------
+
+
 You will need two rdf xml files, which can be downloaded from loc.gov, and unzipped. Below I give the unzip
 command, but feel free to unzip with your favorite utility, and copy the files into the ead_cpf_utils
 directory.
@@ -170,6 +176,10 @@ http://id.loc.gov/static/data/vocabularyrelators.rdfxml.zip
     cd ~/ead_cpf_utils
     unzip ../Downloads/vocabularylanguages.rdfxml.zip
     unzip ../Downloads/vocabularyrelators.rdfxml.zip
+
+
+Review of files and applications
+--------------------------------
 
 Assuming that you are in the ead_cpf_utils directory, you should be able to run 4 commands "git status", "ls
 -l", "java -version", "saxon.sh -?" and get output similar to what follows:
