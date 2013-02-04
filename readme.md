@@ -440,7 +440,8 @@ to both generating CPF records, and to generating your list of agency codes.
 
 See the section detailing oclc_marc2cpf.xsl which briefly describes and internal chunking ability of
 oclc_marc2cpf.xsl. This internal chunking is useful if you wish to generate output in multiple directories
-each with a smaller number of files, as oppose to all the output files in a single, large, unwieldy directory.
+each with a smaller number of files, as oppose to all the output files in a single, large, unwieldy
+directory. The script exec_record.pl also automatically handles chunking output into multiple directories.
 
 The script get_record.pl is also useful for chunking, but operates only on one subset of input records.
 
