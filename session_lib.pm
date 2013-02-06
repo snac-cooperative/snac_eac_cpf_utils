@@ -878,10 +878,10 @@ sub capture_url
 }
 
 
-# Capture incoming file by moving it (cp followed by unlink) into a private system directory.
-# This subroutine is derived from ms_lims/cmlib.pl sub capture_file.
-# Any processing of multi-select CGI menus has to be done before calling capture_file.
-# Require full path on the orig.
+# Capture incoming file by writing its name to the database, and moving it (cp followed by unlink) into a
+# private system directory.  This subroutine is derived from ms_lims/cmlib.pl sub capture_file.  Any
+# processing of multi-select CGI menus has to be done before calling capture_file.  Require full path on the
+# orig.
 
 sub capture_file
 {
@@ -902,9 +902,9 @@ sub capture_file
 	die "Can't understand file name: $orig\n";
     }
     
-    my $fi_pk                = main::sql_insert_file(0, $dest_dir, $orig, $comment);
-    my $dest_short_name      = "$stem\_$fi_pk$suffix";
-    my $dest		     = "$dest_dir/$dest_short_name";
+    my $fi_pk = main::sql_insert_file(0, $dest_dir, $orig, $comment);
+    my $dest_short_name = "$stem\_$fi_pk$suffix";
+    my $dest = "$dest_dir/$dest_short_name";
     
     # cp the file so the ownership will change.
     # remove the original, then chmod destination
@@ -1691,15 +1691,18 @@ sub multi_string
 # prepend the distination directory until a few lines down, and therefore
 # the destination directory needs to be passed in as a separate argument.
 
+# save_upload_file($qq, \%ch, "exp_upload", $ch{dest_dir}, $ch{exp_id}, "", 0);
+
 sub save_upload_file
 {
-    my $qq = $_[0];
-    my $ch_hr = $_[1];
+    my $qq = $_[0]; # CGI object
+    my $ch_hr = $_[1]; # The CGI object hash. 
     my $fn_key = $_[2]; # $ch_hr->{} hash key with file name.
     my $dest_dir = $_[3]; # see note 1 above.
-    my $upload_type = $_[4];
+    my $upload_type = $_[4]; # '' is just an upload. 'text' or 'pta' do special things.
+    my $use_db = $_[5]; # True use the database, else ignore database.
     my $message = "";
-
+    
     if (! exists($ch_hr->{$fn_key}) || (length($ch_hr->{$fn_key}) == 0))
     {
 	# Nothing to do.
@@ -1709,36 +1712,66 @@ sub save_upload_file
 
     my $fn_value = $ch_hr->{$fn_key};
 
+    # These are temp file handles created by CGI. We can't/don't want to leave the file here so we read it in
+    # an rewrite it below.
+
     my $filehandle = $qq->upload($fn_key);
     my $f_hr = $qq->uploadInfo($filehandle);
 
     $fn_value =~ s/(.*\\)//;
     $fn_value = lc($fn_value);
-    my $fi_pk = main::sql_insert_file(0, $dest_dir, $fn_value, "uploaded file");
-
-    # Make the filename unique. tmp.txt becomes tmp_xxx.txt
-    # where xxx is the $fi_pk.
     
-    $fn_value =~ s/(.*)\.(.*)/$1\_$fi_pk\.$2/; 
-    main::sql_update_file($fi_pk, $fn_value);
-    commit_handle();
-    clean_db_handles();
+    my $fn_suffix = "";
+    my $fn_prefix = "";
+    if ($fn_value =~ m/(.*)\.(.*)/)
+    {
+        $fn_prefix = $1;
+        $fn_suffix = $2;
+    }
 
-    my $dest_file = "$dest_dir/$fn_value";
+    # Get a unique value and use as suffix on the file name. A plus of this method is that we can insert into
+    # the db and not have to run an update later. (As used to be necessary when we relied on the fi_pk as the
+    # unique string in the file name.)
+
+    use File::Temp qw( :POSIX tempfile);
+
+    # Note the leading dot "." on the suffix.
+
+    # Can't end a template with a dot.
+    # Error in tempfile() using data/floHasqbmg/single_marc_XXXXXXXXXX.xml: The template must end with at least 4 'X' characters#
+
+    (my $fh, my $new_fn) = tempfile( "$fn_prefix\_XXXXXXXXXX", DIR => $dest_dir, SUFFIX => ".$fn_suffix");
+
+    my $fi_pk = 0;
+    if ($use_db)
+    {
+        $fi_pk = main::sql_insert_file(0, $dest_dir, $fn_value, "uploaded file");
+        
+        if (0) # old think before using tmpnam
+        {
+            # Make the filename unique. tmp.txt becomes tmp_xxx.txt
+            # where xxx is the $fi_pk.
+            # $fn_value =~ s/(.*)\.(.*)/$1\_$fi_pk\.$2/; 
+            # main::sql_update_file($fi_pk, $fn_value);
+        }
+        commit_handle();
+        clean_db_handles();
+    }
+
+    # my $dest_file = "$dest_dir/$fn_value";
 
     if ($upload_type eq 'text')
     {
-	# Normal text file.
-
-	open (A_OUT,">", $dest_file) || die "Cannot open $dest_file for write.\n";
+	# Normal text file, except that we munge it a bit.
+	# open (A_OUT,">", $dest_file) || die "Cannot open $dest_file for write.\n";
 	my $buffer;
 	while (my $bytesread=read($filehandle,$buffer,1024))
 	{
 	    $buffer =~ s/\015//sg;  # remove ^M
 	    $buffer =~ s/\001/ /sg; # change ^A to space.
-	    print A_OUT $buffer;
+	    print $fh $buffer;
 	}
-	close(A_OUT);
+	close($fh);
     }
     elsif ($upload_type eq 'pta')
     {
@@ -1754,31 +1787,31 @@ sub save_upload_file
 	}
 	else
 	{
-	    open (A_OUT,">", $dest_file) || die "Cannot open $dest_file for write.\n";
-	    print A_OUT $buffer; # print (save) first line we read above!
+	    # open (A_OUT,">", $dest_file) || die "Cannot open $dest_file for write.\n";
+	    print $fh $buffer; # print (save) first line we read above!
 	    while (my $bytesread=read($filehandle,$buffer,1024))
 	    {
 		$buffer =~ s/\015//sg;  # remove ^M
-		print A_OUT $buffer;
+		print $fh $buffer;
 	    }
-	    close(A_OUT);
+	    close($fh);
 	}
     }
     else
     {
 	# Any other file, usually binary.
-	open (A_OUT,">", $dest_file) || die "Cannot open $dest_file for write.\n";
+	# open (A_OUT,">", $dest_file) || die "Cannot open $dest_file for write.\n";
 	my $buffer;
 	my $total_bytes = 0;
 	while (my $bytesread=read($filehandle,$buffer,10240))
 	{
-	    print A_OUT $buffer;
+	    print $fh $buffer;
 	    $total_bytes += $bytesread;
 	}
-	close(A_OUT);
+	close($fh);
     }
     $ch_hr->{message} .= $message;
-    return ($fn_value, $fi_pk);
+    return ($new_fn, $fi_pk);
 }
 
 sub index_url($)

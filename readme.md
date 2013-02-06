@@ -25,8 +25,8 @@ Overview of ead_cpf_utils
 -------------------------
 
 These are XSLT scripts that convert MARC into EAD-CPF (Corporations, Persons, and Families). Some sample data
-is (or soon will be) included. There are also Perl scripts which are primarily used when the number of input records to be
-processed will exceed the memory of the computer.
+is (or soon will be) included. There are also Perl scripts which are primarily used when the number of input
+records to be processed will exceed the memory of the computer.
 
 Throughout this document we use the generic user id "mst3k" as your user id. 
 
@@ -922,7 +922,7 @@ dpt isn't in any of our authority lists, but col is.
     </occupation>
 
      -rw-r--r-- 1 mst3k snac  4410 Nov  2 08:30 qa_17851136_no_e_two_4_occupation.xml
-     less OCLC-17851136.c.xml
+ less OCLC-17851136.c.xml
 
 ----    
 
@@ -955,13 +955,22 @@ unique.
 
 ---
 
-Manually created based on 222612265 so we would have a died ca combination date.
+Manually created based on 222612265 so we would have a died ca date. The original two instances of
+"b. ca. 1896" changed to "d. ca. 1896"
 
-    qa_x222612265_fake_died_ca_date.xml
-    less OCLC-x222612265.c.xml
+    qa_222612265x_fake_died_ca_date.xml
+    less OCLC-222612265x.c.xml
+
+
+---
+
+Born ca date. "b. ca. 1896" occurs twice. Dup 600 varies from 100 only by a period (dot) at the end of the
+born date so this also tests de-duplicating ignores a trailing period (and all trailing punctuation, I think).
 
     -rw-r--r-- 1 mst3k snac  3076 Oct  3 14:34 qa_222612265_b_ca_date.xml
     less OCLC-222612265.c.xml
+
+---
 
     -rw-r--r-- 1 mst3k snac  3518 Oct 26 13:22 qa_225810091_600_family_date_dupe_occupation.xml
     less OCLC-225810091.c.xml

@@ -146,7 +146,8 @@
                     <xsl:value-of select="concat($output_dir, '/', $chunk_prefix, '_', $chunk_suffix)"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="'.'"/>
+                    <!-- Allow the use of an output dir even when not using chunks -->
+                    <xsl:value-of select="$output_dir"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
