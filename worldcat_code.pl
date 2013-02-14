@@ -56,7 +56,7 @@ sub main
     print "Ouput file is $output_file\n";
 
     print $ofs '<?xml version="1.0" encoding="UTF-8"?>';
-    print $ofs "\n<all xmlns=\"http://www.loc.gov/MARC21/slim\">\n";
+    print $ofs "\n<all xmlns=\"http://socialarchive.iath.virginia.edu/worldcat">\n";
 
     # Read in a line of input
     my $xx = 0;

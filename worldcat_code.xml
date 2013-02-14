@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<all xmlns="http://www.loc.gov/MARC21/slim">
+<all xmlns="http://socialarchive.iath.virginia.edu/worldcat">
   <container>
     <marc_query>?</marc_query>
     <marc_code/>

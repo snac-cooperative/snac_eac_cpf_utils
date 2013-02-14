@@ -6,11 +6,12 @@
                 xmlns:saxon="http://saxon.sf.net/"
                 xmlns:functx="http://www.functx.com"
                 xmlns:marc="http://www.loc.gov/MARC21/slim"
+                xmlns:snac="http://socialarchive.iath.virginia.edu/worldcat"
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:mads="http://www.loc.gov/mads/"
-                exclude-result-prefixes="eac lib xs saxon xsl madsrdf rdf mads functx marc"
+                exclude-result-prefixes="eac lib xs saxon xsl madsrdf rdf mads functx marc snac"
                 >
     <!-- 
          Author: Tom Laudeman
@@ -1381,7 +1382,7 @@
     </xsl:template> <!-- end tpt_mods -->
 
 
-    <xsl:template name="tpt_agency_info" xmlns="urn:isbn:1-931666-33-4">
+    <xsl:template name="tpt_agency_info" xmlns="urn:isbn:1-931666-33-4" >
         <!-- 
              If there is a single marc query result then use it. When there are two records for a give
              marc_query, use literal "OCLC" for org code, no name, and add a descriptive note. When no result,
@@ -1390,49 +1391,57 @@
              localType, so everything must be in span.
         -->
         <xsl:variable name="org_query" select="normalize-space(marc:datafield[@tag='040']/marc:subfield[@code='a'])"/>
-        <xsl:variable name="ainfo" select="$org_codes/marc:container[marc:marc_query = $org_query]"/>
+
+        <!-- 
+             $ainfo must be created with copy-of and not the selected attribute shortcut because the shortcut
+             prevents selecting each container separately. Don't know why. The code below works, so use it.
+        -->
+        <xsl:variable name="ainfo">
+            <xsl:copy-of select="$org_codes/snac:container[snac:marc_query = $org_query]"/>
+        </xsl:variable>
         <xsl:choose>
-            <xsl:when test="count($ainfo)=1 and string-length($ainfo/marc:isil)>0">
-                <xsl:element name="agencyCode" xmlns:eac="urn:isbn:1-931666-33-4">
-                    <xsl:value-of select="$ainfo/marc:isil"/>
-                </xsl:element>
-                <xsl:element name="agencyName" xmlns:eac="urn:isbn:1-931666-33-4">
-                    <xsl:value-of select="$ainfo/marc:name"/>
-                </xsl:element>
+            <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container[1]/snac:isil)>0">
+                <agencyCode xmlns="urn:isbn:1-931666-33-4">
+                    <xsl:value-of select="$ainfo/snac:isil"/>
+                </agencyCode>
+                <agencyName xmlns="urn:isbn:1-931666-33-4">
+                    <xsl:value-of select="$ainfo/snac:name"/>
+                </agencyName>
             </xsl:when>
-            <xsl:when test="count($ainfo)>1">
-                <xsl:element name="agencyCode" xmlns:eac="urn:isbn:1-931666-33-4">
-                    <xsl:text>OCLC-AO#</xsl:text>
-                </xsl:element>
-                <xsl:element name="agencyName" xmlns:eac="urn:isbn:1-931666-33-4">
-                    <xsl:text>New York State Archives</xsl:text>
-                </xsl:element>
-                <xsl:element name="descriptiveNote" xmlns:eac="urn:isbn:1-931666-33-4">
-                    <xsl:for-each select="$org_codes/marc:container[marc:marc_query = $org_query]">
+            <xsl:when test="count($ainfo/snac:container)>1">
+                <agencyCode>
+                    <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/>
+                    <!-- Unclear why this was hard coded as OCLC-AO# -->
+                    <!-- <xsl:text>OCLC-AO#</xsl:text> -->
+                </agencyCode>
+                <agencyName xmlns="urn:isbn:1-931666-33-4">
+                    <xsl:value-of select="$ainfo/snac:container[1]/snac:name"/>
+                    <!-- <xsl:text>New York State Archives</xsl:text> -->
+                </agencyName>
+                <descriptiveNote xmlns="urn:isbn:1-931666-33-4">
+                    <xsl:for-each select="$ainfo/snac:container">
                         <p>
                             <span localType="multipleRegistryResults"/>
                             <span localType="original"><xsl:value-of select="$org_query"/></span>
-                            <span localType="inst"><xsl:value-of select="marc:name"/></span>
-                            <span localType="isil"><xsl:value-of select="marc:isil"/></span>
+                            <span localType="inst"><xsl:value-of select="snac:name"/></span>
+                            <span localType="isil"><xsl:value-of select="snac:isil"/></span>
                         </p>
                     </xsl:for-each>
-                </xsl:element>
+                </descriptiveNote>
             </xsl:when>
             <xsl:otherwise>
-                <agencyName xmlns:eac="urn:isbn:1-931666-33-4">
+                <agencyName xmlns="urn:isbn:1-931666-33-4">
                     <xsl:value-of select="$org_query"/>
                 </agencyName>
-                    <xsl:element name="descriptiveNote" xmlns:eac="urn:isbn:1-931666-33-4">
-                        <xsl:element name="p" xmlns:eac="urn:isbn:1-931666-33-4">
-                            <xsl:element name="span" xmlns:eac="urn:isbn:1-931666-33-4">
-                                <xsl:attribute name="localType" select="'noRegistryResults'"/>
-                            </xsl:element>
-                            <xsl:element name="span">
+                    <descriptiveNote xmlns="urn:isbn:1-931666-33-4">
+                        <p>
+                            <span localType="noRegistryResults"/>
+                            <span>
                                 <xsl:attribute name="localType" select="'original'"/>
                                 <xsl:value-of select="$org_query"/>
-                            </xsl:element>
-                        </xsl:element>
-                    </xsl:element>
+                            </span>
+                        </p>
+                    </descriptiveNote>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -2065,15 +2074,15 @@
 
     <xsl:template mode="copy-no-ns" match="*" >
         <!--
-            Using local-name() works way better than name(). In fact, if you ask
-            this template to print something with a namespace unknown to this
-            file, it throws an error when using name().
-
             Print elements withtout the pesky namespace. This is mostly for
             debugging where the namespace is just extraneous text that
             interferes with legibility. Seems that we need to replace this line to
             prevent namespace from printing.  <xsl:element name="{name(.)}"
             namespace="{namespace-uri(.)}">
+
+            Using local-name() works way better than name(). In fact, if you ask
+            this template to print something with a namespace unknown to this
+            file, it throws an error when using name().
 
             Interestingly, having a namespace such as the following in the
             stylesheet header causes that namespace to output regardless of the
