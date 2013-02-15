@@ -1401,24 +1401,24 @@
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container[1]/snac:isil)>0">
-                <agencyCode xmlns="urn:isbn:1-931666-33-4">
+                <agencyCode >
                     <xsl:value-of select="$ainfo/snac:isil"/>
                 </agencyCode>
-                <agencyName xmlns="urn:isbn:1-931666-33-4">
+                <agencyName >
                     <xsl:value-of select="$ainfo/snac:name"/>
                 </agencyName>
             </xsl:when>
             <xsl:when test="count($ainfo/snac:container)>1">
-                <agencyCode>
-                    <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/>
+                <agencyCode/>
+                <!--     <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/> -->
                     <!-- Unclear why this was hard coded as OCLC-AO# -->
                     <!-- <xsl:text>OCLC-AO#</xsl:text> -->
-                </agencyCode>
-                <agencyName xmlns="urn:isbn:1-931666-33-4">
-                    <xsl:value-of select="$ainfo/snac:container[1]/snac:name"/>
+                <!-- </agencyCode> -->
+                <agencyName/>
+                <!--     <xsl:value-of select="$ainfo/snac:container[1]/snac:name"/> -->
                     <!-- <xsl:text>New York State Archives</xsl:text> -->
-                </agencyName>
-                <descriptiveNote xmlns="urn:isbn:1-931666-33-4">
+                <!-- </agencyName> -->
+                <descriptiveNote>
                     <xsl:for-each select="$ainfo/snac:container">
                         <p>
                             <span localType="multipleRegistryResults"/>
@@ -1430,10 +1430,10 @@
                 </descriptiveNote>
             </xsl:when>
             <xsl:otherwise>
-                <agencyName xmlns="urn:isbn:1-931666-33-4">
+                <agencyName >
                     <xsl:value-of select="$org_query"/>
                 </agencyName>
-                    <descriptiveNote xmlns="urn:isbn:1-931666-33-4">
+                    <descriptiveNote >
                         <p>
                             <span localType="noRegistryResults"/>
                             <span>

@@ -56,7 +56,7 @@ sub main
     print "Ouput file is $output_file\n";
 
     print $ofs '<?xml version="1.0" encoding="UTF-8"?>';
-    print $ofs "\n<all xmlns=\"http://socialarchive.iath.virginia.edu/worldcat">\n";
+    print $ofs "\n<all xmlns=\"http://socialarchive.iath.virginia.edu/worldcat\">\n";
 
     # Read in a line of input
     my $xx = 0;
@@ -291,16 +291,15 @@ sub parse_second
     {
         $exact = 1;
         my $matching_element = $1;
+
+        $res{iname} = '';
         if ($second =~ m/<institutionName>(.+?)<\/institutionName>/i)
         {
             # <institutionName> with no attributes only occurs once per file.
             $res{iname} = $1;
         }
-        else
-        {
-            $res{iname} = "";
-        }
 
+        $res{isil} = '';
         if ($second =~ m/<ISIL>(.*?\Q$marc_query\E.*?)<\/ISIL>/i ||
             $second =~ m/<ISIL>(.+?)<\/ISIL>/i)
         {
@@ -312,24 +311,31 @@ sub parse_second
             # <ISIL>OCLC-AFM</ISIL>
             $res{isil} = $1;
         }
-        else
-        {
-            $res{isil} = '';
-        }
 
+        $res{marc} = "";
         if ($second =~ m/<marcOrgCode>(.+?)<\/marcOrgCode>/i)
         {
             $res{marc} = $1;
         }
-        else
+
+        # The initial value for this is different because it is a copy-of rather than value-of. We are saving
+        # this for possible later processing. Some bad matches don't include a string match for the original
+        # query, and also have status="inactive". Search RHI.
+
+        # If there are multiple <oclcSymbol> we will on get the first. 
+
+        $res{oclc_symbol} = '<oclcSymbol/>';
+        if ($second =~ m/(<oclcSymbol.*?>.*?<\/oclcSymbol>)/i)
         {
-            $res{marc} = "";
+            $res{oclc_symbol} = $1;
         }
+
         print $ofs "  <container>\n";
         print $ofs "    <marc_query>$marc_query</marc_query>\n";
         print $ofs "    <marc_code>$res{marc}</marc_code>\n";
         print $ofs "    <name>$res{iname}</name>\n";
         print $ofs "    <isil>$res{isil}</isil>\n";
+        print $ofs "    $res{oclc_symbol}\n";
         print $ofs "    <matching_element>$matching_element</matching_element>\n";
         print $ofs "  </container>\n";
     }

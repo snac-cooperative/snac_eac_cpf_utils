@@ -278,21 +278,78 @@ After that example, a couple of commands give an overview of what the log file a
 Validate output with jing
 -------------------------
 
+You need two things: jing.jar (aka jing) and cpf.rng. There are several applications in the world named
+"jing". You want the application from Thai Open Source. Download jing. You can put it in your personal ~/bin
+directory, or if you have admin (root) privileges, you can install it somewhere like /usr/share.
 
-Below is one form of a command used to run jing. Note the + in "find" instead of the very slow and traditional
-"\;". The find with older versions MacOS OSX may not support +.
+http://www.thaiopensource.com/relaxng/jing.html
 
-    find /uva-working/mst3k/test_* -name "*.xml" -exec java -jar /usr/share/jing/bin/jing.jar /projects/socialarchive/published/shared/cpf.rng {} + > test_validation.txt
+http://code.google.com/p/jing-trang/downloads/list
 
-    > ls -l snac.xml
-    lrwxrwxrwx 1 mst3k snac 30 Aug 20 13:31 snac.xml -> /data/source/WorldCat/snac.xml
-
-    > ls -l test_validation.txt
-    -rw-r--r-- 1 mst3k snac 0 Sep 7 08:52 test_validation.txt
 
 You can find the EAD-CPF schema cpf.rng file on the web at:
 
 http://socialarchive.iath.virginia.edu/shared/cpf.rng
+
+
+Validate a single file:
+
+    java -jar /usr/share/jing/bin/jing.jar /projects/socialarchive/published/shared/cpf.rng OCLC-8560380.c.xml 
+
+If you had installed both jing.jar and cpf.rng in your ~/bin (for example /home/mst3k/bin) directory:
+
+    java -jar ~/bin/jing.jar ~/bin/cpf.rng SNAC-8560380.c.xml 
+
+When there is an error, jing will report the line number which is 10 in the example below. In fact, agencyCode
+may not be empty.
+
+    > java -jar ~/bin/jing.jar ~/bin/cpf.rng SNAC-8560380.c.xml
+    /lv1/home/twl8n/eac_project/SNAC-8560380.c.xml:10:23: error: bad character content for element
+
+    > less -N SNAC-8560380.c.xml 
+    
+          1 <?xml version="1.0" encoding="UTF-8"?>
+          2 <?oxygen RNGSchema="http://socialarchive.iath.virginia.edu/shared/cpf.rng" type="xml"?>
+          3 <eac-cpf xmlns:mads="http://www.loc.gov/mads/" xmlns="urn:isbn:1-931666-33-4"
+          4          xmlns:xs="http://www.w3.org/2001/XMLSchema"
+          5          xmlns:eac="urn:isbn:1-931666-33-4">
+          6    <control>
+          7       <recordId>SNAC-8560380.c</recordId>
+          8       <maintenanceStatus>new</maintenanceStatus>
+          9       <maintenanceAgency>
+         10          <agencyCode/>
+         11          <agencyName/>
+
+
+Below is another form of a command used to run jing where a large number of files in a group of directories
+are being checked. Note the + in "find" instead of the very slow and traditional "\;". The find with older
+versions MacOS OSX may not support +.
+
+    > ls -ld devx_* 
+    drwxr-xr-x 2 twl8n snac 40960 Feb 15 14:54 devx_1
+    drwxr-xr-x 2 twl8n snac 36864 Feb 15 14:55 devx_10
+    drwxr-xr-x 2 twl8n snac 69632 Feb 15 14:54 devx_2
+    drwxr-xr-x 2 twl8n snac 69632 Feb 15 14:54 devx_3
+    drwxr-xr-x 2 twl8n snac 53248 Feb 15 14:54 devx_4
+    drwxr-xr-x 2 twl8n snac 28672 Feb 15 14:55 devx_5
+    drwxr-xr-x 2 twl8n snac 36864 Feb 15 14:55 devx_6
+    drwxr-xr-x 2 twl8n snac 36864 Feb 15 14:55 devx_7
+    drwxr-xr-x 2 twl8n snac 36864 Feb 15 14:55 devx_8
+    drwxr-xr-x 2 twl8n snac 20480 Feb 15 14:55 devx_9
+
+    find /home/mst3k/devx_* -name "*.xml" -exec java -jar /home/mst3k/bin/jing.jar /home/mst3k/bin/cpf.rng {} + > test_validation.txt
+
+
+If there are no messages from jing, then your EAD-CPF XML is valid. Note the file size below is zero.
+
+    > ls -l test_validation.txt
+    -rw-r--r-- 1 mst3k snac 0 Feb 15 14:56 test_validation.txt
+
+You can discover the version of Jing by a command similar to the following, assuming that your jing.jar file
+is in /usr/share/jing/bin. (Modify the command as necessary for your jing.jar path):
+
+    java -jar /usr/share/jing/bin/jing.jar
+
 
 
 
@@ -508,7 +565,9 @@ in batches and lacks the automated chunking of exec_record.pl. This older system
 so tracking history would require a record of the command line arguments. Necessary configuration is handled
 via command line arguments.
 
-This example reads MARC input snac.xml, starts with record 1, and reads 10 records:
+This example reads MARC input snac.xml, starts with record 1, and reads 10 records. Note that the output file
+name is based on the input record id, so my EAD-CPF XML files have names that begin with an OCLC identifer
+like "OCLC-8559898". Your output files will have names relative to your record ids.
 
     > get_record.pl file=snac.xml offset=1 limit=10 | saxon.sh -s:- oclc_marc2cpf.xsl
     not_167xx: 8560473
