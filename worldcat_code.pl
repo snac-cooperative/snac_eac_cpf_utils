@@ -26,11 +26,13 @@
 # ./worldcat_code.pl > tmp.log
 
 use strict;
-use URI::Escape; 
+# use MIME::Base64;
+use CGI;
 use Time::HiRes qw(usleep nanosleep);
-use session_lib qw(read_file);
+# use URI::Escape; 
+# use CGI::Util; # for the escape() function
 
-my $ac_file = "agency_unique.txt";
+my $ac_file = ""; # We require a command line arg now. Old default was "agency_unique.txt";
 
 # my $ac_file = "agency_test.txt";
 
@@ -44,6 +46,25 @@ exit();
 sub main
 {
     $| = 1; # unbuffer stdout
+
+    my $qq = new CGI();
+    my %ch = $qq->Vars();
+
+    if (! exists($ch{file}))
+    {
+        print "Error: missing file command line argument.\n";
+        print "Usage: $0 file=agency_unique_filename\n";
+        exit(1);
+    }
+
+    $ac_file = $ch{file};
+    
+    if (! -e $ac_file)
+    {
+        print "Error: cannot find agency unique filename: $ac_file.\n";
+        print "Usage: $0 file=agency_unique_filename\n";
+        exit(1);
+    }
 
     if (! -e $data_dir)
     {
@@ -108,19 +129,28 @@ sub main
             }
             foreach my $rid (@rid_list)
             {
+                # Older versions wrongly just converted rid incompatible characters to _ which could lead to
+                # filename conflicts. Better to encode the rid in a form guaranteed to be ascii
+                # alphanum. We only use it one way: we get an rid and encode then use as a basename either to
+                # write or read.
+
                 # print "trying: ($marc_code) $rid\n";
-                my $data = "$data_dir/$rid.xml";
-                if (-e $data)
+
+                my $safe_data = sprintf("$data_dir/%s.xml", fencode("$rid"));
+                if (-e $safe_data)
                 {
-                    # print "Using cache for $data\n";
-                    $second = read_file($data);
+                    print "Using cache for rid: $rid safe_data: $safe_data\n";
+                    $second = read_file($safe_data);
                     # Reading from disk, no need to sleep here.
                 }
                 else
                 {
-                    # print "Sending requst for $data\n";
+                    print "Sending requst for rid: $rid\n";
                     $second = second_query($rid);
-                    open(my $dfs, ">", $data) || die "Cannot open $data for write\n";
+
+                    # Write the data to the cache
+
+                    open(my $dfs, ">", $safe_data) || die "Cannot open $safe_data for write (rid: $rid)\n";
                     print $dfs $second;
                     close($dfs);
                 }
@@ -143,7 +173,7 @@ sub main
         {
             # If we didn't get a hit, for any reason, output an empty record.
             print $ofs "  <container>\n";
-            print $ofs "    <marc_query>$marc_code</marc_query>\n";
+            print $ofs "    <orig_query>$marc_code</orig_query>\n";
             print $ofs "    <marc_code/>\n";
             print $ofs "    <name/>\n";
             print $ofs "    <isil/>\n";
@@ -183,17 +213,21 @@ sub get_marc
 
 sub first_query
 {
-    my $marc_code = $_[0];
+    my $orig_code = $_[0];
     my $qfield = $_[1];
     
     # worldcat.org might return a zillion records, but I think the default is
     # 10. In practice it seems to return no more than 10, and if there are more
     # than 10 records, we probably don't want to check each one for our hit.
     
-    my $safe_code = $marc_code;
-    $safe_code =~ s/[^A-Za-z0-9]/_/g; # All non-alphanum to underscore to be safe in a file name.
+    # my $safe_code = $marc_code;
+    # $safe_code =~ s/[^A-Za-z0-9]/_/g; # All non-alphanum to underscore to be safe in a file name.
+    # my $data = "$data_dir/mc_$safe_code\_$qfield.html";
 
-    my $data = "$data_dir/mc_$safe_code\_$qfield.html";
+    # Simply converting non-alphanum could result in duplicate conflicts. Need to encode the complete original
+    # query in a safe manner to preserver all its unique goodness.
+    
+    my $data = sprintf("$data_dir/mc_%s\_$qfield.html", fencode($orig_code));
     my $first = '';
     if (-e $data)
     {
@@ -211,14 +245,21 @@ sub first_query
         # special for interpolation. Use single quote ' around the URL arg to
         # curl because double quote " interpolates in the shell, and the shell
         # gets upset about things like ( which are fine (apparently) in a URL.
-        
-        my $uri_query = "$qfield=\"" .  uri_escape($marc_code) . '"+not+local.logicalDelete="1"';
+
+        my $uri_query = "$qfield=\"" .  CGI::Util::escape($orig_code) . '"+not+local.logicalDelete="1"';
+
+        use URI::Escape;
+        my $test_uri_query = "$qfield=\"" .  URI::Escape::uri_escape($orig_code) . '"+not+local.logicalDelete="1"';
+
+        print " uri: $uri_query\n";
+        print "test: $test_uri_query\n";
         
         my $cmd = "curl -s \'http://worldcat.org/webservices/registry/search/Institutions?query=$uri_query&operation=searchRetrieve&recordSchema=info:rfa/rfaRegistry/schemaInfos/adminData&recordPacking=xml\'";
+
         
         $first = `$cmd`;
         usleep(250000);
-        open(my $dfs, ">", $data) || die "Cannot open $data for write\n";
+        open(my $dfs, ">", $data) || die "Cannot open $data (orig_code: $orig_code) for write\n";
         print $dfs $first;
         close($dfs);
    }
@@ -260,7 +301,7 @@ sub second_query
         
 sub parse_second
 {
-    my $marc_query = $_[0];
+    my $orig_query = $_[0];
     my $second = $_[1];
 
     # <institutionName>Huntington Library, Art Collections &amp; Botanical Gardens</institutionName>
@@ -286,8 +327,8 @@ sub parse_second
     # stretch credibility. One record I checked seemed rational in that 040$a BMSNS was with a record that
     # could be Serbian, and 040$b is srp.
 
-    if ($second =~ m/(<marcOrgCode>\Q$marc_query\E<\/marcOrgCode>)/i ||
-        $second =~ m/(<oclcSymbol.*?>\Q$marc_query\E<\/oclcSymbol>)/i)
+    if ($second =~ m/(<marcOrgCode>\Q$orig_query\E<\/marcOrgCode>)/i ||
+        $second =~ m/(<oclcSymbol.*?>\Q$orig_query\E<\/oclcSymbol>)/i)
     {
         $exact = 1;
         my $matching_element = $1;
@@ -300,7 +341,7 @@ sub parse_second
         }
 
         $res{isil} = '';
-        if ($second =~ m/<ISIL>(.*?\Q$marc_query\E.*?)<\/ISIL>/i ||
+        if ($second =~ m/<ISIL>(.*?\Q$orig_query\E.*?)<\/ISIL>/i ||
             $second =~ m/<ISIL>(.+?)<\/ISIL>/i)
         {
             # May have more than one isil, so get the one that matches the marc
@@ -331,7 +372,7 @@ sub parse_second
         }
 
         print $ofs "  <container>\n";
-        print $ofs "    <marc_query>$marc_query</marc_query>\n";
+        print $ofs "    <orig_query>$orig_query</orig_query>\n";
         print $ofs "    <marc_code>$res{marc}</marc_code>\n";
         print $ofs "    <name>$res{iname}</name>\n";
         print $ofs "    <isil>$res{isil}</isil>\n";
@@ -340,4 +381,35 @@ sub parse_second
         print $ofs "  </container>\n";
     }
     return $exact;
+}
+
+sub read_file
+{
+    my @stat_array = stat($_[0]);
+    if ($#stat_array < 7)
+      {
+        die "read_file: File $_[0] not found\n";
+      }
+    my $temp;
+
+    # It is possible that someone will ask us to open a file with a leading space.
+    # That requires separate args for the < and for the file name.
+    # It also works for files with trailing space.
+
+    if (! open(IN, "<", $_[0]))
+    {
+	die "Could not open $_[0] $!\n";
+    }
+    sysread(IN, $temp, 100000); # $stat_array[7]);
+    close(IN);
+    return $temp;
+}
+
+sub fencode
+{
+    # Turn a string into a new string that is a list of 2 character hex digits. ^I becomes 09 and so on.
+
+    my $var = $_[0];
+    $var =~ s/(.)/sprintf("%2.2x", ord($1))/eg;
+    return $var;
 }

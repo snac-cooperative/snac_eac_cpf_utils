@@ -1384,8 +1384,8 @@
 
     <xsl:template name="tpt_agency_info" xmlns="urn:isbn:1-931666-33-4" >
         <!-- 
-             If there is a single marc query result then use it. When there are two records for a give
-             marc_query, use literal "OCLC" for org code, no name, and add a descriptive note. When no result,
+             If there is a single marc query result then use it. When there are two or more records for a given
+             orig_query, use literal "OCLC" for org code, no name, and add a descriptive note. When no result,
              no org code, name is original query, add descriptive note. The only allowed attribute is
              localType so use span tags inside p for all the data. Elements p and descptiveNote do not allow
              localType, so everything must be in span.
@@ -1397,7 +1397,7 @@
              prevents selecting each container separately. Don't know why. The code below works, so use it.
         -->
         <xsl:variable name="ainfo">
-            <xsl:copy-of select="$org_codes/snac:container[snac:marc_query = $org_query]"/>
+            <xsl:copy-of select="$org_codes/snac:container[snac:orig_query = $org_query]"/>
         </xsl:variable>
         <xsl:choose>
             <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container[1]/snac:isil)>0">

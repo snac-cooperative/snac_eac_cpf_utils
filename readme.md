@@ -9,6 +9,7 @@ Table of contents
 * [Review of files and applications](#review-of-files-and-applications)
 * [Quickly run the code](#quickly-run-the-code)
 * [Validate output with jing](#validate-output-with-jing)
+* [WorldCat agency codes](#worldcat-agency-codes)
 * [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 * [Common error messages](#common-error-messages)
 * [Overview for large input files](#overview-for-large-input-files)
@@ -23,7 +24,7 @@ Table of contents
 Overview of ead_cpf_utils
 -------------------------
 
-These are XSLT scripts that convert MARC into EAD-CPF (Corporations, Persons, and Families). Some sample data
+These are XSLT scripts that convert MARC21/slim XML into EAD-CPF (Corporations, Persons, and Families). Some sample data
 is (or soon will be) included. There are also Perl scripts which are primarily used when the number of input
 records to be processed will exceed the memory of the computer.
 
@@ -137,15 +138,22 @@ After installing git, if the "git --version" command works, then you are ready.
     git version 1.8.1
 
 
-If git --version did not work, then check that your $PATH environment variable has a path to git. Find git
-with with 'which', or 'locate', or by examining the installer log. Look at the values in $PATH to verify that git
-path is a default (or not). The MacOS installer puts git in /usr/local/git/bin. Linux users using a package or
-software manager (yum, apt, dpkg, KDE software center, etc.) can skip this step since their git will be in a
-standard path. Here are some typical commands:
+If git --version did not work, then check that your $PATH environment variable has a path to git. Discovery
+the path to git by using the shell commands 'which', or 'locate', or by examining the installer log. Look at
+the values in $PATH to verify that the git path is a default (or not). The MacOS installer puts git in
+/usr/local/git/bin. Linux users using a package or software manager (yum, apt, dpkg, KDE software center,
+etc.) can skip this step since their git will be in a standard path. Here are some typical commands:
 
     which git
     locate git
     echo $PATH
+
+    > which git
+    /usr/bin/git
+
+    > echo $PATH
+    /usr/local/bin:/bin:/usr/bin:/home/mst3k/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/java/latest/bin:/home/mst3k/bin:.
+
 
 The most common problem is simply that your default path doesn't include git's directory. You may wish to edit
 your shell rc file (.bashrc) to add the path to git to PATH. Add this line to .bashrc (bash) or .zshrc
@@ -279,7 +287,7 @@ Validate output with jing
 -------------------------
 
 You need two things: jing.jar (aka jing) and cpf.rng. There are several applications in the world named
-"jing". You want the application from Thai Open Source. Download jing. You can put it in your personal ~/bin
+"jing". You want the application from Thai Open Source. Download jing and put it in your personal ~/bin
 directory, or if you have admin (root) privileges, you can install it somewhere like /usr/share.
 
 http://www.thaiopensource.com/relaxng/jing.html
@@ -287,7 +295,7 @@ http://www.thaiopensource.com/relaxng/jing.html
 http://code.google.com/p/jing-trang/downloads/list
 
 
-You can find the EAD-CPF schema cpf.rng file on the web at:
+You can find the EAD-CPF schema file cpf.rng (with modifications formally submitted to TS-EAC) on the web at:
 
 http://socialarchive.iath.virginia.edu/shared/cpf.rng
 
@@ -351,17 +359,70 @@ is in /usr/share/jing/bin. (Modify the command as necessary for your jing.jar pa
     java -jar /usr/share/jing/bin/jing.jar
 
 
+WorldCat agency codes
+---------------------
+
+The XSLT scripts look up agency codes and agency names in a local file, "worldcat_codes.xml". A fairly large
+example is provided.
+
+Many of you will wish to create a small file with only your local agency codes. There are two aspects to this process:
+
+1) Understand and copy the example xml. There's no schema, but the data format is simple.
+
+2) Look up the codes from WorldCat.
+
+For the code lookup, I suggest using the somewhat daunting, but more accurate web service search page. Search
+for a specific field's value. For example local.marcOrgCode "Viu". (Leave the defaults of "=" and "and". The
+search appears to be case-insensitive.) If there are multiple values for the field you search, you'll get
+multiple records, but at least this is specific. The search for "Viu" correctly returns the University of
+Virginia. If you search "RHi" you'll get two results.
+
+http://worldcat.org/webservices/registry/search/
+
+You can get a more general result by searching the field srw.serverChoice.
+
+Here is a single record example for resulting from searching for the MARC code "Viu". 
+
+* Each institution is in a "container" element. An institution may have multiple entries differentiated by the
+  marc_query. Only the first entry will be used.
+
+* Element "marc_query" is the original search whether marc or otherwise.
+
+* Elements marc_code, name, isil, and oclcSymbol all come out of the WorldCat record.
+
+* Element matching_element is a copy of what element was matched in the WorldCat record.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<all xmlns="http://socialarchive.iath.virginia.edu/worldcat">
+  <container>
+    <marc_query>ViU</marc_query>
+    <marc_code>ViU</marc_code>
+    <name>University of Virginia</name>
+    <isil>OCLC-VA@</isil>
+    <oclcSymbol>VA@</oclcSymbol>
+    <matching_element><marcOrgCode>ViU</marcOrgCode></matching_element>
+  </container>
+</all>
+
+
+There is also a web page for public searches. It does a general search is quite broad and will match against
+any fields, thus a search for "Viu" will return several institutions.
+
+http://www.worldcat.org/registry/Institutions
+
 
 
 Building your own list of WorldCat agency codes
 -----------------------------------------------
 
+This section applies to larger data sets. Please skip this section if it does not apply to you.
+
 The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet each
 time. Essentially, this process of building your own list is a way to cache the agency code data.
 
 Included in the repository is worldcat_code.xml which is a data file of the unique WorldCat agency codes found
-in our largest corpus of MARC records. Your agency codes may vary. You can prepare your own
-worldcat_code.xml. The process begins by getting all the 040$a from the MARC records. Next we look up those
+in our largest corpus of MARC21/slim XML records. Your agency codes may vary. You can prepare your own
+worldcat_code.xml. The process begins by getting all the 040$a from the MARC21/slim XML records. Next we look up those
 values up via the WorldCat web API. Finally, the unique values are written into worldcat_code.xml.
 
 If worldcat_code.pl is not executable, make it so with chmod. 
@@ -373,7 +434,7 @@ First, backup the original worldcat_code.xml.
 
     cp worldcat_code.xml worldcat_code.xml.back
 
-If your MARC data is in marc_sample.xml, run the following command which will extract all the agency codes
+If your MARC21/slim XML data is in marc_sample.xml, run the following command which will extract all the agency codes
 into agency_code.log:
 
     saxon.sh marc_sample.xml extract_040a.xsl > agency_code.log 2>&1
@@ -489,7 +550,9 @@ permissions.
 Overview for large input files
 ------------------------------
 
-If you have a large number of input MARC records, probably more than 100,000, then your computer may run out
+This section applies to larger data sets. Please skip this section if it does not apply to you.
+
+If you have a large number of input MARC21/slim XML records, probably more than 100,000, then your computer may run out
 of memory during the xsl transformation when Saxon is running oclc_marc2cpf.xsl. In this case, you can use
 exec_record.pl to "chunk" the data into smaller runs avoiding the memory problems. The use of chunking applies
 to both generating CPF records, and to generating your list of agency codes.
@@ -534,19 +597,19 @@ the same code.
     -rw-r--r-- 1 mst3k snac 1055 Jan  8 15:13 test_eac.cfg
 
 
-If your input data is in the same format as we used (MARC records without a container element), and the input
+If your input data is in the same format as we used (MARC21/slim XML records without a container element), and the input
 file name is snac.xml, then this example command line is will read 5000 records in 1000 recor chunks, writing
 the output into directories with the prefix "devx_":
 
     ./exec_record.pl config=test_eac.cfg &
 
 The Perl script exec_record.pl pulls records from the original WorldCat data and pipes those records to a
-Saxon command. Before sending the MARC to Saxon, the set of records is surrounded by a `<collection>` element
+Saxon command. Before sending the MARC/21 SLIM XML records to Saxon, the record set is surrounded by a `<collection>` element
 in order to create valid XML. The WorldCat data as it we have it is not valid XML (no surrounding element), but
 the Perl code deals with that. The script exec_record.pl uses a combination of regular expressions and state
 variables to find a `<record>` element regardless of intervening whitespace (or not).
 
-The XSLT script, oclc_marc2cpf.xsl reads marc each record, extracting relevant information and putting it into
+The XSLT script, oclc_marc2cpf.xsl reads each record, extracting relevant information and putting it into
 variables which are put into parameters for a final template that renders the EAD-CPF output. Each eac-cpf
 output is sent to a separate file. Files are put into a single depth directory hierarchy via some chunking
 code. The script oclc_marc2cpf.xsl includes a two additional XSLT files, eac_cpf.xsl and lib.xsl. The file
@@ -565,7 +628,7 @@ in batches and lacks the automated chunking of exec_record.pl. This older system
 so tracking history would require a record of the command line arguments. Necessary configuration is handled
 via command line arguments.
 
-This example reads MARC input snac.xml, starts with record 1, and reads 10 records. Note that the output file
+This example reads MARC21/slim XML input snac.xml, starts with record 1, and reads 10 records. Note that the output file
 name is based on the input record id, so my EAD-CPF XML files have names that begin with an OCLC identifer
 like "OCLC-8559898". Your output files will have names relative to your record ids.
 
@@ -606,13 +669,15 @@ See the extensive comments in the source code files.
 Build WorldCat agency codes from a very large input file
 --------------------------------------------------------
 
+This section applies to larger data sets. Please skip this section if it does not apply to you.
+
 Just as with generating CPF from a large number of input records
 [Overview for large input files](#overview-for-large-input-files) you can use exec_record.pl to get agency
 codes from a large number if input records. Please read the "Overview section first".  Please also see the
 section on building your own agency codes:
 [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes).
 
-Edit agency.cfg for your MARC input records, and run the command below. Your MARC input is the "file" config
+Edit agency.cfg for your MARC21/slim XML input records, and run the command below. Your MARC21/slim XML input is the "file" config
 value, with the default being "file = snac.xml". The output "log_file = agency_code.log" which has all of the
 040$a values from your data. The XSLT script that is run is "xsl_script = extract_040a.xsl".
 
@@ -657,6 +722,8 @@ quality assurance (QA) files that we use during development to verify correct fu
 
 More about large numbers of input records
 -----------------------------------------
+
+This section applies to larger data sets. Please skip this section if it does not apply to you.
 
 If you have a very large number of files, you may wish to use the Perl script exec_record.pl to chunk your
 data. The chunking is necesary to prevent Saxon from running out of memory (RAM). There are two usages of
@@ -727,7 +794,9 @@ The debug param enables some verbose output. This is developers and debugging.
 How do I get a block of records from the MARC input?
 ----------------------------------------------------
 
-Get_record.pl simply gets some marc records, and we redirect into a temporary xml file.
+This section applies to larger data sets. Please skip this section if it does not apply to you.
+
+Get_record.pl simply gets some MARC21/slim XML records, and we redirect into a temporary xml file.
 
     ./get_record.pl file=snac.xml offset=1 limit=10 > tmp.xml
 
@@ -740,6 +809,8 @@ retrieve the record 235.
 
 Example config file
 -------------------
+
+This section applies to larger data sets. Please skip this section if it does not apply to you.
 
     # Use with exec_record.pl. Must have oclc_marc2cpf.xsl, (and included files
     # lib.xsl, and eac_cpf.xsl).
