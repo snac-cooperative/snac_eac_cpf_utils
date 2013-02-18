@@ -1409,15 +1409,13 @@
                 </agencyName>
             </xsl:when>
             <xsl:when test="count($ainfo/snac:container)>1">
-                <agencyCode/>
-                <!--     <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/> -->
-                    <!-- Unclear why this was hard coded as OCLC-AO# -->
-                    <!-- <xsl:text>OCLC-AO#</xsl:text> -->
-                <!-- </agencyCode> -->
-                <agencyName/>
-                <!--     <xsl:value-of select="$ainfo/snac:container[1]/snac:name"/> -->
-                    <!-- <xsl:text>New York State Archives</xsl:text> -->
-                <!-- </agencyName> -->
+                <agencyCode>
+                    <xsl:value-of select="$org_query"/>
+                    <!-- <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/> -->
+                </agencyCode>
+                <agencyName>
+                    <xsl:text>Unknown</xsl:text>
+                </agencyName>
                 <descriptiveNote>
                     <xsl:for-each select="$ainfo/snac:container">
                         <p>
@@ -1428,6 +1426,7 @@
                         </p>
                     </xsl:for-each>
                 </descriptiveNote>
+                <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <agencyName >
