@@ -368,10 +368,10 @@ example is provided.
 Many of you will wish to create a smaller worldcat_code.xml file containing only your local agency codes. There are
 two quick ways to do this:
 
-1) Put your agency codes in a text file, one per line, and let the Perl script worldcat_code.pl do all the
+1. Put your agency codes in a text file, one per line, and let the Perl script worldcat_code.pl do all the
 work. This Perl script has been created to use only core Perl modules, so any Perl installation should work.
 
-2) Manually create a worldcat_code.xml based on the supplied example. 
+2. Manually create a worldcat_code.xml based on the supplied example. 
 
 The third, not so quick way is below: [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 
@@ -394,24 +394,30 @@ You now have a new worldcat_code.xml file. Some status messages will print while
     Using cache for rid: 5087 safe_data: wc_data/35303837.xml
     Sending requst for rid: 87830
     Sending requst for rid: 16387
+    multi mc: A-Ar
     ...
 
 
 Create worldcat_code.xml in an XML or text editor
 -------------------------------------------------
 
-1) Understand, copy, and edit the example worldcat_code.xml. There's no schema, but the data format is simple.
+To create worldcat_code.xml by hand there are three steps: (1) manually search, (2) copy info, (3) paste into an XML text file.
 
-2) Manually look up the codes from the WorldCat registry search web page. Copy/paste the values into the
-worldcat_code.xml file.
-
-For the code lookup, I suggest using the somewhat daunting, but more accurate web service search page. Search
-for a specific field's value. For example local.marcOrgCode "Viu". (Leave the defaults of "=" and "and". The
-search appears to be case-insensitive.) Is is possible to have multiple results. The search for "Viu"
-correctly returns the University of Virginia. If you search "RHi" you'll get two results, both of which have
-the marcOrgCode "RHi".
+1. For the manual, one-at-a-time code lookup, I suggest using the somewhat daunting, but more accurate web
+service search page. Search for a specific field's value. For example local.marcOrgCode "Viu". (Leave the
+defaults of "=" and "and". The search appears to be case-insensitive.) Is is possible to have multiple
+results. The search for "Viu" correctly returns the University of Virginia. If you search "RHi" you'll get two
+results, both of which have the marcOrgCode "RHi".
 
 http://worldcat.org/webservices/registry/search/
+
+2. Manually look up the codes from the WorldCat registry search web page. If there is only on result, click
+the link "Download this Profile as XML". If there are multiple results, click the institution name, then click
+"Download this Profile as XML". With a little luck, the XML opens in your web browser, and you can copy various values.
+
+3. Copy and paste various pieces of data into worldcat_code.xml. There's no schema, but the data format should be fairly easy
+to understand.
+
 
 You can get a more general result by searching the field srw.serverChoice (near the bottom of the web page).
 
