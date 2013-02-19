@@ -362,31 +362,58 @@ is in /usr/share/jing/bin. (Modify the command as necessary for your jing.jar pa
 WorldCat agency codes
 ---------------------
 
-The XSLT scripts look up agency codes and agency names in a local file, "worldcat_codes.xml". A fairly large
+The MARC-to-CPF XSLT scripts look up agency codes and agency names in a local file, "worldcat_code.xml". A fairly large
 example is provided.
 
-Many of you will wish to create a small file with only your local agency codes. There are two aspects to this process:
+Many of you will wish to create a smaller worldcat_code.xml file containing only your local agency codes. There are
+two quick ways to do this:
 
-1) Understand and copy the example xml. There's no schema, but the data format is simple.
+1) Put your agency codes in a text file, one per line, and let the Perl script worldcat_code.pl do all the
+work. This Perl script has been created to use only core Perl modules, so any Perl installation should work.
 
-2) Look up the codes from WorldCat.
+2) Manually create a worldcat_code.xml based on the supplied example. 
+
+The third, not so quick way is below: [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
+
+Quickstart to run worldcat_code.pl
+----------------------------------
+
+Even if you only have one or two agency codes, it might be easy to run the Perl script. To use
+worldcat_code.pl, put OCLC or MARC agency codes into a text file, one code per line. See the example
+agency_test.txt. For the sake of our example, lets say your input file is named "agency_local.txt". Then do
+this:
+
+    chmod +x worldcat_code.pl
+    ./worldcat_code.pl file=agency_local.txt
+
+
+Create worldcat_code.xml in an XML or text editor
+-------------------------------------------------
+
+1) Understand, copy, and edit the example worldcat_code.xml. There's no schema, but the data format is simple.
+
+2) Manually look up the codes from the WorldCat registry search web page. Copy/paste the values into the
+worldcat_code.xml file.
 
 For the code lookup, I suggest using the somewhat daunting, but more accurate web service search page. Search
 for a specific field's value. For example local.marcOrgCode "Viu". (Leave the defaults of "=" and "and". The
-search appears to be case-insensitive.) If there are multiple values for the field you search, you'll get
-multiple records, but at least this is specific. The search for "Viu" correctly returns the University of
-Virginia. If you search "RHi" you'll get two results.
+search appears to be case-insensitive.) Is is possible to have multiple results. The search for "Viu"
+correctly returns the University of Virginia. If you search "RHi" you'll get two results, both of which have
+the marcOrgCode "RHi".
 
 http://worldcat.org/webservices/registry/search/
 
-You can get a more general result by searching the field srw.serverChoice.
+You can get a more general result by searching the field srw.serverChoice (near the bottom of the web page).
 
-Here is a single record example for resulting from searching for the MARC code "Viu". 
+Below is a single record worldcat_code.xml example from searching for the MARC code "Viu". 
 
-* Each institution is in a "container" element. An institution may have multiple entries differentiated by the
-  marc_query. Only the first entry will be used.
+* The outer continer element is "all". It must have at least one "container" child, and may have many
+  "container" elements.
 
-* Element "marc_query" is the original search whether marc or otherwise.
+* Each institution is in a "container" element. An institution may have multiple "container" entries differentiated by the
+  orig_query. Only the first entry will be used.
+
+* Element "orig_query" is the original search whether marc or otherwise.
 
 * Elements marc_code, name, isil, and oclcSymbol all come out of the WorldCat record.
 
@@ -395,7 +422,7 @@ Here is a single record example for resulting from searching for the MARC code "
 <?xml version="1.0" encoding="UTF-8"?>
 <all xmlns="http://socialarchive.iath.virginia.edu/worldcat">
   <container>
-    <marc_query>ViU</marc_query>
+    <orig_query>ViU</orig_query>
     <marc_code>ViU</marc_code>
     <name>University of Virginia</name>
     <isil>OCLC-VA@</isil>
@@ -405,8 +432,9 @@ Here is a single record example for resulting from searching for the MARC code "
 </all>
 
 
-There is also a web page for public searches. It does a general search is quite broad and will match against
-any fields, thus a search for "Viu" will return several institutions.
+WorldCat also has a more genearl search. It is quite broad and will match against any fields, thus a search
+for "Viu" will return several institutions, some of which are "bad" in the sense that the "viu" string matched
+in URLs or elements besides the marcOrgCode or oclcSymbol.
 
 http://www.worldcat.org/registry/Institutions
 
@@ -459,14 +487,16 @@ is fairly standard practice in the Linux world.
 
     cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
 
-The final step involves looking up the codes from WorldCat's servers. The script "worldcat_code.pl" reads the
-file "agency_unique.txt" and writes a new file "worldcat_code.xml". It also creates a directory of cached
-results "./wc_data". What worldcat_code.pl does is to make an http request to the WorldCat servers via a web
-API. Results from http requests to the WorldCat web API are cached as files in ./wc_data and therefore if you
-repeat a run, it will be much, much faster the second time. The first run can be quite slow, partly because
-the script pauses briefly after each request so it does not overload the WorldCat servers.
+The final step involves looking up the codes from WorldCat's servers. The script "worldcat_code.pl" must have
+a command line argument file=agency_unique.txt where "agency_unique.txt" is a file with one agency code per
+line. The script worldcat_code.pl reads the data file and writes a new file "worldcat_code.xml". It also
+creates a directory of cached results "./wc_data". What worldcat_code.pl does is to make an http request to
+the WorldCat servers via a web API. Results from http requests to the WorldCat web API are cached as files in
+./wc_data and therefore if you repeat a run, it will be much, much faster the second time. The first run can
+be quite slow, partly because the script pauses briefly after each request so it does not overload the
+WorldCat servers.
 
-    ./worldcat_code.pl > tmp.log
+    ./worldcat_code.pl file=agency_unique.txt > tmp.log
 
  After the run, you'll have tmp.log, a new directory wc_data, and the results in worldcat_code.xml.
 
@@ -688,16 +718,17 @@ list. This exciting command using a Perl one-liner is fairly standard practice i
 
     cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
 
-The script "worldcat_code.pl" reads the file "agency_unique.txt" and writes a new file "worldcat_code.xml". It
-also creates a directory of cached results "./wc_data". Results from http requests to the WorldCat web API are
-cached as files in ./wc_data and therefore if you repeat a run, it will be much, much faster the second time.
+The command "worldcat_code.pl file=agency_unique.txt" reads the file "agency_unique.txt" and writes a new file
+"worldcat_code.xml". It also creates a directory of cached results "./wc_data". Results from http requests to
+the WorldCat web API are cached as files in ./wc_data and therefore if you repeat a run, it will be much, much
+faster the second time.
 
-    ./worldcat_code.pl > tmp.log
+    ./worldcat_code.pl file=agency_unique.txt > tmp.log
 
 The log file contains entries for codes that have multiple entries. Grep the log for 'multi mc:'.
 
-The files agency_code.log and agency_unique.txt are essentially temporary, and you may delete them after
-running worldcat_code.pl and verifying the results.
+The files agency_code.log and agency_unique.txt are often essentially temporary (as long as they were created
+by scripts as above), in which case you may delete them after running worldcat_code.pl and verifying the results.
 
     > ls -l agency.cfg worldcat_code.* extract_040a.xsl
     -rw-r--r-- 1 mst3k snac   1057 Jan 15 14:06 agency.cfg

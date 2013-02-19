@@ -18,19 +18,17 @@
 # ./exec_record.pl config=agency.cfg &
 # cat agency_code.log | perl -ne 'if ($_ =~ m/040\$a: (.*)/) { print "$1\n";} ' | sort -fu > agency_unique.txt
 
-# worldcat_code.pl also create a directory of cached results ./wc_data/ and reads agency_unique.txt and
-# writes worldcat_code.xml. If the file agency_unique.txt exists, you simply run worldcat_code.pl.
+# worldcat_code.pl also creates a directory of cached results ./wc_data/ and the command line argument
+# supplied via file=foo.txt and writes worldcat_code.xml. If the file foo.txt exists (often agency_unique.txt), you simply run
+# worldcat_code.pl file=agency_unique.txt > tmp.log
 
 # Reminder: scripts must be executable, so if you haven't already done it: chmod +x worldcat_code.pl
 
-# ./worldcat_code.pl > tmp.log
+# ./worldcat_code.pl file=agency_test.txt > tmp.log
 
 use strict;
-# use MIME::Base64;
 use CGI;
 use Time::HiRes qw(usleep nanosleep);
-# use URI::Escape; 
-# use CGI::Util; # for the escape() function
 
 my $ac_file = ""; # We require a command line arg now. Old default was "agency_unique.txt";
 
@@ -251,11 +249,10 @@ sub first_query
         use URI::Escape;
         my $test_uri_query = "$qfield=\"" .  URI::Escape::uri_escape($orig_code) . '"+not+local.logicalDelete="1"';
 
-        print " uri: $uri_query\n";
-        print "test: $test_uri_query\n";
+        # print " uri: $uri_query\n";
+        # print "test: $test_uri_query\n";
         
         my $cmd = "curl -s \'http://worldcat.org/webservices/registry/search/Institutions?query=$uri_query&operation=searchRetrieve&recordSchema=info:rfa/rfaRegistry/schemaInfos/adminData&recordPacking=xml\'";
-
         
         $first = `$cmd`;
         usleep(250000);
