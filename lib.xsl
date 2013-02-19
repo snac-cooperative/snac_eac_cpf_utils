@@ -1399,13 +1399,23 @@
         <xsl:variable name="ainfo">
             <xsl:copy-of select="$org_codes/snac:container[snac:orig_query = $org_query]"/>
         </xsl:variable>
+        
+        <xsl:message>
+            <xsl:text>ainfo: </xsl:text>
+            <xsl:copy-of select="$ainfo"/>
+            <xsl:text>&#x0A;</xsl:text>
+            <xsl:text>org: </xsl:text>
+            <xsl:copy-of select="$org_query"/>
+            <xsl:text>&#x0A;</xsl:text>
+        </xsl:message>
+
         <xsl:choose>
-            <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container[1]/snac:isil)>0">
+            <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container/snac:isil)>0">
                 <agencyCode >
-                    <xsl:value-of select="$ainfo/snac:isil"/>
+                    <xsl:value-of select="$ainfo/snac:container/snac:isil"/>
                 </agencyCode>
                 <agencyName >
-                    <xsl:value-of select="$ainfo/snac:name"/>
+                    <xsl:value-of select="$ainfo/snac:container/snac:name"/>
                 </agencyName>
             </xsl:when>
             <xsl:when test="count($ainfo/snac:container)>1">
@@ -1429,8 +1439,15 @@
                 <xsl:text> </xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <agencyName >
+                <!--
+                    There is some crazy stuff in $org_query. Will it all validate in CPF? Maybe agencyCode
+                    should just be "unknown".
+                -->
+                <agencyCode >
                     <xsl:value-of select="$org_query"/>
+                </agencyCode>
+                <agencyName>
+                    <xsl:text>Unknown</xsl:text>
                 </agencyName>
                     <descriptiveNote >
                         <p>
