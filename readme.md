@@ -379,12 +379,22 @@ Quickstart to run worldcat_code.pl
 ----------------------------------
 
 Even if you only have one or two agency codes, it might be easy to run the Perl script. To use
-worldcat_code.pl, put OCLC or MARC agency codes into a text file, one code per line. See the example
-agency_test.txt. For the sake of our example, lets say your input file is named "agency_local.txt". Then do
-this:
+worldcat_code.pl, put OCLC or MARC agency codes into a text file, one code per line, then run worldcat_code.pl file=your_file_name
+
+Feel free to edit the included example agency_test.txt then run these commands:
 
     chmod +x worldcat_code.pl
-    ./worldcat_code.pl file=agency_local.txt
+    ./worldcat_code.pl file=agency_test.txt
+    
+You now have a new worldcat_code.xml file. Some status messages will print while the script is running.
+
+    Using cache dir wc_data
+    Ouput file is worldcat_code.xml
+    Using cache for rid: 39003 safe_data: wc_data/3339303033.xml
+    Using cache for rid: 5087 safe_data: wc_data/35303837.xml
+    Sending requst for rid: 87830
+    Sending requst for rid: 16387
+    ...
 
 
 Create worldcat_code.xml in an XML or text editor
