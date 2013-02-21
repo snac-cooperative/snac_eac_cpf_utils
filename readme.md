@@ -109,6 +109,14 @@ Saxon for Java:
 
 http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip
 
+Saxon's main page at Sourceforge:
+
+http://sourceforge.net/projects/saxon/
+
+The Saxon home page:
+
+http://www.saxonica.com/
+
 You will need Java. Most modern computers have it pre-installed. It is unclear if gcj or the openjdk will
 work. The link below is probably the correct page to download Oracle (formerly Sun) Java:
 
