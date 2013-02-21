@@ -461,6 +461,13 @@ Building your own list of WorldCat agency codes
 
 This section applies to larger data sets. Please skip this section if it does not apply to you.
 
+We use the WorldCat registry web API:
+
+http://oclc.org/developer/services/worldcat-registry
+
+(An API or Application Programmer Interface is a collection of functions or services available for use outside
+an application or web site. It is programmer lingo for building blocks of software tools.)
+
 The file worldcat_code.xml is used by the XLST to resolve agency codes without going out to the internet each
 time. Essentially, this process of building your own list is a way to cache the agency code data.
 
@@ -576,7 +583,7 @@ soon-to-be-created docs on this topic.
 
 Error:
 
-    > ./worldcat_code.pl > tmp.log
+    > ./worldcat_code.pl file=agency_test.txt > tmp.log
     bash: ./worldcat_code.pl: Permission denied
 
 Solution: 

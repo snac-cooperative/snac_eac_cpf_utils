@@ -155,13 +155,15 @@
                                       xlink:href="{$param_data/eac:resource_href}{$controlfield_001}">
                         <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
                         <xsl:copy-of select="$mods"/>
-			<descriptiveNote>
-			    <p>
-				<span localType="Leader06"><xsl:value-of select="$leader06"/></span>
-				<span localType="Leader07"><xsl:value-of select="$leader07"/></span>
-				<span localType="Leader08"><xsl:value-of select="$leader08"/></span>
-			    </p>
-			</descriptiveNote>
+                        <xsl:if test="string-length($leader06)>0 or string-length($leader07)>0 or string-length($leader08)>0">
+        		    <descriptiveNote>
+			        <p>
+				    <span localType="Leader06"><xsl:value-of select="$leader06"/></span>
+				    <span localType="Leader07"><xsl:value-of select="$leader07"/></span>
+				    <span localType="Leader08"><xsl:value-of select="$leader08"/></span>
+			        </p>
+			    </descriptiveNote>
+                        </xsl:if>
                     </resourceRelation>
                 </relations>
             </cpfDescription>

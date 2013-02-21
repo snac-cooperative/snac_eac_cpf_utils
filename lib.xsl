@@ -580,6 +580,7 @@
         </xsl:element>
     </xsl:template>
 
+
     <xsl:template name="tpt_show_date" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="tokens"/> 
         <xsl:param name="is_family"/> 
@@ -1101,6 +1102,25 @@
                     </xsl:call-template>
                 </xsl:when>
 
+                <!-- 
+                     Force person records with an alt_date (245$f) to be active. This is simple and robust due
+                     to the way "active" is parsed with most dates. The alternative would be to go into
+                     function pass_2 and add the "active" token when we hit matches against \d. If the pass_2
+                     modification were done wrong, it would break most or all of the date code.
+                -->
+
+                <xsl:when test="$entity_type = 'person' and string-length($alt_date)>0">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
+                        <xsl:with-param name="entity_type" select="$entity_type"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d">
+                            <xsl:copy-of select="concat('active ', $alt_date)"/>
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:when>
+
+
                 <xsl:when test=" $is_1xx and $entity_type = 'family' and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
                     <xsl:call-template name="tpt_exist_dates">
                         <xsl:with-param name="xx_tag" select="$xx_tag"/>
@@ -1400,14 +1420,14 @@
             <xsl:copy-of select="$org_codes/snac:container[snac:orig_query = $org_query]"/>
         </xsl:variable>
         
-        <xsl:message>
-            <xsl:text>ainfo: </xsl:text>
-            <xsl:copy-of select="$ainfo"/>
-            <xsl:text>&#x0A;</xsl:text>
-            <xsl:text>org: </xsl:text>
-            <xsl:copy-of select="$org_query"/>
-            <xsl:text>&#x0A;</xsl:text>
-        </xsl:message>
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>ainfo: </xsl:text> -->
+        <!--     <xsl:copy-of select="$ainfo"/> -->
+        <!--     <xsl:text>&#x0A;</xsl:text> -->
+        <!--     <xsl:text>org: </xsl:text> -->
+        <!--     <xsl:copy-of select="$org_query"/> -->
+        <!--     <xsl:text>&#x0A;</xsl:text> -->
+        <!-- </xsl:message> -->
 
         <xsl:choose>
             <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container/snac:isil)>0">
@@ -1835,7 +1855,7 @@
     <xsl:function name="lib:pass_1b">
         <xsl:param name="tokens" as="node()*"/> 
         <!-- 
-             Disambiguate (normal "or") and (century "or") by making (century "or") into a token "cyr".
+             Disambiguate (normal "or") and ("century or") by making ("century or") into a token "cyr".
         -->
         <xsl:copy-of select="$tokens/odate"/>
         <xsl:copy-of select="$tokens/untok"/>
@@ -1975,8 +1995,10 @@
 
         <xsl:for-each select="$tokens/tok">
             <xsl:choose> 
-                <!-- Remember that "cyr" is the token for century "or", usually
-                     a "/" char in the original string. -->
+                <!--
+                    Remember that "cyr" is the token for "century or" as "1st century or 2nd century", usually
+                    a "/" char in the original string "1st/2nd century"
+                -->
                 <xsl:when test="matches(text(),
                                 '\d+(st|nd|rd|th)') and following-sibling::tok[1] = 'cyr' and matches(following-sibling::tok[2],
                                 '\d+(st|nd|rd|th)')">
@@ -1986,9 +2008,10 @@
                     <xsl:variable name="cent2"
                         select="lib:ordinal_number(following-sibling::tok[2])"/>
                     
-                    <!-- The algebraic formula is only slightly confusing. In
-                         XSLT / is a path and div is the division operator. No
-                         division here. -->
+                    <!--
+                        The algebraic formula is only slightly confusing. In XSLT "/" is a path and "div" is the
+                        division operator. No division here.
+                    -->
 
                     <xsl:element name="tok">
                         <xsl:attribute name="notBefore"><xsl:value-of select="(($cent1/num -1) * 100) + 1"/></xsl:attribute>
