@@ -134,12 +134,35 @@
         <xsl:variable
             name="chunk_suffix"
             select="floor((position() + $offset - 1) div $chunk_size) + 1"/>
-        <xsl:variable name="controlfield_001" 
-                      select="normalize-space(marc:controlfield[@tag='001'])"/>
-        <xsl:variable name="record_id" 
-                      select="concat('OCLC-', normalize-space(marc:controlfield[@tag='001']))"/>
+
+        <xsl:variable name="controlfield_001">
+            <!-- 
+                 Some data may have missing/duplicate 001. Using position() should be sufficient to make a
+                 unique 001 value. I'm unclear how well the 010 or 035 would perform as record id values.
+            -->
+            <xsl:choose>
+                <xsl:when test="string-length(normalize-space(marc:controlfield[@tag='001']))>0">
+                    <xsl:value-of select="normalize-space(marc:controlfield[@tag='001'])"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat('missing001_', position())"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="agency_info">
+            <!--
+                See tpt_agency_info in lib.xsl. Unknowns default to agencyCode 'EAC-CPF'.
+            -->
+            <xsl:call-template name="tpt_agency_info"/>
+        </xsl:variable>
+
+        <xsl:variable name="record_id"
+                      select="concat($agency_info/eac:agencyCode,'-', $controlfield_001)"/>
+
         <xsl:variable name="date" 
                       select="current-dateTime()"/>
+
         <xsl:variable name="chunk_dir">
             <xsl:choose>
                 <xsl:when test="$use_chunks=1">
@@ -223,11 +246,6 @@
                 </xsl:if>
                 <xsl:value-of select="."/>
             </xsl:for-each>
-        </xsl:variable>
-
-        <xsl:variable name="agency_info">
-            <!-- See tpt_agency_info in lib.xsl -->
-            <xsl:call-template name="tpt_agency_info"/>
         </xsl:variable>
 
         <!--
@@ -719,13 +737,26 @@
              tpt_match_record, which is the starting point for all the work of creating then eac-cpf
              output.
         -->
-        <xsl:variable name="record_id"
-                      select="marc:controlfield[@tag='001']"/>
+        <xsl:variable name="precord_id">
+            <!-- 
+                 Printable record_id. Some data may have missing/duplicate 001. Using position() should be sufficient to make a
+                 unique 001 value. 005 seems to be duplicated so we can't use that as our unique id either.
+            -->
+            <xsl:choose>
+                <xsl:when test="string-length(normalize-space(marc:controlfield[@tag='001']))>0">
+                    <xsl:value-of select="normalize-space(marc:controlfield[@tag='001'])"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat('missing001_', position())"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
         <xsl:choose>
             <xsl:when test="count(marc:datafield[matches(@tag, '1(00|10|11)')]) &gt; 1">
                 <xsl:message>
                     <xsl:text>multi_1xx: </xsl:text>
-                    <xsl:value-of select="$record_id"/>
+                    <xsl:value-of select="$precord_id"/>
                     <xsl:text>&#x0A;</xsl:text>
                 </xsl:message>
             </xsl:when>
@@ -750,7 +781,7 @@
             <xsl:otherwise>
                 <xsl:message>
                     <xsl:text>not_167xx: </xsl:text>
-                    <xsl:value-of select="$record_id"/>
+                    <xsl:value-of select="$precord_id"/>
                     <xsl:text>&#x0A;</xsl:text>
                 </xsl:message>
             </xsl:otherwise>

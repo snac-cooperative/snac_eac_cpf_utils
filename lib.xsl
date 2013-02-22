@@ -1420,15 +1420,22 @@
             <xsl:copy-of select="$org_codes/snac:container[snac:orig_query = $org_query]"/>
         </xsl:variable>
         
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>ainfo: </xsl:text> -->
-        <!--     <xsl:copy-of select="$ainfo"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!--     <xsl:text>org: </xsl:text> -->
-        <!--     <xsl:copy-of select="$org_query"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
-
+        <xsl:variable name="fallback_code">
+            <!-- 
+                 If the original 040$a aka $org_query is conservatively safe for use as a filename, then use
+                 it as our fallback agency code. A small number of 040$a values are wacky, and can't be used
+                 as filenames.
+            -->
+            <xsl:choose>
+                <xsl:when test="matches($org_query, '^[A-Z\-]+$', 'i')">
+                    <xsl:value-of select="$org_query"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="'EAC-CPF'"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        
         <xsl:choose>
             <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container/snac:isil)>0">
                 <agencyCode >
@@ -1440,7 +1447,7 @@
             </xsl:when>
             <xsl:when test="count($ainfo/snac:container)>1">
                 <agencyCode>
-                    <xsl:value-of select="$org_query"/>
+                    <xsl:value-of select="$fallback_code"/>
                     <!-- <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/> -->
                 </agencyCode>
                 <agencyName>
@@ -1460,11 +1467,11 @@
             </xsl:when>
             <xsl:otherwise>
                 <!--
-                    There is some crazy stuff in $org_query. Will it all validate in CPF? Maybe agencyCode
-                    should just be "unknown".
+                    There is some crazy stuff in $org_query. Will it all validate in CPF? Use "EAC-CPF" as a
+                    placeholder for unknown agency codes.
                 -->
                 <agencyCode >
-                    <xsl:value-of select="$org_query"/>
+                    <xsl:value-of select="$fallback_code"/>
                 </agencyCode>
                 <agencyName>
                     <xsl:text>Unknown</xsl:text>

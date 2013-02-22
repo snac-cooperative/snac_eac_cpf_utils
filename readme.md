@@ -58,6 +58,14 @@ Beginners may enjoy the introduction to Linux and MacOSX commands:
 
 http://defindit.com/readme_files/intro_unix.html
 
+The required input file format is MARC12/slim XML, so you may need MARC conversion tools.
+
+http://people.oregonstate.edu/~reeset/marcedit/html/index.php
+
+MARC Specialized Tools from The Library of Congress
+
+http://www.loc.gov/marc/marctools.html
+
 
 Getting the code
 ----------------
