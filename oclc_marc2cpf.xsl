@@ -87,6 +87,7 @@
     <xsl:param name="chunk_prefix" select="'zzz'"/>
     <xsl:param name="offset" select="1"/>
     <xsl:param name="output_dir" select="'./'"/>
+    <xsl:param name="fallback_default" select="'EAC-CPF'"/>
 
     <xsl:param name="use_chunks">
         <xsl:choose>

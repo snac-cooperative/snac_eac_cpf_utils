@@ -1424,14 +1424,14 @@
             <!-- 
                  If the original 040$a aka $org_query is conservatively safe for use as a filename, then use
                  it as our fallback agency code. A small number of 040$a values are wacky, and can't be used
-                 as filenames.
+                 as filenames.        
             -->
             <xsl:choose>
                 <xsl:when test="matches($org_query, '^[A-Z\-]+$', 'i')">
                     <xsl:value-of select="$org_query"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="'EAC-CPF'"/>
+                    <xsl:value-of select="$fallback_default"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -1448,7 +1448,6 @@
             <xsl:when test="count($ainfo/snac:container)>1">
                 <agencyCode>
                     <xsl:value-of select="$fallback_code"/>
-                    <!-- <xsl:value-of select="$ainfo/snac:container[1]/snac:isil"/> -->
                 </agencyCode>
                 <agencyName>
                     <xsl:text>Unknown</xsl:text>
