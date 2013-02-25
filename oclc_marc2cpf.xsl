@@ -51,7 +51,7 @@
         Templates in this file:
 
         name "tpt_match_record"
-        name "tpt_container" match="/container"
+        name "tpt_container" match="marc:collection"
         name "not_1xx" match="//marc:record[not(marc:datafield[@tag='100' or @tag='110' or @tag='111'])]"
         name "catch_all" match="*"
         name "match_subfield"
@@ -108,7 +108,7 @@
     <xsl:variable name="xslt_vendor_url" select="system-property('xsl:vendor-url')" />
 
     <!-- 
-         Invoke tpt_match_record via a call-template from a match on marc:record only when there is a single 1xx. Only called
+         Invoke tpt_match_record via a call-template from a match on <record> only when there is a single 1xx. Only called
          for 100, 110, 111. All templates have a canonical name or mode.
          
          The method used here can serve as an example for other "only match on single/multi" cases. This is similar but
@@ -119,6 +119,7 @@
     
     <xsl:template name="tpt_match_record">
         <xsl:param name="xx_tag"/>
+
         <xsl:variable
             name="chunk_count"
             select="(position() + $offset) div $chunk_size"/>
@@ -178,7 +179,7 @@
 
         <xsl:variable name="name_entry">
             <!-- 
-                 The context here is marc:record, but tpt_name_entry wants to be called with the single 1xx marc:datafield
+                 The context here is <record>, but tpt_name_entry wants to be called with the single 1xx marc:datafield
                  as context. Applying templates here without a select results in a log of extra (wrong) data in the name
                  entry.
                  
@@ -732,7 +733,7 @@
 
     <xsl:template name="top_record" match="marc:record">
         <!-- 
-             Match an marc:record then branch on multi 1xx vs >=1 [167]xx. We want to choose our xx_tag
+             Match a <record> then branch on multi 1xx vs >=1 [167]xx. We want to choose our xx_tag
              with a priority of 1xx first, then 7xx (both of which are author-ish) then 6xx which
              are related to the current record. If we are not multi_1xx, then call-template for
              tpt_match_record, which is the starting point for all the work of creating then eac-cpf
@@ -790,19 +791,19 @@
     </xsl:template>
 
 
+    <!--
+        The container element is <collection>.
+        
+        Without this we have an unmatched element. However, when we match it, we must apply-templates in order
+        for <record> to match. Output a newline because we are printing messages to stderr and we often
+        combine stdout and stderr (via io redirection 2>&1), so we need a newline after the xml declaration
+        which can't be turned off. (See comment with xsl:output.)
+    -->
+
     <xsl:template name="tpt_collection" match="marc:collection">
         <xsl:text>&#x0A;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-
-    <!--
-        Old. The new container element is <marc:collection>.
-        
-        Without this we have an unmatched element. However, when we match it, we must apply-templates in order for
-        (marc:record) to match. Output a newline because we are printing messages to stderr and we are combining stdout
-        and stderr, so we need a newline after the xml declaration which can't be turned off. (See comment with
-        xsl:output.)
-    -->
 
     <!-- <xsl:template name="match_snac" match="*[local-name() = 'snac']"> -->
     <!--     <xsl:text>&#x0A;</xsl:text> -->

@@ -247,6 +247,7 @@ sub commify
 }
 
 
+my $ns_prefix = "";
 sub next_record
 {
     my $in = $_[0];
@@ -254,45 +255,68 @@ sub next_record
     my $have_open = 0;
     if (! $line_buffer)
     {
-        if (! ($line_buffer .= <$in>) )
+        if (! ($line_buffer = <$in>) )
         {
             # print "End of file\n";
             return undef;
         }
+        # If there is an xml header line, remove it.
+        $line_buffer =~ s/<\?xml.*?>//;
     }
-    
+
+    # No need to remove <collection> or anything outside <record> because all that is trimmed away.
+
     my $debug = 0;
     my $continue = 1;
-    while ($continue && $line_buffer && $record !~ m/<\/record>/)
+    my $xx = 0; 
+    while ($continue && $line_buffer && ! ($record =~ m/(?:<\/marc:record|<\/record|<\/$ns_prefix:record)>/))
     {
         # Cleanse the prefix if appropriate. By only cleaning junk to
         # the left of '<' we preserve partial open element such as
         # "<record\n".
         
-        if (! $have_open)  #  && $line_buffer !~ m/</)
-	{
+        if (! $have_open)         #  && $line_buffer !~ m/</)
+ 	{
             # .+? was bad because that matched "<leader...". Better to
             # match a character set not including '<'.
             $line_buffer =~ s/(^[^<]+?<)/</sm;
-	}
-
+ 	}
+        
         # Get the start element of the record.
         
         # This is interesting. 
         # (?!<record)* matches null string many times in regex; marked by <-- HERE in m/(<record.*?>(?!<record)* <-- HERE )/ at get_record.pl line 115.
+        
+        
+        # Using [^<]+? to match the first namespace prefix. This is only done when ! $have_open so it is not
+        # computationally expensive. Save the namespace prefix. Throw out everything before <record>.
 
-        # if (! $have_open && $line_buffer =~ s/(<record.*?>(?!<record)*)//sm)
-        if (! $have_open && $line_buffer =~ s/(<record.*?>)//sm)
+        if ((! $have_open) && $line_buffer =~ s/.*?((?:<([^<]+?):record|<record).*?>.*$)//sm)
         {
+            # print "first:$line_buffer\n";
             $record = $1;
+            if ($2)
+            {
+                $ns_prefix = $2;
+            }
             $have_open = 1;
         }
         
-        # Get text to end tag or end of text. Use /x modifier so that
-        # non-escaped whitespace is ignored. With /x the regex is $))
-        # not $\ )).
+        # Get text to end tag or end of text. Use /x modifier so that non-escaped whitespace is ignored. With
+        # /x the regex is $)) not $\ )). Using /x and the extra space may have been originally added to a work
+        # around for a bug in Emacs Perl parser.
+        
+        # When the code was added to deal with marc:record|record I found that (?:.*:record|record) is more
+        # robust than (?:.*:)*record.
+        
+        # ?! is "/foo(?!bar)/" matches any occurrence of "foo" that isn't followed by "bar", but we have the nonsense (?!foo)bar.
 
-        if ($have_open && $line_buffer =~ s/((?:(?!<record).)*(?:<\/record>|$ ))//smx)
+        # ?!<(?:.*:record|record) matches any occurrence of "<" not followed by (?:.*:record|record).
+
+        # if ($have_open && $line_buffer =~ s/((?:(?!<(?:.*:record|record)).)*(?:<\/.*:record|<\/record)>|$ )//smx)
+
+        # The non-greedy up to closing </record> simpler than zero-width negative look ahead?
+        if ($have_open && $line_buffer =~ s/(.*?(?:<\/marc:record|<\/record|<\/$ns_prefix:record)>|$ )//smx)
         {
             $record .= $1;
         }
@@ -311,13 +335,15 @@ sub next_record
         {
             $continue = 0;
         }
+        # The while() has end of record detection, in addition to the boolean flag $continue.
+        $xx++;
     }
     
     # Remove leading junk.
-    $record =~ s/^.*(<record)/$1/;
+    $record =~ s/^.*((?:<marc:record|<record|<\/$ns_prefix:record))/$1/;
     
     # Remove trailing junk.
-    $record =~ s/(<\/record>).*$/$1/;
+    $record =~ s/((?:<\/marc:record|<\/record|<\/$ns_prefix:record)>).*$/$1/;
     
     return $record;
 }
