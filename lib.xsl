@@ -78,7 +78,6 @@
     <xsl:variable name="relators" select="document('vocabularyrelators.rdf')/*"/>
     <xsl:variable name="languages" select="document('vocabularylanguages.rdf')/*"/>
     <xsl:variable name="org_codes" select="document('worldcat_code.xml')/*"/>
-
     
     <xsl:template mode="get_lang" match="*">
          <xsl:choose>

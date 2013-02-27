@@ -385,7 +385,8 @@ Many of you will wish to create a smaller worldcat_code.xml file containing only
 two quick ways to do this:
 
 1. Put your agency codes in a text file, one per line, and let the Perl script worldcat_code.pl do all the
-work. This Perl script has been created to use only core Perl modules, so any Perl installation should work. The Quickstart is below.
+work. This Perl script has been created to use only core Perl modules, so any Perl installation should
+work. The Quickstart is below. 
 
 2. Manually create a worldcat_code.xml based on the supplied example. See the Hand create below.
 
@@ -412,6 +413,32 @@ You now have a new worldcat_code.xml file. Some status messages will print while
     Sending requst for rid: 16387
     multi mc: A-Ar
     ...
+
+You can also manually edit worldcat_code.xml. Since it only searches for MARC and OCLC codes from the WorldCat
+registry, many organizations could be missing. If you know the relevant information, simply edit the
+appropriate record in worldcat_code.xml.
+
+For example, Cty-BR is not in WorldCat's registry, so the record is mostly empty:
+
+      <container>
+        <orig_query>CtY-BR</orig_query>
+        <marc_code/>
+        <name/>
+        <isil/>
+        <matching_element/>
+      </container>
+
+Manually updated to:
+
+      <container>
+        <orig_query>CtY-BR</orig_query>
+        <marc_code>CtY-BR</marc_code>
+        <name>Yale University, Beinecke Rare Book and Manuscript Library</name>
+        <isil>CtY-BR</isil>
+        <matching_element/>
+      </container>
+
+In the future, the ISIL may be updated to for better standards conformance.
 
 
 Hand create worldcat_code.xml in an XML or text editor
