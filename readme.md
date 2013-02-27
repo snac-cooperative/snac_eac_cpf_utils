@@ -142,7 +142,7 @@ The included script saxon.sh expects Saxon to be in $HOME/bin/saxon9he.jar. For 
 /Users/mst3k/bin/saxon9he.jar or for Linux /home/mst3k/bin/saxon9he.jar. When you install saxons9he.jar,
 please put it in ~/bin, otherwise you must edit saxon.sh to reflect the correct location.
 
-After download, these will be typical commands:
+After downloading Saxon, these will be typical commands:
 
     mkdir ~/bin
     cd ~/bin
@@ -245,6 +245,7 @@ Assuming that you are in the ead_cpf_utils directory, you should be able to run 
     Java(TM) SE Runtime Environment (build 1.6.0_37-b06-434-10M3909)
     Java HotSpot(TM) 64-Bit Server VM (build 20.12-b01-434, mixed mode)
 
+    > cp saxon.sh.dist saxon.sh
     > saxon.sh -?
     Saxon-HE 9.4.0.6J from Saxonica
     Usage: see http://www.saxonica.com/documentation/using-xsl/commandline.xml
@@ -261,16 +262,65 @@ Assuming that you are in the ead_cpf_utils directory, you should be able to run 
 Quickly run the code
 --------------------
 
-Just about the simplest method, relies on internal defaults:
+If you have not copied the .dist files to local copies, do so now:
 
-    saxon.sh marc.xml oclc_marc2cpf.xsl
+   cp saxon.sh.dist saxon.sh
+   cp worldcat_code.xml.dist worldcat_code.xml
 
-A somewhat more real-world example. Override the default output directory, and write chunks of records to
-"test_N" where N is a counting number, and log results test.log:
+Just about the simplest method, relies on some internal defaults, but overrides the output directory name:
 
-    saxon.sh working_marc.xml oclc_marc2cpf.xsl chunk_prefix=test > test.log 2>&1
+    saxon.sh beinecke_sample.xml oclc_marc2cpf.xsl output_dir=brbl
 
-After that example, a couple of commands give an overview of what the log file and directories look like:
+Here is a session transcript showing that 546 files were generated, listing the first few files in the ./brbl
+directory, and showing the first few lines of brbl/CtY-BR-3118211.c.xml:
+
+    > saxon.sh beinecke_sample.xml oclc_marc2cpf.xsl output_dir=brbl 
+    <?xml version="1.0" encoding="UTF-8"?>
+
+    > ls -l brbl | wc -l
+    546
+
+    > ls -l brbl/* | head
+    -rw-r--r-- 1 twl8n snac  16452 Feb 27 16:09 brbl/CtY-BR-3118211.c.xml
+    -rw-r--r-- 1 twl8n snac  13728 Feb 27 16:09 brbl/CtY-BR-3118211.r01.xml
+    -rw-r--r-- 1 twl8n snac  13434 Feb 27 16:09 brbl/CtY-BR-3118211.r02.xml
+    -rw-r--r-- 1 twl8n snac  13472 Feb 27 16:09 brbl/CtY-BR-3118211.r03.xml
+    -rw-r--r-- 1 twl8n snac  13367 Feb 27 16:10 brbl/CtY-BR-3150242.c.xml
+    -rw-r--r-- 1 twl8n snac  12166 Feb 27 16:10 brbl/CtY-BR-3150242.r01.xml
+    -rw-r--r-- 1 twl8n snac  12170 Feb 27 16:10 brbl/CtY-BR-3150242.r02.xml
+    -rw-r--r-- 1 twl8n snac  11943 Feb 27 16:09 brbl/CtY-BR-3248834.c.xml
+    -rw-r--r-- 1 twl8n snac  31460 Feb 27 16:10 brbl/CtY-BR-3251340.c.xml
+    -rw-r--r-- 1 twl8n snac  20373 Feb 27 16:10 brbl/CtY-BR-3251340.r01.xml
+
+    > head brbl/CtY-BR-3118211.c.xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <?oxygen RNGSchema="http://socialarchive.iath.virginia.edu/shared/cpf.rng" type="xml"?>
+    <eac-cpf xmlns:mads="http://www.loc.gov/mads/" xmlns="urn:isbn:1-931666-33-4"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:eac="urn:isbn:1-931666-33-4">
+       <control>
+          <recordId>CtY-BR-3118211.c</recordId>
+          <maintenanceStatus>new</maintenanceStatus>
+          <maintenanceAgency>
+             <agencyCode>CtY-BR</agencyCode>
+
+    > java -jar ~/bin/jing.jar ~/bin/cpf.rng brbl/*
+
+    >
+
+
+Note above that the jing command produced no output. That is good and means the CPF XML output validates. Jing
+is discussed later.
+
+Below is an prototype command line where you have more than 100 records (lets say 1000 records), and wish to
+have the output in separate directories aka "chunking". Override the default output directory, and write
+chunks of records to "test_N" where N is a counting number, and log results test.log:
+
+    saxon.sh big_marc_file.xml oclc_marc2cpf.xsl chunk_prefix=test > test.log 2>&1
+
+There is not a 1000 record sample file included in the Github repository. However, I ran 1000 records of data
+so you can see more or less what to expect. After the command above, a couple of commands give an overview of
+what the log file and directories look like:
 
     > head test.log
     not_167xx: 8560473
