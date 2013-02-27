@@ -381,8 +381,8 @@ WorldCat agency codes
 The MARC-to-CPF XSLT scripts look up agency codes and agency names in a local file, "worldcat_code.xml". A fairly large
 example is provided.
 
-Many of you will wish to create a smaller worldcat_code.xml file containing only your local agency codes. There are
-two quick ways to do this:
+Many of you will wish to create a modified or smaller worldcat_code.xml file containing your local agency
+codes. There are two quick ways to do this:
 
 1. Put your agency codes in a text file, one per line, and let the Perl script worldcat_code.pl do all the
 work. See the [Quickstart](#quickstart-to-run-worldcat_codepl) below.
@@ -397,7 +397,7 @@ Quickstart to run worldcat_code.pl
 Even if you only have one or two agency codes, it might be easy to run the Perl script. To use
 worldcat_code.pl, put OCLC or MARC agency codes into a text file, one code per line, then run worldcat_code.pl file=your_file_name
 
-Feel free to edit the included example agency_test.txt then run these commands:
+Feel free to add your agency codes to the included example agency_test.txt then run these commands:
 
     chmod +x worldcat_code.pl
     ./worldcat_code.pl file=agency_test.txt
