@@ -385,9 +385,9 @@ Many of you will wish to create a smaller worldcat_code.xml file containing only
 two quick ways to do this:
 
 1. Put your agency codes in a text file, one per line, and let the Perl script worldcat_code.pl do all the
-work. See the [Quickstart](#quickstart-to-run-worldcat_code-pl) below.
+work. See the [Quickstart](#quickstart-to-run-worldcat_codepl) below.
 
-2. Manually create a worldcat_code.xml based on the supplied example. See the Hand create below.
+2. Manually create a worldcat_code.xml based on the supplied example. See the [Hand create](#hand-create-worldcat_codexml-in-an-xml-or-text-editor) below.
 
 The third, less quick way: [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 
