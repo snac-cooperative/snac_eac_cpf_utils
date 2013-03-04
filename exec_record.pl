@@ -106,11 +106,6 @@ sub main
         die "file: $file Error: not found or is not a file.\n";
     }
 
-    if (! -d $output_dir)
-    {
-        die "output_dir: $output_dir Error: directory does not exist.\n";
-    }
-
     if ($offset < 1)
     {
         die "offset: $offset Error: offset must be >= 1.\n";
@@ -133,6 +128,19 @@ sub main
             $config_str .= "$key: $cf{$key}\n";
         }
         log_message($log_file, $config_str);
+    }
+
+    # This checking seems a bit conservative since saxon/xslt will create necessary dirs in xsl:result-document.
+
+    if (! -d $output_dir)
+    {
+        log_message($log_file, "output_dir: $output_dir Warning: directory does not exist. Creating.\n");
+        mkdir $output_dir;
+        if (! -d $output_dir)
+        {
+            log_message($log_file, "output_dir: $output_dir Error: could not create. Exiting.\n");
+            exit(1);
+        }
     }
 
     open(IN, "<", $file) || die "Cannot open $file for reading\n";

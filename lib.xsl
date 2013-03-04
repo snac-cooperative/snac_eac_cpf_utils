@@ -624,15 +624,18 @@
                 <xsl:when test="$tokens/tok[matches(text(), '^\d+$')]/following-sibling::tok[position()=1 and matches(text(), '^\d+$')]">
                     <xsl:value-of select="true()"/>
                 </xsl:when>
+
                 <!--
-                    Alphabetic tokens that aren't our known list must be unparsed dates.
+                    Alphabetic tokens that aren't our known list must be unparsed dates. Note that the second
+                    regex matches against the full length of the token.
                 -->
-                <xsl:when test="$tokens/tok[matches(text(), '[A-Za-z]+') and not(matches(text(), 'approximately|or|active|century|b|d|st|nd|rd|th'))]">
+                <xsl:when test="$tokens/tok[matches(text(), '[A-Za-z]+') and
+                                not(matches(text(), '^(approximately|or|active|century|b|d|st|nd|rd|th)$'))]">
                     <xsl:value-of select="true()"/>
                 </xsl:when>
                 <!--
                     Unrecognized tokens should only be year numbers. Any
-                    supposed-year-numbers that are NAN or numbers > 2012 are errors
+                    supposed-year-numbers that are NAN or numbers > 2013 are errors
                     are unparsed dates. Also, notBefore and notAfter should never be
                     NaN.
                 -->
@@ -641,7 +644,7 @@
                                 @notAfter='NaN' or
                                 @notAfter='0' or
                                 (not(matches(text(), 'approximately|or|active|century|b|d|st|nd|rd|th|-')) and string(number()) = 'NaN') or
-                                number() > 2012 or 
+                                number() > 2013 or 
                                 number() = 0 ]">
                     <xsl:value-of select="true()"/>
                 </xsl:when>
@@ -1423,11 +1426,14 @@
             <!-- 
                  If the original 040$a aka $org_query is conservatively safe for use as a filename, then use
                  it as our fallback agency code. A small number of 040$a values are wacky, and can't be used
-                 as filenames.        
+                 as filenames. And / is not ok, so we have to fix that if we find one.
+                 
+                 http://www.bs.dk/isil/structure.htm
+                 [A-Za-z0-9\-\/:]
             -->
             <xsl:choose>
                 <xsl:when test="matches($org_query, '^[A-Z\-]+$', 'i')">
-                    <xsl:value-of select="$org_query"/>
+                    <xsl:value-of select="lib:fn-safe($org_query)"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="$fallback_default"/>
@@ -1438,7 +1444,14 @@
         <xsl:choose>
             <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container/snac:isil)>0">
                 <agencyCode >
-                    <xsl:value-of select="$ainfo/snac:container/snac:isil"/>
+                    <!--
+                        We have ISIL codes from OCLC with things like # in them, and the standard allows /, so
+                        munge any stuff not compatible with file names into 3 character decimal numeric
+                        strings. # becomes 035 and / becomes 047. So OCLC-4X# becomes OCLC-4X035. Ugly, but
+                        a valid file name. Hex might be better, but XSLT doesn't have a native hex conversion,
+                        as far as I can tell.
+                    -->
+                    <xsl:value-of select="lib:fn-safe($ainfo/snac:container/snac:isil)"/>
                 </agencyCode>
                 <agencyName >
                     <xsl:value-of select="$ainfo/snac:container/snac:name"/>
@@ -1638,8 +1651,15 @@
                          tpt_all_xx, so when there is a matching 7xx, I just mark the first occurance (whether
                          6xx or 7xx) as is_creator="true()", no matter what the $df tag value. Also, if the
                          current tag is 7xx, then is_creator="true()".
+                         
+                         We can only parse a single date, so (essentially) concat all the 245$f by usin
+                         xsl:value-of. If there is only one, it will probably parse. More than qone will
+                         result in a "questionable" date, and humans can work it out later.
                     -->
-                    <xsl:variable name="alt_date" select="marc:datafield[@tag = '245']/marc:subfield[@code = 'f']"/>
+                    <xsl:variable name="alt_date">
+                        <xsl:value-of select="marc:datafield[@tag = '245']/marc:subfield[@code = 'f']"/>
+                    </xsl:variable>
+
                     <container> <!-- namespace is eac due to xmlns in xsl:template above xmlns="urn:isbn:1-931666-33-4" -->
                         <e_name>
                             <xsl:attribute name="tag" select="$df/marc:datafield/@tag"/>
@@ -2331,6 +2351,30 @@
         </xsl:variable>
 
         <xsl:value-of select="normalize-space($pass_3)"/>
+    </xsl:function>
+
+    <xsl:function name="lib:fn-safe">
+        <xsl:param name="str"/>
+
+        <xsl:choose>
+            <xsl:when test="matches($str, '[^A-Za-z0-9\-]')">
+                <xsl:analyze-string select="$str" regex="."> 
+                    <xsl:matching-substring>
+                        <xsl:choose>
+                            <xsl:when test="matches(., '[^A-Za-z0-9\-]')">
+                                <xsl:value-of select="format-number( string-to-codepoints(.), '000')"/> 
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="."/> 
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:matching-substring>
+                </xsl:analyze-string>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="$str"/>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function>
 
 
