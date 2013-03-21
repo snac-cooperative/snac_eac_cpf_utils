@@ -9,7 +9,9 @@
                 xmlns:lib="http://example.com/"
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns="urn:isbn:1-931666-33-4"
+                xmlns:xlink="http://www.w3.org/1999/xlink" 
                 xmlns:saxon="http://saxon.sf.net/"
+                xmlns:frbr="http://rdvocab.info/uri/schema/FRBRentitiesRDA/"
                 exclude-result-prefixes="xsl date xs functx marc lib eac saxon"
                 >
     <!--
@@ -80,14 +82,21 @@
     <xsl:strip-space elements="*"/>
     <xsl:preserve-space elements="layout"/>
     
+    <xsl:param name="output_dir" select="'./cpf'"/>
+    <xsl:param name="fallback_default" select="'EAC-CPF'"/>
+
+    <!-- These three params (variables) are sent to the cpf template eac_cpf.xsl. -->
+
+    <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
+    <xsl:param name="xlink_role" select="'snac:ArchivalResource'"/> <!-- xlink:role -->
+    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc/'"/> <!-- xlink:href -->
+
     <!-- 
          Chunking related. The prefix does not include _ or /.
     -->
     <xsl:param name="chunk_size" select="100"/>
     <xsl:param name="chunk_prefix" select="'zzz'"/>
     <xsl:param name="offset" select="1"/>
-    <xsl:param name="output_dir" select="'./'"/>
-    <xsl:param name="fallback_default" select="'EAC-CPF'"/>
 
     <xsl:param name="use_chunks">
         <xsl:choose>
@@ -285,29 +294,23 @@
         </xsl:if>
 
         <xsl:variable name="all_xx">
-            <!-- $xx_tag is always 100, 110, or 111, so it is mostly only good for debugging here.
-            
-            Either of these works to pass in the initial empty node set, but the
-            second statement seems more obvious. It is critical to pass in a
-            node set. Not specifying the data type defaults to some string-ish
-            data type which fails with an error when used with xpath outside
-            boolean().
-
-            <xsl:with-param name="curr" select="/.."/>
-            <xsl:with-param name="curr" as="node()*"/>
+            <!--
+                Either of these works to pass in the initial empty node set, but the second statement seems
+                more obvious. It is critical to pass in a node set. Not specifying the data type defaults to
+                some string-ish data type which fails with an error when used with xpath outside boolean().
+                
+                <xsl:with-param name="curr" select="/.."/>
+                <xsl:with-param name="curr" as="node()*"/>
             -->
 
             <xsl:variable name="creator_info">
                 <!-- 
-                     Used for non-1xx records. If a 7xx exists, then use it as a
-                     resourceRelation arcrole creatorOf. Force the namespace of
-                     this node set to be ns since this is essentially input
-                     (MARC) and not output (EAC). This gets messy in tpt_all_xx
-                     where there can be non-7xx duplicate names. Changing the
-                     de-duplicating code would require a full rewrite of
-                     tpt_all_xx, so when there is a matching 7xx, I just mark
-                     the first occurance (whether 6xx or 7xx) as is_creator, no
-                     matter what the tag value.
+                     Used for non-1xx records. If a 7xx exists, then use it as a resourceRelation arcrole
+                     creatorOf. Force the namespace of this node set to be ns since this is essentially input
+                     (MARC) and not output (EAC). This gets messy in tpt_all_xx where there can be non-7xx
+                     duplicate names. Changing the de-duplicating code would require a full rewrite of
+                     tpt_all_xx, so when there is a matching 7xx, I just mark the first occurance (whether 6xx
+                     or 7xx) as is_creator, no matter what the tag value.
                 -->
                 <xsl:choose>
                     <xsl:when test="marc:datafield[(@tag='700' or @tag='710' or @tag='711') and marc:subfield[@code='a']][1]">
@@ -340,13 +343,6 @@
             </xsl:call-template>
         </xsl:variable>
         
-        <!-- See lib.xml -->
-        <xsl:variable name="occupation">
-            <xsl:call-template name="tpt_occupation">
-                <xsl:with-param name="tag" select="$xx_tag"/>
-            </xsl:call-template>
-        </xsl:variable>
-
         <!--
             control/languageDeclaration. I'm pretty sure there is only a single
             040$b per record, but for-each sets the context, so that is
@@ -361,10 +357,6 @@
                 This is the description/languageUsed and reads the 041$a. See tpt_language in lib.xsl.
             -->
             <xsl:call-template name="tpt_language"/>
-        </xsl:variable>
-
-        <xsl:variable name="function">
-            <xsl:call-template name="tpt_function"/>
         </xsl:variable>
 
         <xsl:variable name="original">
@@ -513,8 +505,8 @@
             <xsl:with-param name="topical_subject" select="$topical_subject"/>
             <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
             <xsl:with-param name="language" select="$language"/>
-            <xsl:with-param name="occupation" select="$occupation"/>
-            <xsl:with-param name="function" select="$function"/>
+            <!-- <xsl:with-param name="occupation" select="$occupation"/> -->
+            <!-- <xsl:with-param name="function" select="$function"/> -->
             <xsl:with-param name="rules" select="$rules"/>
         </xsl:apply-templates>
     </xsl:template> <!-- end tpt_match -->
@@ -552,14 +544,13 @@
         <xsl:param name="tag_245" />
         <xsl:param name="xslt_script" />
         <xsl:param name="original" />
-        <!-- <xsl:param name="authorized_form" /> -->
         <xsl:param name="topical_subject" />
         <xsl:param name="geographic_subject" />
         <xsl:param name="agency_info" />
         <xsl:param name="lang_decl" />
         <xsl:param name="language" />
-        <xsl:param name="occupation" />
-        <xsl:param name="function" />
+        <!-- <xsl:param name="occupation" /> -->
+        <!-- <xsl:param name="function" /> -->
         <xsl:param name="rules" />
         
         <xsl:variable name="file_name">
@@ -592,7 +583,7 @@
         -->
         <xsl:variable name="cpf_relation" xmlns="urn:isbn:1-931666-33-4">
             <!--
-                arcrole="associatedWith" for both .c and .r records.
+                arcrole="snac:associatedWith" for both .c and .r records.
                 For a local .c record being processed by this template, outoput all the (global) .rNN nodes;
             -->
             <xsl:if test="$is_c_flag">
@@ -601,12 +592,12 @@
                         Paths here are realtive to $all_xx/container/e_name. Note, here we are looking at $all_xx, not
                         the current record matching this template. 
                     -->
-                    <cpfRelation xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
-                                 xlink:role="http://RDVocab.info/uri/schema/FRBRentitiesRDA/{./@entity_type_fc}"
-                                 xlink:arcrole="associatedWith">
+                    <cpfRelation xlink:type="simple"
+                                 xlink:role="frbr:{@entity_type_fc}"
+                                 xlink:arcrole="snac:associatedWith">
                         <relationEntry><xsl:value-of select="."/></relationEntry>
                         <descriptiveNote>
-                            <p><span localType="recordId"><xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/></span></p>
+                            <p><span localType="snac:extractRecordId"><xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/></span></p>
                         </descriptiveNote>
                     </cpfRelation>
                 </xsl:for-each>
@@ -616,15 +607,18 @@
                 For a local .r record which also has a 1xx being processed by this template, output
                 the (global) single .c node. If this record did not have a 1xx, there would be no .c
                 file to refer to.
+                
+                old:
+                xlink:role="http://RDVocab.info/uri/schema/FRBRentitiesRDA/{$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@entity_type_fc}"
             -->
             <xsl:if test="$is_r_flag and $is_1xx">
-                <cpfRelation xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple"
-                             xlink:role="http://RDVocab.info/uri/schema/FRBRentitiesRDA/{$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@entity_type_fc}"
-                             xlink:arcrole="associatedWith">
+                <cpfRelation xlink:type="simple"
+                             xlink:role="frbr:{eac:e_name/@entity_type_fc}"
+                             xlink:arcrole="snac:associatedWith">
                     <relationEntry><xsl:value-of select="$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']"/></relationEntry>
                     <descriptiveNote>
                         <p>
-                            <span localType="recordId">
+                            <span localType="snac:extractRecordId">
                                 <xsl:value-of select="concat($all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@record_id,
                                                       '.',
                                                       $all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@fn_suffix)"/>
@@ -634,18 +628,34 @@
                 </cpfRelation>
             </xsl:if>
         </xsl:variable>
-
+        
+        <!-- 
+             New params to tpt_body are in a variable nodeset which is easier to update,
+             modify, add to, and delete from than hard coded params. It should have been like
+             this from the start.
+        -->
+        
         <xsl:variable name="param_data">
             <ev_desc>
-                <xsl:value-of select="'Derived from MARC'"/>
+                <xsl:value-of select="$ev_desc"/>
             </ev_desc>
             <rules>
                 <xsl:value-of select="$rules"/>
             </rules>
-            <resource_href>
-                <xsl:value-of select="'http://www.worldcat.org/oclc/'"/>
-            </resource_href>
+            <xlink_href>
+                <xsl:value-of select="$xlink_href"/>
+            </xlink_href>
+            <xlink_role>
+                <xsl:value-of select="$xlink_role"/>
+            </xlink_role>
+            <xsl:copy-of select="."/>
         </xsl:variable>
+
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>pd: </xsl:text> -->
+        <!--     <xsl:apply-templates mode="copy-no-ns" select="$param_data/eac:container/eac:occ"/> -->
+        <!--     <xsl:text>&#x0A;</xsl:text> -->
+        <!-- </xsl:message> -->
 
         <!--
             Note: the context is a <container> node set. <container><e_name>...</e_name><existDates>...</existDates></container>
@@ -679,18 +689,15 @@
                 <xsl:with-param name="original" select="$original"/>
                 <xsl:with-param name="agency_info" select="$agency_info"/>
                 <xsl:with-param name="lang_decl" select="$lang_decl"/>
-                <!-- <xsl:with-param name="authorized_form" select="$authorized_form"/> -->
                 <xsl:with-param name="topical_subject" select="$topical_subject"/>
                 <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
-                <xsl:with-param name="occupation" select="$occupation"/>
+                <!-- <xsl:with-param name="occupation" select="$occupation"/> -->
+                <!-- <xsl:with-param name="function" select="$function"/> -->
                 <xsl:with-param name="language" select="$language"/>
-                <xsl:with-param name="function" select="$function"/>
                 <xsl:with-param name="param_data" select="$param_data" />
             </xsl:call-template>
         </xsl:result-document>
     </xsl:template> <!-- end tpt_container -->
-
-    <!-- tpt_function moved to lib.xsl -->
 
     <xsl:template name="not_1xx" >
         <!-- 
@@ -804,6 +811,26 @@
         <xsl:text>&#x0A;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
+
+    <xsl:template match="/">
+        <xsl:if test="not(boolean(marc:collection))">
+            <xsl:text>&#x0A;Warning: Collection element not found.&#x0A;</xsl:text>
+        </xsl:if>
+        <xsl:apply-templates />
+    </xsl:template>
+    
+
+    <!-- <xsl:template match="*|/"> -->
+    <!--     <xsl:text>Matched star or.&#x0A;</xsl:text> -->
+    <!-- </xsl:template> -->
+
+    <!-- <xsl:template match="text()|@*"> -->
+    <!--     <xsl:text>Matches text or at star.&#x0A;</xsl:text> -->
+    <!-- </xsl:template> -->
+
+    <!-- <xsl:template match="processing-instruction()|comment()"> -->
+    <!--     <xsl:text>Matches processing-instruction or comment.&#x0A;</xsl:text> -->
+    <!-- </xsl:template> -->
 
     <!-- <xsl:template name="match_snac" match="*[local-name() = 'snac']"> -->
     <!--     <xsl:text>&#x0A;</xsl:text> -->

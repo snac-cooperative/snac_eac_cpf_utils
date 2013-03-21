@@ -3,7 +3,12 @@
                 version="2.0"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:eac="urn:isbn:1-931666-33-4"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:frbr="http://rdvocab.info/uri/schema/FRBRentitiesRDA/"
+                xmlns:snac="http://socialarchive.iath.virginia.edu/vocabulary/"
+                xmlns:owl="http://www.w3.org/2002/07/owl#"
                 xmlns="urn:isbn:1-931666-33-4"
+                exclude-result-prefixes="xs eac"
                 >
     <!-- 
          Author: Tom Laudeman
@@ -87,8 +92,7 @@
                     </maintenanceEvent>
                 </maintenanceHistory>
                 <sources>
-                    <source xmlns:xlink="http://www.w3.org/1999/xlink"
-                            xlink:href="{$param_data/eac:resource_href}{$controlfield_001}"
+                    <source xlink:href="{$param_data/eac:xlink_href}{$controlfield_001}"
                             xlink:type="simple">
                         <xsl:if test="true()"> <!-- enable in .c only with $is_c_flag, or disable for all with false() -->
                             <objectXMLWrap>
@@ -109,24 +113,29 @@
                 <xsl:if test="$is_c_flag">
                     <description>
                         <!--
-                            The existDates were created (in lib.xsl) with the
-                            namespace that this file knows as eac. Don't show
-                            unparsed dates. Those are hanging around for QA and
-                            possibly for some future use.
+                            The existDates were created (in lib.xsl) with the namespace that this file knows
+                            as eac. Don't show unparsed dates. Those are hanging around for QA and possibly
+                            for some future use.
                         -->
                         <xsl:if test="string-length($exist_dates) > 0 and not($exist_dates[@unparsed])">
                             <xsl:copy-of select="$exist_dates"/>
                         </xsl:if>
-                        <xsl:copy-of select="$occupation"/>
-                        <xsl:copy-of select="$function"/>
-                        <xsl:copy-of select="$local_affiliation"/>
-                        <xsl:copy-of select="$topical_subject"/>
-                        <xsl:copy-of select="$geographic_subject"/>
-                        <xsl:copy-of select="$language"/>
-                        <xsl:if test="$tag_545 != ''">
-                            <biogHist>
-                                <xsl:copy-of select="$tag_545"/>
-                            </biogHist>
+                        <!-- 
+                             Note that eac:occ and eac:func are /* which means "children of". Don't mess it
+                             up.
+                        -->
+                        <xsl:copy-of select="$param_data/eac:container/eac:occ/*"/>
+                        <xsl:copy-of select="$param_data/eac:container/eac:func/*"/>
+                        <xsl:if test="$is_c_flag">
+                            <xsl:copy-of select="$local_affiliation"/>
+                            <xsl:copy-of select="$topical_subject"/>
+                            <xsl:copy-of select="$geographic_subject"/>
+                            <xsl:copy-of select="$language"/>
+                            <xsl:if test="$tag_545 != ''">
+                                <biogHist>
+                                    <xsl:copy-of select="$tag_545"/>
+                                </biogHist>
+                            </xsl:if>
                         </xsl:if>
                     </description>
                 </xsl:if>
@@ -143,25 +152,28 @@
                         <xsl:if test="string-length($exist_dates) > 0 and not($exist_dates[@unparsed])">
                             <xsl:copy-of select="$exist_dates"/>
                         </xsl:if>
+                        <xsl:if test="boolean($param_data/eac:container/eac:occ/*) or boolean($param_data/eac:container/eac:func/*)">
+                            <xsl:copy-of select="$param_data/eac:container/eac:occ/*"/>
+                            <xsl:copy-of select="$param_data/eac:container/eac:func/*"/>
+                        </xsl:if>
                     </description>
                 </xsl:if>
 
                 <relations>
                     <xsl:copy-of select="$cpf_relation"/>
-                    <resourceRelation xmlns:xlink="http://www.w3.org/1999/xlink"
-                                      xlink:arcrole="{$arc_role}"
-                                      xlink:role="archivalDescriptionMARC"
+                    <resourceRelation xlink:arcrole="{$arc_role}"
+                                      xlink:role="{$param_data/eac:xlink_role}"
                                       xlink:type="simple"
-                                      xlink:href="{$param_data/eac:resource_href}{$controlfield_001}">
+                                      xlink:href="{$param_data/eac:xlink_href}{$controlfield_001}">
                         <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
                         <xsl:copy-of select="$mods"/>
 
                         <xsl:if test="string-length($leader06)>0 or string-length($leader07)>0 or string-length($leader08)>0">
         		    <descriptiveNote>
 			        <p>
-				    <span localType="Leader06"><xsl:value-of select="$leader06"/></span>
-				    <span localType="Leader07"><xsl:value-of select="$leader07"/></span>
-				    <span localType="Leader08"><xsl:value-of select="$leader08"/></span>
+				    <span localType="snac:Leader06"><xsl:value-of select="$leader06"/></span>
+				    <span localType="snac:Leader07"><xsl:value-of select="$leader07"/></span>
+				    <span localType="snac:Leader08"><xsl:value-of select="$leader08"/></span>
 			        </p>
 			    </descriptiveNote>
                         </xsl:if>
