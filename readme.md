@@ -9,6 +9,7 @@ Table of contents
 * [Review of files and applications](#review-of-files-and-applications)
 * [Quickly run the code](#quickly-run-the-code)
 * [Validate output with jing](#validate-output-with-jing)
+* [MARC conversion .mrc to xml](#MARC-conversion-mrc-to-xml)
 * [WorldCat agency codes](#worldcat-agency-codes)
 * [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 * [Common error messages](#common-error-messages)
@@ -34,7 +35,7 @@ Throughout this document we use the generic user id "mst3k" as your user id.
 
 Copyright 2013 University of Virginia. Licensed under the Educational Community License, Version 2.0 (the
 "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
-License at http://www.osedu.org/licenses/ECL-2.0
+License at http://www.osedu.org/licenses/ECL-2.0 or see the file license.txt in this repository.
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is
 distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
@@ -48,7 +49,7 @@ What you might need to get started
 * All the files from the GitHub repository ead_cpf_utils. While you won't necessarily use every file from the
 ead_cpf_utils repository, many of the files cross reference each other.
 
-* Saxon 9he (xslt processor)
+* Saxon 9he (XSLT 2.0 processor)
 
 * Java (to run Saxon)
 
@@ -62,14 +63,15 @@ install and use cygwin.
 
 http://www.cygwin.com/
 
-You can retrieve the EAD-CPF code from github with a web browser or via the command line utility "git". The command
+You can retrieve the EAD-CPF code from github with a web browser, or via the command line utility "git". The command
 line utility is faster and easier to use for updates.
 
 Beginners may enjoy the introduction to Linux and MacOSX commands:
 
 http://defindit.com/readme_files/intro_unix.html
 
-The required input file format is MARC12/slim XML, so you may need MARC conversion tools.
+The required input file format is MARC21/slim XML, so you may need MARC conversion tools. The open source
+utility yaz will convert MARC .mrc to MARC21/slim XML.
 
 http://people.oregonstate.edu/~reeset/marcedit/html/index.php
 
@@ -437,6 +439,10 @@ You can discover the version of Jing by a command similar to the following, assu
 is in /usr/share/jing/bin. (Modify the command as necessary for your jing.jar path):
 
     java -jar /usr/share/jing/bin/jing.jar
+
+
+MARC conversion .mrc to xml
+---------------------------
 
 
 WorldCat agency codes
