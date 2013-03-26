@@ -948,8 +948,16 @@ Command line params of oclc_marc2cpf.xsl
 
 The command line params understood by oclc_marc2cpf.xsl are normally not necessary. If you wanted to use the
 Perl script get_records.pl to run a test with a subset of your data, the params could be useful. The Perl
-script exec_record.pl relies on these params, but they are automatically managed based on configuration values
-from a supplied .cfg file.
+script exec_record.pl relies on some of these params, but they are automatically managed based on
+configuration values from a supplied .cfg file.
+
+fallback_default default US-SNAC
+
+The fallback_default is the default agency code for the maintenanceAgency as well as the value used when there
+is no maintenance agency in the original MARC record. The maintenanceAgency of a CPF record will often be the
+agency creating the CPF, as opposed to the agency that created the MARC record. We save the maintenance agency
+from the original MARC record in an objectXMLWrap'd MODS element inside the CPF.
+
 
 chunk_size  default 100
 
@@ -967,7 +975,7 @@ offset default 1
 The offset is automatically supplied by exec_record.pl. If you are running oclc_marc2cpf.xsl, you will almost
 always use 1 or just leave the param off the command line so that it defaults to 1.
 
-output_dir  default ./
+output_dir  default ./cpf
 
 Output CPF files will be created in subdirectories of the output_dir, based on the full directory string (see above).
 
@@ -978,7 +986,14 @@ change the chunk_prefix from default, use_chunks will be enabled.
 
 debug  default false()
 
-The debug param enables some verbose output. This is developers and debugging.
+The debug param enables some verbose output. This is for developers and debugging.
+
+The three params below have been created in anticipation of future use. The show up in the CPF output. They
+are intended to make the XSLT scripts somewhat more flexible.
+
+ev_desc default Derived from MARC
+xlink_role default snac:ArchivalResource
+xlink_href default http://www.worldcat.org/oclc/
 
 
 

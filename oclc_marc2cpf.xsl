@@ -123,7 +123,7 @@
          The method used here can serve as an example for other "only match on single/multi" cases. This is similar but
          not identical to try_multi_1xx.xsl.
 
-         position() works sort-of but some (many) numbers are skipped due since we filter out non-1xx records.
+         position() works sort-of but some (many) numbers are skipped due since we filter out multi-1xx records.
     -->
     
     <xsl:template name="tpt_match_record">
