@@ -455,19 +455,19 @@ the input file name. The usual Linux redirection allows you to create an output 
 below, output is piped to "less" for viewing on the fly. In the second command, output is redirected to a
 file.
 
-yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc| less
+    yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc| less
 
-yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc > UF-CC0-2013-02.xml
+    yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc > UF-CC0-2013-02.xml
 
 Yaz appears to be available for MacOS, but I haven't tried it:
 
-    http://www.macports.org/ports.php?by=name&substr=yaz
+http://www.macports.org/ports.php?by=name&substr=yaz
 
 Yaz appears to be available as a Windows binary from the creators at indexdata:
 
-    http://www.indexdata.com/yaz
+http://www.indexdata.com/yaz
 
-    http://ftp.indexdata.dk/pub/yaz/win32/yaz_4.2.51.exe
+http://ftp.indexdata.dk/pub/yaz/win32/yaz_4.2.51.exe
 
 
 WorldCat agency codes
