@@ -9,7 +9,7 @@ Table of contents
 * [Review of files and applications](#review-of-files-and-applications)
 * [Quickly run the code](#quickly-run-the-code)
 * [Validate output with jing](#validate-output-with-jing)
-* [MARC conversion .mrc to xml](#MARC-conversion-mrc-to-xml)
+* [MARC conversion .mrc to xml](#marc-conversion-mrc-to-xml)
 * [WorldCat agency codes](#worldcat-agency-codes)
 * [Building your own list of WorldCat agency codes](#building-your-own-list-of-worldcat-agency-codes)
 * [Common error messages](#common-error-messages)
@@ -443,6 +443,21 @@ is in /usr/share/jing/bin. (Modify the command as necessary for your jing.jar pa
 
 MARC conversion .mrc to xml
 ---------------------------
+
+The yaz package contains a utility yaz-marcdump that easily converts from MARC .mrc to MARC21/slim XML. If you are running Fedora Linux or a similar Redhat distribution that uses yum, the command below should work to install yaz:
+
+    sudo yum -y install yaz
+
+The utility application yaz-marcdump several options. The minimum options seem to be -f and -o. Use "-f marc8"
+to specifiy the from format. I had success with "marc8" and the documentation (man page) suggests that
+"MARC-8" also works. The -o option is output format and we want "marcxml". The third argument is the input
+file name. The usual Linux redirection takes care of the output file. In the first command below, output is
+piped to "less" for viewing on the fly. In the second command, output is redirected to a file.
+
+yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc| less
+
+yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc > UF-CC0-2013-02.xml
+
 
 
 WorldCat agency codes
