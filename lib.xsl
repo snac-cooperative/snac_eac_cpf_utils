@@ -59,7 +59,8 @@
     <xsl:variable name="relators" select="document('vocabularyrelators.rdf')/*"/>
     <xsl:variable name="languages" select="document('vocabularylanguages.rdf')/*"/>
     <xsl:variable name="org_codes" select="document('worldcat_code.xml')/*"/>
-    
+    <xsl:variable name="this_year" select="year-from-date(current-date())"/>    
+
     <xsl:template mode="get_lang" match="*">
          <xsl:choose>
              <xsl:when test="madsrdf:authoritativeLabel">
@@ -697,6 +698,10 @@
                     <xsl:value-of select="true()"/>
                 </xsl:when>
 
+                <xsl:when test="$tokens/tok[text() = 'num' and string-length(text()) > 4]">
+                    <xsl:value-of select="true()"/>
+                </xsl:when>
+
                 <!--
                     Alphabetic tokens that aren't our known list must be unparsed dates. Note that the second
                     regex matches against the full length of the token.
@@ -716,7 +721,7 @@
                                 @notAfter='NaN' or
                                 @notAfter='0' or
                                 (not(matches(text(), '^(approximately|or|active|century|b|d|st|nd|rd|th|-)$')) and string(@std) = 'NaN') or
-                                @std > 2013 or 
+                                @std > $this_year or 
                                 @std = 0 ]">
                     <xsl:value-of select="true()"/>
                 </xsl:when>
@@ -1104,10 +1109,21 @@
             <xsl:variable name="pass_2">
                 <xsl:copy-of select="lib:pass_2($pass_1b)"/>
             </xsl:variable>
+
+            <!-- <xsl:message> -->
+            <!--     <xsl:text>p2: </xsl:text> -->
+            <!--     <xsl:copy-of select="$pass_2"/> -->
+            <!--     <xsl:text>&#x0A;</xsl:text> -->
+            <!-- </xsl:message> -->
+
+            <!-- Normalize position of approx and turn related numeric tokens into 'num' -->
+            <xsl:variable name="pass_2b">
+                <xsl:copy-of select="lib:pass_2b($pass_2)"/>
+            </xsl:variable>
             
             <!-- Fix century values. -->
             <xsl:variable name="pass_3">
-                <xsl:copy-of select="lib:pass_3($pass_2)"/>
+                <xsl:copy-of select="lib:pass_3($pass_2b)"/>
             </xsl:variable>
 
             <!-- Turn remaining fully numeric tokens into @std, @val, and tok element value 'num'. -->
@@ -1240,14 +1256,13 @@
             </xsl:choose>
         </xsl:variable> <!-- end tokens -->
         
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>epx: </xsl:text> -->
-        <!--     <xsl:apply-templates mode="copy-no-ns" select="$tokens"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
-        <!--
-            Test the string-length() since boolean() of a valid but empty variable is still true.
-        -->
+        <xsl:if test="$debug">
+            <xsl:message>
+                <xsl:text>epx: </xsl:text>
+                <xsl:apply-templates mode="copy-no-ns" select="$tokens"/>
+                <xsl:text>&#x0A;</xsl:text>
+            </xsl:message>
+        </xsl:if>
 
         <xsl:variable name="exist_dates">
             <xsl:choose>
@@ -1425,7 +1440,8 @@
     <xsl:template name="tpt_mods" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="all_xx"/>
         <xsl:param name="agency_info"/>
-        <!--
+        <xsl:param name="controlfield_001"/>
+    <!--
             We assume that we have at least one 1xx or 7xx name in
             $all_xx/container/ename. Title from MARC 245 (all subfields
             except $6 and $8). If 245 lacks $f and $g then append space 260
@@ -1458,6 +1474,10 @@
         -->
 	<xsl:element name="objectXMLWrap" xmlns:eac="urn:isbn:1-931666-33-4">
             <mods xmlns="http://www.loc.gov/mods/v3">
+	        <recordInfo>
+                    <recordOrigin>WorldCat:<xsl:value-of select="$controlfield_001"/></recordOrigin>
+                    <recordContentSource>ISIL:<xsl:value-of select="$agency_info/eac:agencyCode"/></recordContentSource>
+                </recordInfo>
                 <xsl:for-each select="$all_xx/eac:container/eac:e_name[matches(@tag, '1(00|10|11)') or @is_creator=true()]">
                     <name>
                         <namePart><xsl:value-of select="."/></namePart>
@@ -1489,6 +1509,14 @@
         </xsl:element>
     </xsl:template> <!-- end tpt_mods -->
 
+    <xsl:template name="tpt_snac_info" xmlns="urn:isbn:1-931666-33-4">
+        <agencyCode>
+            <xsl:text>US-SNAC</xsl:text>
+        </agencyCode>
+        <agencyName>
+            <xsl:text>SNAC: Social Networks and Archival Context Project</xsl:text>
+        </agencyName>
+    </xsl:template>
 
     <xsl:template name="tpt_agency_info" xmlns="urn:isbn:1-931666-33-4" >
         <!-- 
@@ -1564,8 +1592,8 @@
             </xsl:when>
             <xsl:otherwise>
                 <!--
-                    There is some crazy stuff in $org_query. Will it all validate in CPF? Use "EAC-CPF" as a
-                    placeholder for unknown agency codes.
+                    There is some crazy stuff in $org_query which will not validate against cpf.rng. Use the
+                    fallback_code as a placeholder for unknown agency codes.
                 -->
                 <agencyCode >
                     <xsl:value-of select="$fallback_code"/>
@@ -1914,7 +1942,7 @@
                 <xsl:with-param name="alt_date" select="$alt_date"/>
             </xsl:call-template>
         </xsl:variable>
-        
+
         <xsl:variable name="pass_2">
         <xsl:call-template name="tpt_pa_2">
             <xsl:with-param name="tokens" select="$pass_1"/>
@@ -1925,7 +1953,7 @@
             <xsl:with-param name="tokens" select="$pass_2"/>
         </xsl:call-template>
         
-        <!-- Return tokens from the last pass. final parsing is called from back in lib:edate_core -->
+        <!-- Return tokens from the last pass. Final parsing tpt_pa_3 is called from back in lib:edate_core. -->
     </xsl:template>
 
     <xsl:template name="tpt_pa_3" xmlns="urn:isbn:1-931666-33-4">
@@ -1937,6 +1965,16 @@
                 </xsl:variable>
                 <existDates>
                     <date localType="snac:active" standardDate="{format-number($local_date, '0000')}">
+                            <!-- Add attributes notBefore, notAfter for date [1] which should be the only date. -->
+                            <xsl:for-each select="$local_date/eac:tok[1]/@*[matches(name(), '^not')]">
+                                <xsl:choose>
+                                    <xsl:when test="string-length(.)>0">
+                                        <xsl:attribute name="{name()}">
+                                            <xsl:value-of select="format-number(., '0000')"/>
+                                        </xsl:attribute>
+                                    </xsl:when>
+                                </xsl:choose>
+                            </xsl:for-each>
                         <xsl:text>active </xsl:text>
                         <xsl:if test="$local_date/eac:tok[@approx = 1]">
                             <xsl:text>approximately </xsl:text>
@@ -1953,6 +1991,17 @@
                 <existDates>
                     <dateRange>
                         <fromDate localType="snac:active" standardDate="{format-number($local_date/eac:tok[1], '0000')}">
+                            <!-- Add attributes notBefore, notAfter for date [1]  -->
+                            <xsl:for-each select="$local_date/eac:tok[1]/@*[matches(name(), '^not')]">
+                                <xsl:choose>
+                                    <xsl:when test="string-length(.)>0">
+                                        <xsl:attribute name="{name()}">
+                                            <xsl:value-of select="format-number(., '0000')"/>
+                                        </xsl:attribute>
+                                    </xsl:when>
+                                </xsl:choose>
+                            </xsl:for-each>
+
                             <xsl:text>active </xsl:text>
                             <xsl:if test="$local_date/eac:tok[1][@approx = 1]">
                                 <xsl:text>approximately </xsl:text>
@@ -1960,6 +2009,16 @@
                             <xsl:value-of select="format-number($local_date/eac:tok[1], '0000')"/>
                         </fromDate>
                         <toDate localType="snac:active" standardDate="{format-number($local_date/eac:tok[2], '0000')}">
+                            <!-- Add attributes notBefore, notAfter for date [2]  -->
+                            <xsl:for-each select="$local_date/eac:tok[2]/@*[matches(name(), '^not')]">
+                                <xsl:choose>
+                                    <xsl:when test="string-length(.)>0">
+                                        <xsl:attribute name="{name()}">
+                                            <xsl:value-of select="format-number(., '0000')"/>
+                                        </xsl:attribute>
+                                    </xsl:when>
+                                </xsl:choose>
+                            </xsl:for-each>
                             <xsl:text>active </xsl:text>
                             <xsl:if test="$local_date/eac:tok[2][@approx = 1]">
                                 <xsl:text>approximately </xsl:text>
@@ -1997,23 +2056,58 @@
     <xsl:template name="tpt_pa_2" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="tokens" as="node()*"/> 
         <!-- 
-             Normalize token ca to attribute "approx"
+             Normalize token ca to attribute "approx". Also, since this is the first pass after tokenizing,
+             eliminate 5 digit numbers and any number-letter combos.
+             
+             Since we are making the bad values <untok> we continue parsing the rest of the date. 
         -->
         <xsl:copy-of select="$tokens/eac:odate"/>
         <xsl:copy-of select="$tokens/eac:untok"/>
         <xsl:for-each select="$tokens/eac:tok">
+            <xsl:variable name="p_tok"
+                          select="preceding-sibling::eac:tok[1]"/>
+            <xsl:variable name="f_tok"
+                          select="following-sibling::eac:tok[1]"/>
+
             <xsl:choose>
-                <xsl:when test="matches(., '\d{4}') and
-                                (following-sibling::eac:tok[1][matches(text(), 'ca')] or
-                                preceding-sibling::eac:tok[1][matches(text(), 'ca')])">
-                    <untok approx="1">
-                        <xsl:value-of select="."/>
-                    </untok>
+                <xsl:when test="matches(., '\d{5}')">
+                    <!-- 5 digit numbers are bad. Do nothing. -->
+                    <untok><xsl:value-of select="."/></untok>
                 </xsl:when>
 
-                <xsl:when test="matches(., 'ca')">
-                    <!-- Don't copy; this becomes part of and an adjacent token. -->
+                <xsl:when test="matches(text(), '^\d+$') and number(text()) > $this_year">
+                    <!-- Future years are bad. Do nothing. -->
+                    <untok><xsl:value-of select="."/></untok>
                 </xsl:when>
+
+                
+                <xsl:when test="matches(., '\d{4}[^0-9]+|[^0-9]+\d{4}')">
+                    <!--
+                        Mixtures of digits and numbers are bad at this stage. Do nothing. Note that 1980's
+                        and 1908s were parsed in tpt_pa_1.
+                    -->
+                    <untok><xsl:value-of select="."/></untok>
+                </xsl:when>
+
+                <xsl:when test="matches(., '\d{4}')">
+                    <tok>
+                        <xsl:if test="$f_tok = 'approx' or $p_tok = 'approx'">
+                            <xsl:attribute name="notBefore"><xsl:value-of select="number(.) - 3"/></xsl:attribute>
+                            <xsl:attribute name="notAfter"><xsl:value-of select="number(.) + 3"/></xsl:attribute>
+                            <xsl:attribute name="approx"><xsl:text>1</xsl:text></xsl:attribute>
+                        </xsl:if>
+                        <xsl:value-of select="."/>
+                    </tok>
+                </xsl:when>
+
+                <xsl:when test="text() = 'approx'">
+                    <!-- Do nothing. These tokens are handled above, and become an attribute. -->
+                </xsl:when>
+
+                <!-- Handled elsewhere -->
+                <!-- Don't copy; this becomes part of and an adjacent token. -->
+                <!-- <xsl:when test="matches(., 'ca')"> -->
+                <!-- </xsl:when> -->
 
                 <xsl:otherwise>
                     <xsl:copy-of select="."/>
@@ -2053,19 +2147,21 @@
                         <tok>or</tok>
                     </xsl:when>
 
-                    <xsl:when test="matches(regex-group(2), '\d+s')">
-                        <!--
-                            There was a time when we didn't like 1800s 1940s or any number with "s" on the
-                            end, but now we try to parse them.
-                        -->
+                    <!--
+                        Alternate parsing does not fully understand 1980s or 1980's. We only grab the
+                        digits. XML and XSLT don't provide a mechanism to escape " or ' inside
+                        strings. Happily, we can match any single character between \d+ and s, so we simply
+                        use . but if you needed a single quote in a regex, that would be a problem.
+                    -->
+                    <xsl:when test="matches(regex-group(2), '\d+s|\d+.s')">
                         <tok>
-                            <xsl:value-of select="regex-group(2)"/>
+                            <xsl:value-of select="replace(regex-group(2), '[^0-9]+', '')"/>
                         </tok>
                     </xsl:when>
 
-                    <xsl:when test="matches(regex-group(2), 'approx')">
+                    <xsl:when test="matches(regex-group(2), '^approximately|approx|ca|circa|c$')">
                         <!--
-                            This is not a keyword, but simply a normalized token. The token is 'approx'. Do
+                            Regex matches full word. Change the keyword, to a normalized token 'approx'. Do
                             not change to 'approximately' unless you are prepared to change and fix all the
                             other code relying on 'approx'. In fact, if you want to change it, change it to
                             'aprx_tok' or something distinctly token-ish.
@@ -2179,7 +2275,7 @@
     <xsl:function name="lib:pass_2">
         <xsl:param name="tokens" as="node()*"/> 
         <!-- 
-             Process NNNNs (1870s) and "or N".
+             Normalize several token types, fix approx. Process NNNNs (1870s) and "or N".
         -->
         <xsl:copy-of select="$tokens/odate"/>
         <xsl:copy-of select="$tokens/untok"/>
@@ -2208,8 +2304,8 @@
                     </xsl:analyze-string>
                 </xsl:when>
 
-                <xsl:when test="$f_tok = 'or'">
-                    <!-- if following is '-' (or whatever) we want that since it is used during analysis later. -->
+                <xsl:when test="matches(., '^\d+$') and $f_tok = 'or'">
+                    <!-- if a number and if following is '-' (or whatever) we want that since it is used during analysis later. -->
                     <xsl:variable name="or_date"
                                   select="format-number(number(lib:date_cat(text(), following-sibling::tok[2])), '0000')"/>
                     <tok>
@@ -2225,15 +2321,14 @@
 
                 <xsl:when test="($p_tok = 'or') or (text() = 'or')">
                     <!--
-                        Does first preceding tok match 'or'? For example "or 2"
-                        and this is token "2". If so, we processed this already
-                        so we do not want to see it again. Same if this token
-                        matches 'or'. 
+                        Does first preceding tok match 'or'? For example "or 2" and this is token "2". If so,
+                        we processed this already so we do not want to see it again. Same if this token
+                        matches 'or'.
                     -->
                 </xsl:when>
 
-                <xsl:when test="$f_tok = '?'">
-                    <!-- If the following token is ? then do a date range. -->
+                <xsl:when test="matches(., '^\d+$') and $f_tok = '?'">
+                    <!-- If a numeric token is followed by ? then do a date range. This code carefully avoids "18th cent.?" -->
                     <xsl:element name="tok">
                         <xsl:attribute name="notBefore"><xsl:value-of select="number(.) -1"/></xsl:attribute>
                         <xsl:attribute name="notAfter"><xsl:value-of select="number(.) + 1"/></xsl:attribute>
@@ -2243,43 +2338,14 @@
                         <xsl:text>num</xsl:text>
                     </xsl:element>
                 </xsl:when>
-
+                
                 <xsl:when test="text() = '?'">
                     <!--
                         ? tokens have already been processed so throw them away.
                     -->
                 </xsl:when>
 
-                <xsl:when test="$p_tok = 'ca' or $p_tok = 'c' or $p_tok = 'circa' or $f_tok = 'approx'">
-                    <!--
-                        If the preceding token is circa (in any form) then +3 -3
-                        date range. Ditto if following token is 'approx'. If the
-                        following token is 'approx' then insert a 'circa' token
-                        before our date so this date will be just like a normal
-                        circa date.
-                    -->
-                    <xsl:if test="$f_tok = 'approx'">
-                        <xsl:element name="tok">
-                            <xsl:text>approximately</xsl:text>
-                        </xsl:element>
-                    </xsl:if>
-                    <xsl:element name="tok">
-                        <xsl:attribute name="notBefore"><xsl:value-of select="number(.) - 3"/></xsl:attribute>
-                        <xsl:attribute name="notAfter"><xsl:value-of select="number(.) + 3"/></xsl:attribute>
-                        <xsl:attribute name="std" select="format-number(., '0000')"/>
-                        <xsl:attribute name="val" select="format-number(., '0000')"/>
-                        <xsl:text>num</xsl:text>
-                    </xsl:element>
-                </xsl:when>
-
-                <xsl:when test="text() = 'approx'">
-                    <!--
-                        Do nothing for approx since they will be converted into
-                        leading 'approximately' tokens by the code above.
-                    -->
-                </xsl:when>
-
-                <xsl:when test="text() = 'ca' or text() = 'c' or text() = 'circa'">
+                <xsl:when test="text() = 'ca' or text() = 'c' or text() = 'circa' or text() = 'approx'">
                     <xsl:element name="tok">
                         <xsl:text>approximately</xsl:text>
                     </xsl:element>
@@ -2297,6 +2363,48 @@
             </xsl:choose>
         </xsl:for-each>
     </xsl:function>
+
+    <xsl:function name="lib:pass_2b">
+        <xsl:param name="tokens" as="node()*"/> 
+        <!-- 
+             Resolve approx numerically, whether in leading or trailing position. Trailing is especially interesting: "1940
+             approx - 1980" becomes "approx 1940 - 1980", but as a node list of tokens (of course).
+        -->
+        <xsl:copy-of select="$tokens/odate"/>
+        <xsl:copy-of select="$tokens/untok"/>
+        <xsl:for-each select="$tokens/tok">
+            <xsl:variable name="p_tok"
+                          select="preceding-sibling::tok[1]"/>
+            <xsl:variable name="f_tok"
+                          select="following-sibling::tok[1]"/>
+            <xsl:choose>
+                <xsl:when test="matches(. , '^\d+$') and ($p_tok = 'approximately' or $f_tok = 'approximately')">
+                    <!--
+                        Only for numeric tokens, if the preceding token is approx (in any form) then +3 -3 date
+                        range. Ditto if following token is 'approx'. If the following token is 'approx' then
+                        insert an 'approx' token before our date so this date will be just like a normal approx.
+                        date.
+                    -->
+                    <xsl:if test="$f_tok = 'approximately'">
+                        <xsl:element name="tok">
+                            <xsl:text>approximately</xsl:text>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:element name="tok">
+                        <xsl:attribute name="notBefore"><xsl:value-of select="number(.) - 3"/></xsl:attribute>
+                        <xsl:attribute name="notAfter"><xsl:value-of select="number(.) + 3"/></xsl:attribute>
+                        <xsl:attribute name="std" select="format-number(., '0000')"/>
+                        <xsl:attribute name="val" select="format-number(., '0000')"/>
+                        <xsl:text>num</xsl:text>
+                    </xsl:element>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:copy-of select="."/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+    </xsl:function>
+
                         
     <xsl:function name="lib:pass_3">
         <xsl:param name="tokens" as="node()*"/> 

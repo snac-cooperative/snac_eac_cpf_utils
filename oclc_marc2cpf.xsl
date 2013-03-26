@@ -12,7 +12,7 @@
                 xmlns:xlink="http://www.w3.org/1999/xlink" 
                 xmlns:saxon="http://saxon.sf.net/"
                 xmlns:frbr="http://rdvocab.info/uri/schema/FRBRentitiesRDA/"
-                exclude-result-prefixes="xsl date xs functx marc lib eac saxon"
+                exclude-result-prefixes="xsl date xs functx marc lib eac saxon frbr xlink"
                 >
     <!--
         Author: Tom Laudeman
@@ -83,7 +83,7 @@
     <xsl:preserve-space elements="layout"/>
     
     <xsl:param name="output_dir" select="'./cpf'"/>
-    <xsl:param name="fallback_default" select="'EAC-CPF'"/>
+    <xsl:param name="fallback_default" select="'US-SNAC'"/>
 
     <!-- These three params (variables) are sent to the cpf template eac_cpf.xsl. -->
 
@@ -163,7 +163,7 @@
 
         <xsl:variable name="agency_info">
             <!--
-                See tpt_agency_info in lib.xsl. Unknowns default to agencyCode 'EAC-CPF'.
+                See tpt_agency_info in lib.xsl. Unknowns default to agencyCode $fallback_default.
             -->
             <xsl:call-template name="tpt_agency_info"/>
         </xsl:variable>
@@ -412,6 +412,7 @@
             <xsl:call-template name="tpt_mods">
                 <xsl:with-param name="all_xx" select="$all_xx"/>
                 <xsl:with-param name="agency_info" select="$agency_info"/>
+                <xsl:with-param name="controlfield_001" select="$controlfield_001"/>
             </xsl:call-template>
         </xsl:variable>
         
@@ -466,9 +467,18 @@
             <xsl:value-of select="normalize-space(concat($temp_name, $trailing_dot, ' ', $tag_245))"/>
         </xsl:variable> <!-- end rel_entry -->
 
+        <xsl:variable name="param_data">
+            <snac_info>
+                <xsl:call-template name="tpt_snac_info"/>
+            </snac_info>
+            <agency_info>
+                <xsl:copy-of select="$agency_info"/>
+            </agency_info>
+        </xsl:variable>
+
         <!-- <xsl:message> -->
-        <!--     <xsl:text>allc: </xsl:text> -->
-        <!--     <xsl:copy-of select="$all_xx/eac:container"/> -->
+        <!--     <xsl:text>pd: </xsl:text> -->
+        <!--     <xsl:copy-of select="$param_data"/> -->
         <!--     <xsl:text>&#x0A;</xsl:text> -->
         <!-- </xsl:message> -->
 
@@ -478,6 +488,7 @@
                 elements, otherwise XSLT tries to apply to //e_name as well. That makes a mess of the position() inside
                 tpt_container.
             -->
+            <xsl:with-param name="tc_data" select="$param_data"/>
             <xsl:with-param name="rel_entry" select="$rel_entry"/>
             <xsl:with-param name="is_1xx" select="$is_1xx"/>
             <xsl:with-param name="name_entry" select="$name_entry"/>
@@ -499,7 +510,7 @@
             <xsl:with-param name="tag_245" select="normalize-space($tag_245)"/>
             <xsl:with-param name="xslt_script" select="$xslt_script"/>
             <xsl:with-param name="original" select="$original"/>
-            <xsl:with-param name="agency_info" select="$agency_info"/>
+            <!-- <xsl:with-param name="agency_info" select="$agency_info"/> -->
             <xsl:with-param name="lang_decl" select="$lang_decl"/>
             <!-- <xsl:with-param name="authorized_form" select="$authorized_form"/> -->
             <xsl:with-param name="topical_subject" select="$topical_subject"/>
@@ -523,6 +534,7 @@
              
              The single .c gets links to all the .rNN files. Each .rNN gets a link to the single .c;
         -->
+        <xsl:param name="tc_data"/>
         <xsl:param name="rel_entry"/>
         <xsl:param name="is_1xx"/>
         <xsl:param name="name_entry"/>
@@ -546,7 +558,7 @@
         <xsl:param name="original" />
         <xsl:param name="topical_subject" />
         <xsl:param name="geographic_subject" />
-        <xsl:param name="agency_info" />
+        <!-- <xsl:param name="agency_info" /> -->
         <xsl:param name="lang_decl" />
         <xsl:param name="language" />
         <!-- <xsl:param name="occupation" /> -->
@@ -631,11 +643,15 @@
         
         <!-- 
              New params to tpt_body are in a variable nodeset which is easier to update,
-             modify, add to, and delete from than hard coded params. It should have been like
+             modify, add to, and delete from, than hard coded params. It should have been like
              this from the start.
         -->
         
         <xsl:variable name="param_data">
+            <agency_info>
+                <xsl:copy-of select="$tc_data/eac:agency_info"/>
+            </agency_info>
+            <xsl:copy-of select="$tc_data/eac:snac_info"/>
             <ev_desc>
                 <xsl:value-of select="$ev_desc"/>
             </ev_desc>
@@ -648,6 +664,10 @@
             <xlink_role>
                 <xsl:value-of select="$xlink_role"/>
             </xlink_role>
+            <!--
+                This sends over the current eac:container wrapper element, which has all kinds of info about
+                the current entity. Currently it is used for occupation and function.
+            -->
             <xsl:copy-of select="."/>
         </xsl:variable>
 
@@ -687,7 +707,7 @@
                 <xsl:with-param name="tag_245" select="normalize-space($tag_245)"/>
                 <xsl:with-param name="xslt_script" select="$xslt_script"/>
                 <xsl:with-param name="original" select="$original"/>
-                <xsl:with-param name="agency_info" select="$agency_info"/>
+                <!-- <xsl:with-param name="agency_info" select="$agency_info"/> -->
                 <xsl:with-param name="lang_decl" select="$lang_decl"/>
                 <xsl:with-param name="topical_subject" select="$topical_subject"/>
                 <xsl:with-param name="geographic_subject" select="$geographic_subject"/>

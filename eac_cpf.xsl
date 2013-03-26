@@ -54,7 +54,7 @@
         <xsl:param name="tag_245"/>
         <xsl:param name="xslt_script"/>
         <xsl:param name="original"/>
-        <xsl:param name="agency_info" />
+        <!-- <xsl:param name="agency_info" /> -->
         <xsl:param name="lang_decl" />
         <xsl:param name="topical_subject"/>
         <xsl:param name="geographic_subject"/>
@@ -65,12 +65,12 @@
         
         <xsl:processing-instruction name="oxygen">RNGSchema="http://socialarchive.iath.virginia.edu/shared/cpf.rng" type="xml"</xsl:processing-instruction>
         <xsl:text>&#x0A;</xsl:text>        
-        <eac-cpf  xmlns:mads="http://www.loc.gov/mads/">
+        <eac-cpf>
             <control>
                 <recordId><xsl:value-of select="concat($record_id, '.', $fn_suffix)"/></recordId>
                 <maintenanceStatus>new</maintenanceStatus>
                 <maintenanceAgency>
-                    <xsl:copy-of select="$agency_info"/>
+                    <xsl:copy-of select="$param_data/eac:snac_info/*"/>
                 </maintenanceAgency>
                 <xsl:copy-of select="$lang_decl"/>
                 <maintenanceHistory>

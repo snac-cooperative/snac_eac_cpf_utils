@@ -32,6 +32,15 @@ records to be processed will exceed the memory of the computer.
 
 Throughout this document we use the generic user id "mst3k" as your user id. 
 
+Copyright 2013 University of Virginia. Licensed under the Educational Community License, Version 2.0 (the
+"License"); you may not use this file except in compliance with the License. You may obtain a copy of the
+License at http://www.osedu.org/licenses/ECL-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is
+distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+the License for the specific language governing permissions and limitations under the License.
+
+
 
 What you might need to get started
 ----------------------------------
@@ -264,10 +273,13 @@ Assuming that you are in the ead_cpf_utils directory, you should be able to run 
 Quickly run the code
 --------------------
 
+Many thanks to Mark Custer for publicly sharing a few sample records under the Educational Community
+License. These records are in the file beinecke_sample.xml that we use in the working example below.
+
 If you have not copied the .dist files to local copies, do so now:
 
    cp saxon.sh.dist saxon.sh
-   cp worldcat_code.xml.dist worldcat_code.xml
+   cp worldcat_code.xml.small worldcat_code.xml
 
 Just about the simplest method, relies on some internal defaults, but overrides the output directory name:
 
@@ -279,8 +291,8 @@ directory, and showing the first few lines of brbl/CtY-BR-3118211.c.xml:
     > saxon.sh beinecke_sample.xml oclc_marc2cpf.xsl output_dir=brbl 
     <?xml version="1.0" encoding="UTF-8"?>
 
-    > ls -l brbl | wc -l
-    546
+    > ls -l brbl/* | wc -l
+    545
 
     > ls -l brbl/* | head
     -rw-r--r-- 1 twl8n snac  16452 Feb 27 16:09 brbl/CtY-BR-3118211.c.xml
