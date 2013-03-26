@@ -448,16 +448,26 @@ The yaz package contains a utility yaz-marcdump that easily converts from MARC .
 
     sudo yum -y install yaz
 
-The utility application yaz-marcdump several options. The minimum options seem to be -f and -o. Use "-f marc8"
-to specifiy the from format. I had success with "marc8" and the documentation (man page) suggests that
-"MARC-8" also works. The -o option is output format and we want "marcxml". The third argument is the input
-file name. The usual Linux redirection takes care of the output file. In the first command below, output is
-piped to "less" for viewing on the fly. In the second command, output is redirected to a file.
+The utility application yaz-marcdump has several options. The minimum options seem to be -f and -o. Use "-f
+marc8" to specifiy the from (input) format. I had success with "marc8" and the documentation (man page)
+suggests that "MARC-8" also works. The -o option is output format and we want "marcxml". The third argument is
+the input file name. The usual Linux redirection allows you to create an output file. In the first command
+below, output is piped to "less" for viewing on the fly. In the second command, output is redirected to a
+file.
 
 yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc| less
 
 yaz-marcdump -f marc8 -o marcxml UF-CC0-2013-02.mrc > UF-CC0-2013-02.xml
 
+Yaz appears to be available for MacOS, but I haven't tried it:
+
+    http://www.macports.org/ports.php?by=name&substr=yaz
+
+Yaz appears to be available as a Windows binary from the creators at indexdata:
+
+    http://www.indexdata.com/yaz
+
+    http://ftp.indexdata.dk/pub/yaz/win32/yaz_4.2.51.exe
 
 
 WorldCat agency codes
