@@ -1729,18 +1729,32 @@ sub save_upload_file
         $fn_suffix = $2;
     }
 
-    # Get a unique value and use as suffix on the file name. A plus of this method is that we can insert into
-    # the db and not have to run an update later. (As used to be necessary when we relied on the fi_pk as the
-    # unique string in the file name.)
+    my $new_fn = "$dest_dir/$fn_value";
+    my $fh;
 
-    use File::Temp qw( :POSIX tempfile);
-
-    # Note the leading dot "." on the suffix.
-
-    # Can't end a template with a dot.
-    # Error in tempfile() using data/floHasqbmg/single_marc_XXXXXXXXXX.xml: The template must end with at least 4 'X' characters#
-
-    (my $fh, my $new_fn) = tempfile( "$fn_prefix\_XXXXXXXXXX", DIR => $dest_dir, SUFFIX => ".$fn_suffix");
+    if (0) # Create unique filename. Use when not saving in a unique dirctory.
+    {
+        # Get a unique value and use as suffix on the file name. A plus of this method is that we can insert into
+        # the db and not have to run an update later. (As used to be necessary when we relied on the fi_pk as the
+        # unique string in the file name.)
+        
+        use File::Temp qw( :POSIX tempfile);
+        
+        # Note the leading dot "." on the suffix.
+        
+        # Can't end a template with a dot.
+        # Error in tempfile() using data/floHasqbmg/single_marc_XXXXXXXXXX.xml: The template must end with at least 4 'X' characters#
+        
+        ($fh, $new_fn) = tempfile( "$fn_prefix\_XXXXXXXXXX", DIR => $dest_dir, SUFFIX => ".$fn_suffix");
+    }
+    else
+    {
+        if (! open($fh, ">", "$dest_dir/$fn_value"))
+        {
+            $ch_hr->{message} .= "Can't open $dest_dir/$fn_value for output";
+            return (undef, undef);
+        }
+    }
 
     my $fi_pk = 0;
     if ($use_db)
@@ -1757,8 +1771,6 @@ sub save_upload_file
         commit_handle();
         clean_db_handles();
     }
-
-    # my $dest_file = "$dest_dir/$fn_value";
 
     if ($upload_type eq 'text')
     {
