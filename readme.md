@@ -1,4 +1,5 @@
 
+This is a beta, pre-release version.
 
 Table of contents
 -----------------
