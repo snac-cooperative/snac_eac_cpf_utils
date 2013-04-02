@@ -299,13 +299,10 @@
          <xsl:param name="is_c_flag"/>
          <xsl:param name="is_cp"/>
          <xsl:param name="is_r_flag"/>
-
          <!--
              I think the probably ends up in /eac-cpf/cpfDescription/relations/resourceRelation in the output
              template eac_cpf.xsl.
          --> 
-
-         
          <xsl:choose>
              <xsl:when test="$is_c_flag or (eac:e_name/@is_creator=true())">
                  <xsl:text>snac:creatorOf</xsl:text>
