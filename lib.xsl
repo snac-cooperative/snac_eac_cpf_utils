@@ -6,12 +6,12 @@
                 xmlns:saxon="http://saxon.sf.net/"
                 xmlns:functx="http://www.functx.com"
                 xmlns:marc="http://www.loc.gov/MARC21/slim"
-                xmlns:snac="http://socialarchive.iath.virginia.edu/worldcat"
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns:madsrdf="http://www.loc.gov/mads/rdf/v1#"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:mads="http://www.loc.gov/mads/"
-                exclude-result-prefixes="eac lib xs saxon xsl madsrdf rdf mads functx marc snac"
+                xmlns:snacwc="http://socialarchive.iath.virginia.edu/worldcat"
+                exclude-result-prefixes="eac lib xs saxon xsl madsrdf rdf mads functx marc snacwc"
                 >
     <!-- 
          Author: Tom Laudeman
@@ -53,6 +53,51 @@
          match_record -> tpt_all_xx -> edate_core -> tpt_exist_dates
                                        '-> var exist_dates-> tpt_show_dates
     -->
+    
+    <!-- 
+         Variables for the localType values. These have changed at least 3 times, so now they go into variables.
+         "av_" is mnemonic for Attribute Value.
+    -->
+    <xsl:variable name="av_derivedFromRole" select="'http://socialarchive.iath.virginia.edu/control/term#derivedFromRole'"/>
+
+    <xsl:variable name="av_mergedRecord" select="'http://socialarchive.iath.virginia.edu/control/term#mergedRecord'"/>
+    <xsl:variable name="av_suspiciousDate" select="'http://socialarchive.iath.virginia.edu/control/term#suspiciousDate'"/>
+    <xsl:variable name="av_active " select="'http://socialarchive.iath.virginia.edu/control/term#active '"/>
+    <xsl:variable name="av_born" select="'http://socialarchive.iath.virginia.edu/control/term#born'"/>
+    <xsl:variable name="av_died" select="'http://socialarchive.iath.virginia.edu/control/term#died'"/>
+    <xsl:variable name="av_associatedSubject" select="'http://socialarchive.iath.virginia.edu/control/term#associatedSubject'"/>
+    <xsl:variable name="av_associatedPlace" select="'http://socialarchive.iath.virginia.edu/control/term#associatedPlace'"/>
+    <xsl:variable name="av_extractRecordId" select="'http://socialarchive.iath.virginia.edu/control/term#extractRecordId'"/>
+    <xsl:variable name="av_Leader06" select="'http://socialarchive.iath.virginia.edu/control/term#Leader06'"/>
+    <xsl:variable name="av_Leader07" select="'http://socialarchive.iath.virginia.edu/control/term#Leader07'"/>
+    <xsl:variable name="av_Leader08" select="'http://socialarchive.iath.virginia.edu/control/term#Leader08'"/>
+
+    <xsl:variable name="av_CorporateBody" select="'http://socialarchive.iath.virginia.edu/control/term#CorporateBody'"/>
+    <xsl:variable name="av_Family" select="'http://socialarchive.iath.virginia.edu/control/term#Family'"/>
+    <xsl:variable name="av_Person" select="'http://socialarchive.iath.virginia.edu/control/term#Person'"/>
+    <xsl:variable name="av_associatedWith" select="'http://socialarchive.iath.virginia.edu/control/term#associatedWith'"/>
+    <xsl:variable name="av_correspondedWith" select="'http://socialarchive.iath.virginia.edu/control/term#correspondedWith'"/>
+    <xsl:variable name="av_creatorOf" select="'http://socialarchive.iath.virginia.edu/control/term#creatorOf'"/>
+    <xsl:variable name="av_referencedIn" select="'http://socialarchive.iath.virginia.edu/control/term#referencedIn'"/>
+    <xsl:variable name="av_archivalResource" select="'http://socialarchive.iath.virginia.edu/control/term#archivalResource'"/>
+    <xsl:variable name="av_BibliographicResource" select="'http://socialarchive.iath.virginia.edu/control/term#BibliographicResource'"/>
+    <xsl:variable name="av_mayBeSameAs" select="'http://socialarchive.iath.virginia.edu/control/term#mayBeSameAs'"/>
+    <xsl:variable name="av_sameAs" select="'http://www.w3.org/2002/07/owl#sameAs'"/>
+    
+    <!-- 
+         The XSLT equivalent of a key-value lookup list.
+    -->
+    <xsl:variable name="etype" xmlns="urn:isbn:1-931666-33-4">
+        <value key="person">
+            <xsl:value-of select="$av_Person"/>
+        </value>
+        <value key="corporateBody">
+            <xsl:value-of select="$av_CorporateBody"/>
+        </value>
+        <value key="family">
+            <xsl:value-of  select="$av_Family"/>
+        </value>
+    </xsl:variable>
 
     <!-- <xsl:output method="xml" /> -->
     <xsl:variable name="occupations" select="document('occupations.xml')/*"/>
@@ -156,18 +201,17 @@
              </xsl:variable>
 
              <!--
-                 With the proper meta-data, building the geo subject is possible.
-                 Three cases: $a regardless of following, $a with contiguous
-                 following $z (repeating), $z repeating not contiguous with $a.
+                 With the proper meta-data, building the geo subject is possible.  Three cases. (1) $a
+                 regardless of following. (2) $a with contiguous following $z (repeating). (3) $z single or
+                 repeating not contiguous with $a.
                  
-                 $df has been forced to be namespace ns as all input from the marc records, so continue using
-                 the marc: prefix here. Must use xsl:element to force <place> and <placeEntry> are output into
-                 the eac: namespace. Literals inherit the "current namespace", but "current" has some odd,
-                 non-current characteristics.
+                 $df has been forced to be namespace marc as is conventional for all input from the marc
+                 records, so continue using the marc: prefix here. This template has been forced into the eac:
+                 namespace.
              -->
              <xsl:for-each select="$df/marc:datafield">
                  <xsl:if test="marc:subfield[@code='a' or (@code='z' and @prev='a')]">
-                     <place localType="snac:associatedPlace">
+                     <place localType="{$av_associatedPlace}">
                          <placeEntry>
                              <xsl:for-each select="marc:subfield[@code='a' or (@code='z' and @prev='a')]">
                                  <xsl:if test="not(position()=1)">
@@ -179,9 +223,9 @@
                      </place>
                      <xsl:text>&#x0A;</xsl:text>
                  </xsl:if>
-                 
+
                  <xsl:if test="marc:subfield[@code='z' and (@prev='' or @prev='z')]">
-                     <place localType="snac:associatedPlace">
+                     <place localType="{$av_associatedPlace}">
                          <placeEntry>
                              <xsl:for-each select="marc:subfield[@code='z' and (@prev='' or @prev='z')]">
                                  <xsl:if test="not(position()=1)">
@@ -261,7 +305,7 @@
          <xsl:variable name="code" select="$sub[1]/@code"/>
          
          <subfield code="{$code}" prev="{$prev}">
-             <xsl:value-of select="$sub" />
+             <xsl:value-of select="$sub[1]" />
          </subfield>
 
          <!--
@@ -305,17 +349,17 @@
          --> 
          <xsl:choose>
              <xsl:when test="$is_c_flag or (eac:e_name/@is_creator=true())">
-                 <xsl:text>snac:creatorOf</xsl:text>
+                 <xsl:value-of select="$av_creatorOf"/>
              </xsl:when>
              <xsl:when test="$is_cp">
-                 <xsl:text>snac:correspondedWith</xsl:text>
+                 <xsl:value-of select="$av_correspondedWith"/>
              </xsl:when>
              <xsl:when test="$is_r_flag">
-                 <xsl:text>snac:referencedIn</xsl:text>
+                 <xsl:value-of select="$av_referencedIn"/>
              </xsl:when>
              <xsl:otherwise>
                  <!-- This can't happen given current logic. (Really?) -->
-                 <xsl:text>snac:associatedWith</xsl:text>
+                 <xsl:value-of select="$av_associatedWith"/>
              </xsl:otherwise>
          </xsl:choose>
      </xsl:template>
@@ -331,7 +375,10 @@
 	     <xsl:when test="substring(marc:controlfield[@tag='008'],11,1)='d'">
 		 <xsl:text>aacr2compatible</xsl:text>
 	     </xsl:when>
-	     <xsl:otherwise>unknown</xsl:otherwise>
+	     <xsl:otherwise>
+                 <!-- Ideally this would be set specially for each input data set. -->
+                 <xsl:text>WorldCat</xsl:text>
+             </xsl:otherwise>
 	 </xsl:choose>
      </xsl:template>
 
@@ -343,7 +390,7 @@
         -->
         <xsl:for-each select="marc:datafield[@tag=$tag]" >
             <!-- removed xmlns="urn:isbn:1-931666-33-4" and moved to enclosing template element. -->
-            <place localType="snac:associatedPlace">
+            <place localType="{$av_associatedPlace}">
                 <placeEntry>
                     <xsl:for-each select="marc:subfield[@code='z']">
                         <xsl:if test="not(position() = 1)">
@@ -380,7 +427,7 @@
         -->
         <xsl:variable name="all_ts">
             <xsl:for-each select="marc:datafield[@tag='650']">
-                <localDescription localType="snac:associatedSubject">
+                <localDescription localType="{$av_associatedSubject}">
                     <term>
                         <xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='c' or @code='d' or @code='v' or @code='x' or @code='y']">
                             <xsl:if test="not(position() = 1)">
@@ -594,7 +641,7 @@
         <xsl:for-each select="$relators/madsrdf:Authority[madsrdf:code = $test_code]">
             <xsl:variable name="unp" select="lower-case(lib:unpunct(madsrdf:authoritativeLabel/text()))"/>
             <xsl:element name="{$cname}">
-                <xsl:attribute name="localType" select="'snac:derivedFromRole'"/>
+                <xsl:attribute name="localType" select="$av_derivedFromRole"/>
                 <xsl:for-each select="$occupations/mads:mads[mads:variant[@otherType='singular']/mads:occupation[text() = $unp]]">
                     <term>
                         <xsl:value-of select="mads:authority/mads:occupation"/>
@@ -614,7 +661,7 @@
 
         <xsl:for-each select="$occupations/mads:mads[mads:variant[@otherType='singular']/mads:occupation[text() = $unp]]">
             <xsl:element name="{$cname}">
-                <xsl:attribute name="localType" select="'snac:derivedFromRole'"/>
+                <xsl:attribute name="localType" select="$av_derivedFromRole"/>
                 <term>
                     <xsl:value-of select="mads:authority/mads:occupation"/>
                 </term>
@@ -732,7 +779,7 @@
             <!-- There is another unparsed "suspicious" date below in the otherwise element of this choose. -->
             <xsl:when test="$is_unparsed">
                 <existDates>
-                    <date localType="snac:suspiciousFormat">
+                    <date localType="{$av_suspiciousDate}">
                         <xsl:value-of select="$tokens/odate"/>
                     </date>
                 </existDates>
@@ -746,7 +793,7 @@
 
             <xsl:when test="$tokens/tok[(matches(@std, '\d+[^\d]+|[^\d]+\d+') or matches(@std, '\d{5}')) and not(matches(@val, 'century'))]">
                 <existDates>
-                    <date localType="snac:suspiciousFormat">
+                    <date localType="{$av_suspiciousDate}">
                         <xsl:value-of select="$tokens/odate"/>
                     </date>
                 </existDates>
@@ -758,10 +805,10 @@
                 <!-- No active since that is illogical with 'born' for persons. -->
                 <xsl:variable name="loc_type">
                     <xsl:if test="$is_family">
-                        <xsl:text>snac:active</xsl:text>
+                        <xsl:value-of select="$av_active"/>
                     </xsl:if>
                     <xsl:if test="not($is_family)">
-                        <xsl:text>snac:born</xsl:text>
+                        <xsl:value-of select="$av_born"/>
                     </xsl:if>
                 </xsl:variable>
                 <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
@@ -831,10 +878,10 @@
                 -->
                 <xsl:variable name="loc_type">
                     <xsl:if test="$is_family">
-                        <xsl:text>snac:active</xsl:text>
+                        <xsl:value-of select="$av_active"/>
                     </xsl:if>
                     <xsl:if test="not($is_family)">
-                        <xsl:text>snac:died</xsl:text>
+                        <xsl:value-of select="$av_died"/>
                     </xsl:if>
                 </xsl:variable>
                 <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
@@ -892,12 +939,12 @@
                             <xsl:choose>
                                 <xsl:when test="($tokens/tok[text() = '-']/preceding-sibling::tok = 'active') or $is_family or $is_century">
                                     <xsl:attribute name="localType">
-                                        <xsl:text>snac:active</xsl:text>
+                                        <xsl:value-of select="$av_active"/>
                                     </xsl:attribute>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:attribute name="localType">
-                                        <xsl:text>snac:born</xsl:text>
+                                        <xsl:value-of select="$av_born"/>
                                     </xsl:attribute>
                                 </xsl:otherwise>
                             </xsl:choose>
@@ -935,12 +982,12 @@
                             <xsl:choose>
                                 <xsl:when test="($tokens/tok[text() = 'active']) or $is_family or $is_century">
                                     <xsl:attribute name="localType">
-                                        <xsl:text>snac:active</xsl:text>
+                                        <xsl:value-of select="$av_active"/>
                                     </xsl:attribute>
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <xsl:attribute name="localType">
-                                        <xsl:text>snac:died</xsl:text>
+                                        <xsl:value-of select="$av_died"/>
                                     </xsl:attribute>
                                 </xsl:otherwise>
                             </xsl:choose>
@@ -979,7 +1026,7 @@
             <xsl:when test="count($tokens/tok[text() = '-']) = 0 and count($tokens/tok[text() = 'num']) = 1">
                 <!--
                     No hyphen and only one number so this is a single date.  If we have an 'active' token then
-                    'snac:active'.
+                    $av_active.
                 -->
                 <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num']"/>
                 <existDates>
@@ -987,7 +1034,7 @@
                         <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
                         <xsl:if test="($tokens/tok[text() = 'active']) or $is_family">
                             <xsl:attribute name="localType">
-                                <xsl:text>snac:active</xsl:text>
+                                <xsl:value-of select="$av_active"/>
                             </xsl:attribute>
                         </xsl:if>
 
@@ -1034,7 +1081,7 @@
 
             <xsl:otherwise>
                 <existDates>
-                    <date localType="snac:suspiciousFormat">
+                    <date localType="{$av_suspiciousDate}">
                         <xsl:value-of select="$tokens/odate"/>
                     </date>
                 </existDates>
@@ -1507,9 +1554,6 @@
     </xsl:template> <!-- end tpt_mods -->
 
     <xsl:template name="tpt_snac_info" xmlns="urn:isbn:1-931666-33-4">
-        <agencyCode>
-            <xsl:text>US-SNAC</xsl:text>
-        </agencyCode>
         <agencyName>
             <xsl:text>SNAC: Social Networks and Archival Context Project</xsl:text>
         </agencyName>
@@ -1530,7 +1574,7 @@
              prevents selecting each container separately. Don't know why. The code below works, so use it.
         -->
         <xsl:variable name="ainfo">
-            <xsl:copy-of select="$org_codes/snac:container[snac:orig_query = $org_query]"/>
+            <xsl:copy-of select="$org_codes/snacwc:container[snacwc:orig_query = $org_query]"/>
         </xsl:variable>
         
         <xsl:variable name="fallback_code">
@@ -1553,7 +1597,7 @@
         </xsl:variable>
         
         <xsl:choose>
-            <xsl:when test="count($ainfo/snac:container)=1 and string-length($ainfo/snac:container/snac:isil)>0">
+            <xsl:when test="count($ainfo/snacwc:container)=1 and string-length($ainfo/snacwc:container/snacwc:isil)>0">
                 <agencyCode >
                     <!--
                         We have ISIL codes from OCLC with things like # in them, and the standard allows /, so
@@ -1562,13 +1606,13 @@
                         a valid file name. Hex might be better, but XSLT doesn't have a native hex conversion,
                         as far as I can tell.
                     -->
-                    <xsl:value-of select="lib:fn-safe($ainfo/snac:container/snac:isil)"/>
+                    <xsl:value-of select="lib:fn-safe($ainfo/snacwc:container/snacwc:isil)"/>
                 </agencyCode>
                 <agencyName >
-                    <xsl:value-of select="$ainfo/snac:container/snac:name"/>
+                    <xsl:value-of select="$ainfo/snacwc:container/snacwc:name"/>
                 </agencyName>
             </xsl:when>
-            <xsl:when test="count($ainfo/snac:container)>1">
+            <xsl:when test="count($ainfo/snacwc:container)>1">
                 <agencyCode>
                     <xsl:value-of select="$fallback_code"/>
                 </agencyCode>
@@ -1576,12 +1620,13 @@
                     <xsl:text>Unknown</xsl:text>
                 </agencyName>
                 <descriptiveNote>
-                    <xsl:for-each select="$ainfo/snac:container">
+                    <xsl:for-each select="$ainfo/snacwc:container">
                         <p>
-                            <span localType="snac:multipleRegistryResults"/>
-                            <span localType="snac:original"><xsl:value-of select="$org_query"/></span>
-                            <span localType="snac:inst"><xsl:value-of select="snac:name"/></span>
-                            <span localType="snac:isil"><xsl:value-of select="snac:isil"/></span>
+                            <!-- This is not a currently supported value, so I commented it out. -->
+                            <!-- <span localType="snacwc:multipleRegistryResults"/> -->
+                            <span localType="snacwc:original"><xsl:value-of select="$org_query"/></span>
+                            <span localType="snacwc:inst"><xsl:value-of select="snacwc:name"/></span>
+                            <span localType="snacwc:isil"><xsl:value-of select="snacwc:isil"/></span>
                         </p>
                     </xsl:for-each>
                 </descriptiveNote>
@@ -1600,8 +1645,9 @@
                 </agencyName>
                     <descriptiveNote >
                         <p>
-                            <span localType="snac:noRegistryResults"/>
-                            <span localType="snac:original">
+                            <!-- This is not a currently supported value, so I commented it out. -->
+                            <!-- <span localType="snac:noRegistryResults"/> -->
+                            <span localType="snacwc:original">
                                 <xsl:value-of select="$org_query"/>
                             </span>
                         </p>
@@ -1961,7 +2007,7 @@
                     <xsl:copy-of select="$tokens/eac:tok[matches(., '\d{4}')]"/>
                 </xsl:variable>
                 <existDates>
-                    <date localType="snac:active" standardDate="{format-number($local_date, '0000')}">
+                    <date localType="{$av_active}" standardDate="{format-number($local_date, '0000')}">
                             <!-- Add attributes notBefore, notAfter for date [1] which should be the only date. -->
                             <xsl:for-each select="$local_date/eac:tok[1]/@*[matches(name(), '^not')]">
                                 <xsl:choose>
@@ -1987,7 +2033,7 @@
                 </xsl:variable>
                 <existDates>
                     <dateRange>
-                        <fromDate localType="snac:active" standardDate="{format-number($local_date/eac:tok[1], '0000')}">
+                        <fromDate localType="{$av_active}" standardDate="{format-number($local_date/eac:tok[1], '0000')}">
                             <!-- Add attributes notBefore, notAfter for date [1]  -->
                             <xsl:for-each select="$local_date/eac:tok[1]/@*[matches(name(), '^not')]">
                                 <xsl:choose>
@@ -2005,7 +2051,7 @@
                             </xsl:if>
                             <xsl:value-of select="format-number($local_date/eac:tok[1], '0000')"/>
                         </fromDate>
-                        <toDate localType="snac:active" standardDate="{format-number($local_date/eac:tok[2], '0000')}">
+                        <toDate localType="{$av_active}" standardDate="{format-number($local_date/eac:tok[2], '0000')}">
                             <!-- Add attributes notBefore, notAfter for date [2]  -->
                             <xsl:for-each select="$local_date/eac:tok[2]/@*[matches(name(), '^not')]">
                                 <xsl:choose>

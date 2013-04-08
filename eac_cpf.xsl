@@ -4,9 +4,6 @@
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
-                xmlns:frbr="http://rdvocab.info/uri/schema/FRBRentitiesRDA/"
-                xmlns:snac="http://socialarchive.iath.virginia.edu/vocabulary/"
-                xmlns:owl="http://www.w3.org/2002/07/owl#"
                 xmlns="urn:isbn:1-931666-33-4"
                 exclude-result-prefixes="xs eac"
                 >
@@ -54,7 +51,6 @@
         <xsl:param name="tag_245"/>
         <xsl:param name="xslt_script"/>
         <xsl:param name="original"/>
-        <!-- <xsl:param name="agency_info" /> -->
         <xsl:param name="lang_decl" />
         <xsl:param name="topical_subject"/>
         <xsl:param name="geographic_subject"/>
@@ -171,9 +167,9 @@
                         <xsl:if test="string-length($leader06)>0 or string-length($leader07)>0 or string-length($leader08)>0">
         		    <descriptiveNote>
 			        <p>
-				    <span localType="snac:Leader06"><xsl:value-of select="$leader06"/></span>
-				    <span localType="snac:Leader07"><xsl:value-of select="$leader07"/></span>
-				    <span localType="snac:Leader08"><xsl:value-of select="$leader08"/></span>
+				    <span localType="{$param_data/eac:av_Leader06}"><xsl:value-of select="$leader06"/></span>
+				    <span localType="{$param_data/eac:av_Leader07}"><xsl:value-of select="$leader07"/></span>
+				    <span localType="{$param_data/eac:av_Leader08}"><xsl:value-of select="$leader08"/></span>
 			        </p>
 			    </descriptiveNote>
                         </xsl:if>

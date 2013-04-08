@@ -11,8 +11,7 @@
                 xmlns="urn:isbn:1-931666-33-4"
                 xmlns:xlink="http://www.w3.org/1999/xlink" 
                 xmlns:saxon="http://saxon.sf.net/"
-                xmlns:frbr="http://rdvocab.info/uri/schema/FRBRentitiesRDA/"
-                exclude-result-prefixes="xsl date xs functx marc lib eac saxon frbr xlink"
+                exclude-result-prefixes="xsl date xs functx marc lib eac saxon xlink"
                 >
     <!--
         Author: Tom Laudeman
@@ -88,7 +87,7 @@
     <!-- These three params (variables) are sent to the cpf template eac_cpf.xsl. -->
 
     <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
-    <xsl:param name="xlink_role" select="'snac:ArchivalResource'"/> <!-- xlink:role -->
+    <xsl:param name="xlink_role" select="$av_archivalResource"/> <!-- xlink:role -->
     <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc/'"/> <!-- xlink:href -->
 
     <!-- 
@@ -510,14 +509,10 @@
             <xsl:with-param name="tag_245" select="normalize-space($tag_245)"/>
             <xsl:with-param name="xslt_script" select="$xslt_script"/>
             <xsl:with-param name="original" select="$original"/>
-            <!-- <xsl:with-param name="agency_info" select="$agency_info"/> -->
             <xsl:with-param name="lang_decl" select="$lang_decl"/>
-            <!-- <xsl:with-param name="authorized_form" select="$authorized_form"/> -->
             <xsl:with-param name="topical_subject" select="$topical_subject"/>
             <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
             <xsl:with-param name="language" select="$language"/>
-            <!-- <xsl:with-param name="occupation" select="$occupation"/> -->
-            <!-- <xsl:with-param name="function" select="$function"/> -->
             <xsl:with-param name="rules" select="$rules"/>
         </xsl:apply-templates>
     </xsl:template> <!-- end tpt_match -->
@@ -525,7 +520,6 @@
     <!-- tpt_geo, tpt_65x_geo moved to lib.xsl -->
 
     <xsl:template name="tpt_container" match="/eac:container" xmlns="urn:isbn:1-931666-33-4">
-
         <!-- 
              Generate files via result-document(). The <container> has an <e_name> for each unique [167]xx entry. Each
              <e_name> has necessary attributes to generate the file with all elements properly populated. Called via
@@ -558,13 +552,10 @@
         <xsl:param name="original" />
         <xsl:param name="topical_subject" />
         <xsl:param name="geographic_subject" />
-        <!-- <xsl:param name="agency_info" /> -->
         <xsl:param name="lang_decl" />
         <xsl:param name="language" />
-        <!-- <xsl:param name="occupation" /> -->
-        <!-- <xsl:param name="function" /> -->
         <xsl:param name="rules" />
-        
+
         <xsl:variable name="file_name">
             <xsl:value-of select="concat($chunk_dir, '/', $record_id, '.', eac:e_name/@fn_suffix, '.xml')"/>
         </xsl:variable>
@@ -604,12 +595,14 @@
                         Paths here are realtive to $all_xx/container/e_name. Note, here we are looking at $all_xx, not
                         the current record matching this template. 
                     -->
+                    <xsl:variable name="et" select="@entity_type"/>
+
                     <cpfRelation xlink:type="simple"
-                                 xlink:role="frbr:{@entity_type_fc}"
-                                 xlink:arcrole="snac:associatedWith">
+                                 xlink:role="{$etype/eac:value[@key = $et]}"
+                                 xlink:arcrole="{$av_associatedWith}">
                         <relationEntry><xsl:value-of select="."/></relationEntry>
                         <descriptiveNote>
-                            <p><span localType="snac:extractRecordId"><xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/></span></p>
+                            <p><span localType="{$av_extractRecordId}"><xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/></span></p>
                         </descriptiveNote>
                     </cpfRelation>
                 </xsl:for-each>
@@ -619,21 +612,22 @@
                 For a local .r record which also has a 1xx being processed by this template, output
                 the (global) single .c node. If this record did not have a 1xx, there would be no .c
                 file to refer to.
-                
-                old:
-                xlink:role="http://RDVocab.info/uri/schema/FRBRentitiesRDA/{$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@entity_type_fc}"
             -->
             <xsl:if test="$is_r_flag and $is_1xx">
+                <!-- We need some fields from the the main C record. Put that C e_name node set in a variable. -->
+                <xsl:variable name="cmain">
+                    <xsl:copy-of select="$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']"/>
+                </xsl:variable>
                 <cpfRelation xlink:type="simple"
-                             xlink:role="frbr:{eac:e_name/@entity_type_fc}"
-                             xlink:arcrole="snac:associatedWith">
-                    <relationEntry><xsl:value-of select="$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']"/></relationEntry>
+                             xlink:role="{$etype/eac:value[@key = $cmain/eac:e_name/@entity_type]}"
+                             xlink:arcrole="{$av_associatedWith}">
+                    <relationEntry><xsl:value-of select="$cmain/eac:e_name"/></relationEntry>
                     <descriptiveNote>
                         <p>
-                            <span localType="snac:extractRecordId">
-                                <xsl:value-of select="concat($all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@record_id,
+                            <span localType="{$av_extractRecordId}">
+                                <xsl:value-of select="concat($cmain/eac:e_name/@record_id,
                                                       '.',
-                                                      $all_xx/eac:container/eac:e_name[@fn_suffix = 'c']/@fn_suffix)"/>
+                                                      $cmain/eac:e_name/@fn_suffix)"/>
                             </span>
                         </p>
                     </descriptiveNote>
@@ -647,10 +641,8 @@
              this from the start.
         -->
         
-        <xsl:variable name="param_data">
-            <agency_info>
-                <xsl:copy-of select="$tc_data/eac:agency_info"/>
-            </agency_info>
+        <xsl:variable name="param_data" xmlns="urn:isbn:1-931666-33-4">
+            <xsl:copy-of select="$tc_data/eac:agency_info"/>
             <xsl:copy-of select="$tc_data/eac:snac_info"/>
             <ev_desc>
                 <xsl:value-of select="$ev_desc"/>
@@ -664,6 +656,15 @@
             <xlink_role>
                 <xsl:value-of select="$xlink_role"/>
             </xlink_role>
+            <av_Leader06>
+                <xsl:value-of select="$av_Leader06"/>
+            </av_Leader06>
+            <av_Leader07>
+                <xsl:value-of select="$av_Leader07"/>
+            </av_Leader07>
+            <av_Leader08>
+                <xsl:value-of select="$av_Leader08"/>
+            </av_Leader08>
             <!--
                 This sends over the current eac:container wrapper element, which has all kinds of info about
                 the current entity. Currently it is used for occupation and function.
@@ -671,9 +672,11 @@
             <xsl:copy-of select="."/>
         </xsl:variable>
 
+
         <!-- <xsl:message> -->
         <!--     <xsl:text>pd: </xsl:text> -->
-        <!--     <xsl:apply-templates mode="copy-no-ns" select="$param_data/eac:container/eac:occ"/> -->
+            <!-- <xsl:apply-templates mode="copy-no-ns" select="$param_data"/> -->
+        <!--     <xsl:copy-of select="$param_data"/> -->
         <!--     <xsl:text>&#x0A;</xsl:text> -->
         <!-- </xsl:message> -->
 
@@ -707,12 +710,9 @@
                 <xsl:with-param name="tag_245" select="normalize-space($tag_245)"/>
                 <xsl:with-param name="xslt_script" select="$xslt_script"/>
                 <xsl:with-param name="original" select="$original"/>
-                <!-- <xsl:with-param name="agency_info" select="$agency_info"/> -->
                 <xsl:with-param name="lang_decl" select="$lang_decl"/>
                 <xsl:with-param name="topical_subject" select="$topical_subject"/>
                 <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
-                <!-- <xsl:with-param name="occupation" select="$occupation"/> -->
-                <!-- <xsl:with-param name="function" select="$function"/> -->
                 <xsl:with-param name="language" select="$language"/>
                 <xsl:with-param name="param_data" select="$param_data" />
             </xsl:call-template>
