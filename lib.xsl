@@ -104,7 +104,10 @@
     <xsl:variable name="relators" select="document('vocabularyrelators.rdf')/*"/>
     <xsl:variable name="languages" select="document('vocabularylanguages.rdf')/*"/>
     <xsl:variable name="org_codes" select="document('worldcat_code.xml')/*"/>
+    <!-- Too many files with "places" in the name. geonames_places is less confusing. -->
+    <xsl:variable name="places" select="document('geonames_places.xml')/*"/>
     <xsl:variable name="this_year" select="year-from-date(current-date())"/>    
+
 
     <xsl:template mode="get_lang" match="*">
          <xsl:choose>
@@ -171,9 +174,18 @@
          -->
          <xsl:value-of select="boolean($temp/val[.=true()][1])"/>
      </xsl:template>
-     
+
 
      <xsl:template name="tpt_geo" xmlns="urn:isbn:1-931666-33-4">
+
+         <!-- <xsl:message> -->
+         <!--     <xsl:text>places: </xsl:text> -->
+         <!--     <xsl:copy-of select="$places/place[1]/local-name()" /> -->
+         <!--     <xsl:text> ns (none):</xsl:text> -->
+         <!--     <xsl:copy-of select="$places/place[1]/namespace-uri()" /> -->
+         <!--     <xsl:text>&#x0A;</xsl:text> -->
+         <!-- </xsl:message> -->
+
          <!--
              Build a node set regardless of empty placeEntry values or duplicates. Then copy removing empties
              and duplicates. The elements are for output, so we create them in the eac namespace.
@@ -241,7 +253,7 @@
              </xsl:for-each>
          </xsl:variable>
 
-         <xsl:variable name="geo1">
+         <xsl:variable name="geo_pass1">
              <xsl:call-template name="tpt_65x_geo">
                  <xsl:with-param name="tag" select="650"/>
              </xsl:call-template>
@@ -253,7 +265,69 @@
              </xsl:call-template>
              <xsl:copy-of select="$geo_651"/>
          </xsl:variable>
+
+         <!-- 
+              Now that we have a list of geo places, make another pass to put in authoritative names from
+              geonames.org.
+         -->
+         <xsl:variable name="geo1">
+             <xsl:for-each select="$geo_pass1/eac:place">
+                 <!-- <xsl:variable name="pn" select="replace(eac:placeEntry, '\-\-', ' ')"/> -->
+                 <xsl:variable name="pn" select="eac:placeEntry"/>
+                 <!-- <xsl:message> -->
+                 <!--     <xsl:text>pn: </xsl:text> -->
+                 <!--     <xsl:value-of select="$pn"/> -->
+                 <!--     <xsl:text> orig: </xsl:text> -->
+                 <!--     <xsl:copy-of select="$places/place[cpfName/text() = 'Pennsylvania Ambridge']"/> -->
+                 <!--     <xsl:text>&#x0A;</xsl:text> -->
+                 <!-- </xsl:message> -->
+
+                 <place localType="{@localType}">
+                     <placeEntry>
+                         <xsl:choose>
+                             <xsl:when test="$places/place[cpfName/text() = $pn]">
+                                 <!--
+                                     Use xsl:for-each to loop and set context but we must have only one record. We
+                                     choose the record with the max score. In the tests below, note that
+                                     element/text() will only be true if there is a non-empty value, AFAIK. As opposed
+                                     to testing the element which is true if the element exists, empty or not.
+                                     
+                                     Note that continentCode aka countryCode is occasionally blank, so we deal with it.
+                                 -->
+                                 <xsl:variable name="ms" select="max($places/place[cpfName/text() = $pn]/score)"/>
+                                 <xsl:for-each select="$places/place[cpfName/text() = $pn and score = $ms]">
+                                     <xsl:attribute name="latitude" select="lat"/>
+                                     <xsl:attribute name="longitude" select="lng"/>
+                                     <xsl:attribute name="vocabularySource" select="concat('http://www.geonames.org/', geonameId)"/>
+                                     <xsl:if test="continentCode/text()">
+                                         <xsl:attribute name="countryCode" select="continentCode"/>
+                                     </xsl:if>
+                                     <xsl:if test="adminName1/text() and not (name/text() = adminName1/text())">
+                                         <xsl:value-of select="adminName1"/>
+                                         <xsl:text>--</xsl:text>
+                                     </xsl:if>
+                                     <xsl:if test="adminName2/text() and not (name/text() = adminName2/text())">
+                                         <xsl:value-of select="adminName2"/>
+                                         <xsl:text>--</xsl:text>
+                                     </xsl:if>
+                                     <xsl:value-of select="name"/>
+                                 </xsl:for-each>
+                             </xsl:when>
+                             <xsl:otherwise>
+                                 <xsl:value-of select="eac:placeEntry"/>
+                             </xsl:otherwise>
+                         </xsl:choose>
+                     </placeEntry>
+                 </place>
+             </xsl:for-each>
+         </xsl:variable>
          
+         <!-- <xsl:message> -->
+         <!--     <xsl:text>geo1: </xsl:text> -->
+         <!--     <xsl:copy-of select="$geo1" /> -->
+         <!--     <xsl:text>&#x0A;</xsl:text> -->
+         <!-- </xsl:message> -->
+
          <!--
              Deduping a node set in 6 lines of code, but subtle. We need to
              compare each node to every other node in the node set. That is
@@ -508,7 +582,7 @@
     </xsl:template> <!-- end tpt_language -->
         
 
-    <xsl:template name="tpt_occupation" xmlns:eac="urn:isbn:1-931666-33-4">
+    <xsl:template name="tpt_occupation" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="df"/>
         <!--
             If we are a person/family with a 656 occupation then use it, else try to use [167]00$e or [167]00$4 via some lookups in the
@@ -1516,7 +1590,7 @@
              effect. This all seems somewhat un-robust, but it was necessary as a workaround to
              completely rewriting tpt_all_xx.
         -->
-	<xsl:element name="objectXMLWrap" xmlns:eac="urn:isbn:1-931666-33-4">
+	<xsl:element name="objectXMLWrap" xmlns="urn:isbn:1-931666-33-4">
             <mods xmlns="http://www.loc.gov/mods/v3">
 	        <recordInfo>
                     <recordOrigin>WorldCat:<xsl:value-of select="$controlfield_001"/></recordOrigin>
@@ -2814,7 +2888,6 @@
         </xsl:choose>
     </xsl:function>
 
-
     <xsl:function name="lib:unpunct" as="xs:string*" >
         <xsl:param name="str" as="xs:string?"/>
         <!--
@@ -2895,5 +2968,44 @@
         </xsl:choose>
     </xsl:function>
 
+    <xsl:function name="lib:xpname-match" as="xs:boolean">
+        <xsl:param name="str1" as="xs:string?"/>
+        <xsl:param name="str2" as="xs:string?"/>
+        <!--
+            Punctuation-normalized name match. Preserve leading comma. If the
+            length is different after un-punctuating the strings must be
+            different then return false. Else return the results of
+            matches(). Order of arguments to matches() doesn't matter because
+            the two un-punctuated strings are the same length.
+            
+            No need to lower case both strings because we're using a regex with 'i'.
+            
+            Add an additional replace() around the lib:unpunct() call because
+            there is one record with '\&', but after hours of trying to get xslt
+            to take that in some escaped form in a regex, I've given up, and
+            just delete it from both strings. We only care about comparing
+            punctuation-clean strings, so we only need to clean both strings the
+            same way. We cannot modify/break lib:unpunct() because that is used
+            elsewhere to unpunctuate strings that are real data in the cpf
+            output.
+        -->
+        <xsl:variable name="clean1" select="lower-case(lib:unpunct($str1))"/>
+        <xsl:variable name="clean2" select="lower-case(lib:unpunct($str2))"/>
+        <xsl:choose>
+            <xsl:when test="not(string-length($clean1) = string-length($clean2))">
+                <xsl:value-of select="false()"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>clean1: </xsl:text> -->
+                <!--     <xsl:copy-of select="$clean1"/> -->
+                <!--     <xsl:text> clean2: </xsl:text> -->
+                <!--     <xsl:copy-of select="$clean2"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
+                <xsl:value-of select="$clean1 = $clean2"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:function>
 
 </xsl:stylesheet>

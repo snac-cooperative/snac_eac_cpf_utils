@@ -71,7 +71,6 @@
         name "tpt_tens"
         name "tpt_all_xx"
         name "tpt_file_suffix"
-        name "tpt_occupation"
         
     -->
 
@@ -88,7 +87,7 @@
 
     <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
     <xsl:param name="xlink_role" select="$av_archivalResource"/> <!-- xlink:role -->
-    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc/'"/> <!-- xlink:href -->
+    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
 
     <!-- 
          Chunking related. The prefix does not include _ or /.
@@ -466,7 +465,12 @@
             <xsl:value-of select="normalize-space(concat($temp_name, $trailing_dot, ' ', $tag_245))"/>
         </xsl:variable> <!-- end rel_entry -->
 
-        <xsl:variable name="param_data">
+        <!--
+            Container param data thus cparam_data. There's already a param_data below, and I find duplicate
+            var names confusing. Although these are in different scope so technically it is ok in this
+            instance.
+        -->
+        <xsl:variable name="cparam_data">
             <snac_info>
                 <xsl:call-template name="tpt_snac_info"/>
             </snac_info>
@@ -475,19 +479,13 @@
             </agency_info>
         </xsl:variable>
 
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>pd: </xsl:text> -->
-        <!--     <xsl:copy-of select="$param_data"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
-
         <xsl:apply-templates select="$all_xx/eac:container">
             <!--
                 See tpt_container below. Important to select $all_xx/container so that we only operate on /container
                 elements, otherwise XSLT tries to apply to //e_name as well. That makes a mess of the position() inside
                 tpt_container.
             -->
-            <xsl:with-param name="tc_data" select="$param_data"/>
+            <xsl:with-param name="tc_data" select="$cparam_data"/>
             <xsl:with-param name="rel_entry" select="$rel_entry"/>
             <xsl:with-param name="is_1xx" select="$is_1xx"/>
             <xsl:with-param name="name_entry" select="$name_entry"/>
@@ -515,7 +513,7 @@
             <xsl:with-param name="language" select="$language"/>
             <xsl:with-param name="rules" select="$rules"/>
         </xsl:apply-templates>
-    </xsl:template> <!-- end tpt_match -->
+    </xsl:template> <!-- end tpt_match_record -->
     
     <!-- tpt_geo, tpt_65x_geo moved to lib.xsl -->
 
@@ -602,7 +600,11 @@
                                  xlink:arcrole="{$av_associatedWith}">
                         <relationEntry><xsl:value-of select="."/></relationEntry>
                         <descriptiveNote>
-                            <p><span localType="{$av_extractRecordId}"><xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/></span></p>
+                            <p>
+                                <span localType="{$av_extractRecordId}">
+                                    <xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/>
+                                </span>
+                            </p>
                         </descriptiveNote>
                     </cpfRelation>
                 </xsl:for-each>
@@ -672,13 +674,6 @@
             <xsl:copy-of select="."/>
         </xsl:variable>
 
-
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>pd: </xsl:text> -->
-            <!-- <xsl:apply-templates mode="copy-no-ns" select="$param_data"/> -->
-        <!--     <xsl:copy-of select="$param_data"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
 
         <!--
             Note: the context is a <container> node set. <container><e_name>...</e_name><existDates>...</existDates></container>
@@ -833,30 +828,16 @@
     </xsl:template>
 
     <xsl:template match="/">
+        <xsl:message>
+            <xsl:text>Number of geonames places read in:</xsl:text>
+            <xsl:value-of select="count($places/*)"/>
+            <xsl:text>&#x0A;</xsl:text>
+            <xsl:value-of select="concat('Writing output to:', $output_dir, '&#x0A;')"/>
+        </xsl:message>
         <xsl:if test="not(boolean(marc:collection))">
             <xsl:text>&#x0A;Warning: Collection element not found.&#x0A;</xsl:text>
         </xsl:if>
         <xsl:apply-templates />
     </xsl:template>
-    
-
-    <!-- <xsl:template match="*|/"> -->
-    <!--     <xsl:text>Matched star or.&#x0A;</xsl:text> -->
-    <!-- </xsl:template> -->
-
-    <!-- <xsl:template match="text()|@*"> -->
-    <!--     <xsl:text>Matches text or at star.&#x0A;</xsl:text> -->
-    <!-- </xsl:template> -->
-
-    <!-- <xsl:template match="processing-instruction()|comment()"> -->
-    <!--     <xsl:text>Matches processing-instruction or comment.&#x0A;</xsl:text> -->
-    <!-- </xsl:template> -->
-
-    <!-- <xsl:template name="match_snac" match="*[local-name() = 'snac']"> -->
-    <!--     <xsl:text>&#x0A;</xsl:text> -->
-    <!--     <xsl:apply-templates /> -->
-    <!-- </xsl:template> -->
-
-
 
 </xsl:stylesheet>

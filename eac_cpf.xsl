@@ -5,7 +5,7 @@
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns="urn:isbn:1-931666-33-4"
-                exclude-result-prefixes="xs eac"
+                exclude-result-prefixes="xs eac xlink"
                 >
     <!-- 
          Author: Tom Laudeman
@@ -54,9 +54,9 @@
         <xsl:param name="lang_decl" />
         <xsl:param name="topical_subject"/>
         <xsl:param name="geographic_subject"/>
-        <xsl:param name="occupation" />
+        <!-- <xsl:param name="occupation" /> -->
         <xsl:param name="language" />
-        <xsl:param name="function" />
+        <!-- <xsl:param name="function" /> -->
         <xsl:param name="param_data"/>
         
         <xsl:processing-instruction name="oxygen">RNGSchema="http://socialarchive.iath.virginia.edu/shared/cpf.rng" type="xml"</xsl:processing-instruction>
@@ -88,7 +88,7 @@
                     </maintenanceEvent>
                 </maintenanceHistory>
                 <sources>
-                    <source xlink:href="{$param_data/eac:xlink_href}{$controlfield_001}"
+                    <source xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}"
                             xlink:type="simple">
                         <xsl:if test="true()"> <!-- enable in .c only with $is_c_flag, or disable for all with false() -->
                             <objectXMLWrap>
@@ -122,6 +122,13 @@
                         -->
                         <xsl:copy-of select="$param_data/eac:container/eac:occ/*"/>
                         <xsl:copy-of select="$param_data/eac:container/eac:func/*"/>
+                        <xsl:copy-of select="$param_data/eac:function"/>
+                        <!-- <xsl:message> -->
+                        <!--     <xsl:text>fun: </xsl:text> -->
+                        <!--     <xsl:copy-of select="$param_data/eac:function" /> -->
+                        <!-- </xsl:message> -->
+
+
                         <xsl:if test="$is_c_flag">
                             <xsl:copy-of select="$local_affiliation"/>
                             <xsl:copy-of select="$topical_subject"/>
@@ -160,7 +167,7 @@
                     <resourceRelation xlink:arcrole="{$arc_role}"
                                       xlink:role="{$param_data/eac:xlink_role}"
                                       xlink:type="simple"
-                                      xlink:href="{$param_data/eac:xlink_href}{$controlfield_001}">
+                                      xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}">
                         <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
                         <xsl:copy-of select="$mods"/>
 
