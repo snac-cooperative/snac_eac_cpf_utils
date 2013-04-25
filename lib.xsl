@@ -16,11 +16,12 @@
     <!-- 
          Author: Tom Laudeman
          The Institute for Advanced Technology in the Humanities
-
+         
          Copyright 2013 University of Virginia. Licensed under the Educational Community License, Version 2.0 (the
          "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
          License at
          
+         http://opensource.org/licenses/ECL-2.0
          http://www.osedu.org/licenses/ECL-2.0
          
          Unless required by applicable law or agreed to in writing, software distributed under the License is
@@ -58,19 +59,18 @@
          Variables for the localType values. These have changed at least 3 times, so now they go into variables.
          "av_" is mnemonic for Attribute Value.
     -->
-    <xsl:variable name="av_derivedFromRole" select="'http://socialarchive.iath.virginia.edu/control/term#derivedFromRole'"/>
-
-    <xsl:variable name="av_mergedRecord" select="'http://socialarchive.iath.virginia.edu/control/term#mergedRecord'"/>
-    <xsl:variable name="av_suspiciousDate" select="'http://socialarchive.iath.virginia.edu/control/term#suspiciousDate'"/>
-    <xsl:variable name="av_active " select="'http://socialarchive.iath.virginia.edu/control/term#active '"/>
-    <xsl:variable name="av_born" select="'http://socialarchive.iath.virginia.edu/control/term#born'"/>
-    <xsl:variable name="av_died" select="'http://socialarchive.iath.virginia.edu/control/term#died'"/>
-    <xsl:variable name="av_associatedSubject" select="'http://socialarchive.iath.virginia.edu/control/term#associatedSubject'"/>
-    <xsl:variable name="av_associatedPlace" select="'http://socialarchive.iath.virginia.edu/control/term#associatedPlace'"/>
-    <xsl:variable name="av_extractRecordId" select="'http://socialarchive.iath.virginia.edu/control/term#extractRecordId'"/>
+    <xsl:variable name="av_mergedRecord" select="'http://socialarchive.iath.virginia.edu/control/term#MergedRecord'"/>
+    <xsl:variable name="av_suspiciousDate" select="'http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate'"/>
+    <xsl:variable name="av_active " select="'http://socialarchive.iath.virginia.edu/control/term#Active'"/>
+    <xsl:variable name="av_born" select="'http://socialarchive.iath.virginia.edu/control/term#Birth'"/>
+    <xsl:variable name="av_died" select="'http://socialarchive.iath.virginia.edu/control/term#Death'"/>
+    <xsl:variable name="av_associatedSubject" select="'http://socialarchive.iath.virginia.edu/control/term#AssociatedSubject'"/>
+    <xsl:variable name="av_associatedPlace" select="'http://socialarchive.iath.virginia.edu/control/term#AssociatedPlace'"/>
+    <xsl:variable name="av_extractRecordId" select="'http://socialarchive.iath.virginia.edu/control/term#ExtractedRecordId'"/>
     <xsl:variable name="av_Leader06" select="'http://socialarchive.iath.virginia.edu/control/term#Leader06'"/>
     <xsl:variable name="av_Leader07" select="'http://socialarchive.iath.virginia.edu/control/term#Leader07'"/>
     <xsl:variable name="av_Leader08" select="'http://socialarchive.iath.virginia.edu/control/term#Leader08'"/>
+    <xsl:variable name="av_derivedFromRole" select="'http://socialarchive.iath.virginia.edu/control/term#DerivedFromRole'"/>
 
     <xsl:variable name="av_CorporateBody" select="'http://socialarchive.iath.virginia.edu/control/term#CorporateBody'"/>
     <xsl:variable name="av_Family" select="'http://socialarchive.iath.virginia.edu/control/term#Family'"/>
@@ -79,7 +79,9 @@
     <xsl:variable name="av_correspondedWith" select="'http://socialarchive.iath.virginia.edu/control/term#correspondedWith'"/>
     <xsl:variable name="av_creatorOf" select="'http://socialarchive.iath.virginia.edu/control/term#creatorOf'"/>
     <xsl:variable name="av_referencedIn" select="'http://socialarchive.iath.virginia.edu/control/term#referencedIn'"/>
-    <xsl:variable name="av_archivalResource" select="'http://socialarchive.iath.virginia.edu/control/term#archivalResource'"/>
+    <xsl:variable name="av_archivalResource" select="'http://socialarchive.iath.virginia.edu/control/term#ArchivalResource'"/>
+
+    <!-- As far as I know these aren't used in the XSLT that generates CPF. -->
     <xsl:variable name="av_BibliographicResource" select="'http://socialarchive.iath.virginia.edu/control/term#BibliographicResource'"/>
     <xsl:variable name="av_mayBeSameAs" select="'http://socialarchive.iath.virginia.edu/control/term#mayBeSameAs'"/>
     <xsl:variable name="av_sameAs" select="'http://www.w3.org/2002/07/owl#sameAs'"/>
@@ -92,6 +94,10 @@
             <xsl:value-of select="$av_Person"/>
         </value>
         <value key="corporateBody">
+            <xsl:value-of select="$av_CorporateBody"/>
+        </value>
+        <value key="expedition">
+            <!-- Added to deal with field books -->
             <xsl:value-of select="$av_CorporateBody"/>
         </value>
         <value key="family">
@@ -432,7 +438,11 @@
                  <xsl:value-of select="$av_referencedIn"/>
              </xsl:when>
              <xsl:otherwise>
-                 <!-- This can't happen given current logic. (Really?) -->
+                 <!--
+                     Old comment: This can't happen given current logic. New comment: Really? Maybe not for
+                     WorldCat because all those are either is_c_flag or is_r_flag, but the SIA data may come
+                     here.
+                 -->
                  <xsl:value-of select="$av_associatedWith"/>
              </xsl:otherwise>
          </xsl:choose>
@@ -450,8 +460,11 @@
 		 <xsl:text>aacr2compatible</xsl:text>
 	     </xsl:when>
 	     <xsl:otherwise>
-                 <!-- Ideally this would be set specially for each input data set. -->
-                 <xsl:text>WorldCat</xsl:text>
+                 <!--
+                     Ideally this would be set specially for each input data set. See the param auth_form in
+                     the main calling code that includes lib.xsl, for example oclc_marc2cpf.xsl.
+                 -->
+                 <xsl:value-of select="$auth_form"/>
              </xsl:otherwise>
 	 </xsl:choose>
      </xsl:template>
@@ -1164,30 +1177,77 @@
     </xsl:template> <!-- end tpt_show_date -->
 
     
-    <xsl:template name="simple_date_range" xmlns="urn:isbn:1-931666-33-4">
+    <xsl:template name="tpt_simple_date_range" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="from" />
         <xsl:param name="from_type"/>
         <xsl:param name="to" />
         <xsl:param name="to_type" />
+        <xsl:param name="allow_single" />
         <!--
             If there is no "to" then we only have one date. Must always have at least one date.
+            
+            Give the ways this is used (called from field_books2cpf.xsl) the logic behind dates might be
+            slightly wrong. There is an assumption that multiple expeditions will yield a date set, but it is
+            possible (in theory) that the expeditions would have no dates at all. We don't account for a
+            dateSet with an empty dateRange.
         -->
+
+        <!-- 
+             normalize-space on the dates. Can't modify vars so we'll just make new ones.
+        -->
+
+        <xsl:variable name="nfrom" select="normalize-space($from)"/>
+        <xsl:variable name="nto" select="normalize-space($to)"/>
+
         <xsl:choose>
-            <xsl:when test="string-length($to) = 0">
-                <date standardDate="{$from}" localType="{$from_type}">
-                    <xsl:value-of select="$from"/>
+            <xsl:when test="string-length($nto) = 0 and $allow_single">
+                <date standardDate="{$nfrom}" localType="{$from_type}">
+                    <xsl:value-of select="$nfrom"/>
                 </date>
             </xsl:when>
-            <xsl:otherwise>
+            <xsl:when test="string-length($nto) > 0 or string-length($nfrom) > 0">
                 <dateRange>
-                    <xsl:if test="string-length($from) > 0">
-                        <fromDate standardDate="{$from}" localType="{$from_type}"><xsl:value-of select="$from"/></fromDate>
-                    </xsl:if>
-                    <xsl:if test="string-length($to) > 0">
-                        <toDate standardDate="{$to}" localType="{$to_type}"><xsl:value-of select="$to"/></toDate>
-                    </xsl:if>
+                    <xsl:choose>
+                        <xsl:when test="$from_type = $av_active or $to_type = $av_active">
+                            <xsl:if test="string-length($nfrom) > 0">
+                                <fromDate standardDate="{$nfrom}" localType="{$from_type}"><xsl:value-of select="$nfrom"/></fromDate>
+                            </xsl:if>
+                            <xsl:if test="string-length($nto) > 0">
+                                <toDate standardDate="{$nto}" localType="{$to_type}"><xsl:value-of select="$nto"/></toDate>
+                            </xsl:if>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!--
+                                We are going with missing is just an empty self closing element, as opposed
+                                to an element with some attributes with empty string values. Heaven only
+                                knows how downstream code would deal with attributes that exist but have an
+                                empty string as the value.
+                            -->
+                            <xsl:choose>
+                                <xsl:when test="string-length($nfrom) > 0">
+                                    <fromDate standardDate="{$nfrom}" localType="{$from_type}">
+                                        <xsl:value-of select="$nfrom"/>
+                                    </fromDate>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <fromDate/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:choose>
+                                <xsl:when test="string-length($nto) > 0">
+                                    <toDate standardDate="{$nto}" localType="{$to_type}">
+                                        <xsl:value-of select="$nto"/>
+                                    </toDate>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <toDate/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </dateRange>
-            </xsl:otherwise>
+            </xsl:when>
+            <!-- otherwise we don't have either from or to, so we don't have a date -->
         </xsl:choose>
     </xsl:template>
 
@@ -1559,7 +1619,7 @@
         <xsl:param name="all_xx"/>
         <xsl:param name="agency_info"/>
         <xsl:param name="controlfield_001"/>
-    <!--
+        <!--
             We assume that we have at least one 1xx or 7xx name in
             $all_xx/container/ename. Title from MARC 245 (all subfields
             except $6 and $8). If 245 lacks $f and $g then append space 260
@@ -1574,8 +1634,7 @@
             </xsl:for-each>
             <xsl:if
                 test="boolean(marc:datafield[@tag = '260']/marc:subfield[@code = 'c']) and
-                      boolean(marc:datafield[@tag = '245']/marc:subfield[not(@code = 'f') and
-                      not(@code = 'g')])">
+                      boolean(marc:datafield[@tag = '245']/marc:subfield[not(@code = 'f') and not(@code = 'g')])">
                 <xsl:text> </xsl:text>
                 <xsl:value-of select="marc:datafield[@tag = '260']/marc:subfield[@code = 'c']"/>
             </xsl:if>

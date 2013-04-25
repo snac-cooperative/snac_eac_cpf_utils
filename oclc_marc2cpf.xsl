@@ -21,6 +21,7 @@
         "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
         License at
         
+        http://opensource.org/licenses/ECL-2.0
         http://www.osedu.org/licenses/ECL-2.0
         
         Unless required by applicable law or agreed to in writing, software distributed under the License is
@@ -48,46 +49,42 @@
         There is no point in doing omit-xml-declaration="yes" with Saxon, because it won't omit it for xml
         output to stdout. However, if set to "yes" it will omit the declaration for result-document() output
         to a file, which could be bad.
-
+        
         Templates in this file:
-
-        name "tpt_match_record"
-        name "tpt_container" match="marc:collection"
-        name "not_1xx" match="//marc:record[not(marc:datafield[@tag='100' or @tag='110' or @tag='111'])]"
-        name "catch_all" match="*"
-        name "match_subfield"
-        name "top_record" match="marc:record"
-        name "match_snac" match="snac"
+        
+        tpt_main match="/" This the xslt equivalent of main().
+        tpt_match_record
+        tpt_container match="marc:collection"
+        not_1xx match="//marc:record[not(marc:datafield[@tag='100' or @tag='110' or @tag='111'])]"
+        catch_all match="*"
+        match_subfield
+        top_record match="marc:record"
+        match_snac match="snac"
         mode "copy-no-ns" match="*"
         
-        Templates in lib.xml
-        mode "do_subfield" match="*"
-        name "tpt_entity_type"
-        name "tpt_topical_subject"
-        name "tpt_function"
-        name "tpt_geo"
-        name "tpt_65x_geo"
-        mode "tpt_name_entry" match="*"
-        name "tpt_tens"
-        name "tpt_all_xx"
-        name "tpt_file_suffix"
-        
+        See also lib.xsl, eac_cpf.xsl.
     -->
+
+    <xsl:param name="debug" select="false()"/>
+
+    <xsl:param name="output_dir" select="'./cpf'"/>
+    <xsl:param name="fallback_default" select="'US-SNAC'"/>
+    <xsl:param name="auth_form" select="'WorldCat'"/>
+    <xsl:param name="inc_orig" select="true()"  as="xs:boolean"/>
+    <xsl:param name="archive_name" select="'WorldCat'"/>
+
+    <!-- These three params (variables) are passed to the cpf template eac_cpf.xsl via params to tpt_body. -->
+
+    <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
+    <!-- xlink:role The $av_ variables are in lib.xml. -->
+    <xsl:param name="xlink_role" select="$av_archivalResource"/> 
+    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
 
     <xsl:include href="eac_cpf.xsl"/>
     <xsl:include href="lib.xsl"/>
     <xsl:output name="xml" method="xml" indent="yes" omit-xml-declaration="no"/>
     <xsl:strip-space elements="*"/>
     <xsl:preserve-space elements="layout"/>
-    
-    <xsl:param name="output_dir" select="'./cpf'"/>
-    <xsl:param name="fallback_default" select="'US-SNAC'"/>
-
-    <!-- These three params (variables) are sent to the cpf template eac_cpf.xsl. -->
-
-    <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
-    <xsl:param name="xlink_role" select="$av_archivalResource"/> <!-- xlink:role -->
-    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
 
     <!-- 
          Chunking related. The prefix does not include _ or /.
@@ -96,18 +93,16 @@
     <xsl:param name="chunk_prefix" select="'zzz'"/>
     <xsl:param name="offset" select="1"/>
 
-    <xsl:param name="use_chunks">
+    <xsl:param name="use_chunks" as="xs:boolean">
         <xsl:choose>
             <xsl:when test="not($chunk_prefix='zzz')">
-                <xsl:value-of select="1"/>
+                <xsl:value-of select="true()"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="0"/>
+                <xsl:value-of select="false()"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:param>
-
-    <xsl:param name="debug" select="false()"/>
 
     <xsl:variable name="xslt_script" select="'oclc_marc2cpf.xsl'"/>
     <xsl:variable name="xslt_version" select="system-property('xsl:version')" />
@@ -174,7 +169,7 @@
 
         <xsl:variable name="chunk_dir">
             <xsl:choose>
-                <xsl:when test="$use_chunks=1">
+                <xsl:when test="$use_chunks">
                     <xsl:value-of select="concat($output_dir, '/', $chunk_prefix, '_', $chunk_suffix)"/>
                 </xsl:when>
                 <xsl:otherwise>
@@ -260,9 +255,6 @@
         <!--
             authorizedForm has been replaced by $rules.
         -->
-        <!-- <xsl:variable name="authorized_form"> -->
-        <!--     <xsl:text>OCLC-WorldCat</xsl:text> -->
-        <!-- </xsl:variable> -->
         
         <xsl:variable name="topical_subject">
             <xsl:call-template name="tpt_topical_subject">
@@ -304,7 +296,7 @@
             <xsl:variable name="creator_info">
                 <!-- 
                      Used for non-1xx records. If a 7xx exists, then use it as a resourceRelation arcrole
-                     creatorOf. Force the namespace of this node set to be ns since this is essentially input
+                     creatorOf. Force the namespace of this node set to be marc: since this is essentially input
                      (MARC) and not output (EAC). This gets messy in tpt_all_xx where there can be non-7xx
                      duplicate names. Changing the de-duplicating code would require a full rewrite of
                      tpt_all_xx, so when there is a matching 7xx, I just mark the first occurance (whether 6xx
@@ -464,19 +456,47 @@
 
             <xsl:value-of select="normalize-space(concat($temp_name, $trailing_dot, ' ', $tag_245))"/>
         </xsl:variable> <!-- end rel_entry -->
+        
+        <xsl:variable name="citation">
+            <!-- See tpt_mods in lib.xml -->
+            <xsl:variable name="title">
+                <xsl:for-each select="marc:datafield[@tag = '245']/marc:subfield[not(@code = '6') and not(@code = '8')]">
+                    <xsl:if test="not(position() = 1)">
+                        <xsl:text> </xsl:text>
+                    </xsl:if>
+                    <xsl:value-of select="."/>
+                </xsl:for-each>
+                <xsl:if
+                    test="boolean(marc:datafield[@tag = '260']/marc:subfield[@code = 'c']) and
+                          boolean(marc:datafield[@tag = '245']/marc:subfield[not(@code = 'f') and not(@code = 'g')])">
+                    <xsl:text> </xsl:text>
+                    <xsl:value-of select="marc:datafield[@tag = '260']/marc:subfield[@code = 'c']"/>
+                </xsl:if>
+            </xsl:variable>
+
+            <citation>
+                <xsl:text>From the description of </xsl:text>
+                <xsl:value-of select="$title"/>
+                <xsl:text> (</xsl:text>
+                <xsl:value-of select="$agency_info/eac:agencyName"/>
+                <xsl:value-of select="concat('). ', $archive_name, ' record id: ')"/>
+                <xsl:value-of select="$controlfield_001"/>
+            </citation>
+        </xsl:variable>
 
         <!--
-            Container param data thus cparam_data. There's already a param_data below, and I find duplicate
-            var names confusing. Although these are in different scope so technically it is ok in this
-            instance.
+            tc_data to be consistent with usage inside tpt_container. Wast: container param data thus
+            cparam_data. There's already a param_data below, and I find duplicate var names
+            confusing. Although these are in different scope so technically it is ok in this instance.
         -->
-        <xsl:variable name="cparam_data">
+        <xsl:variable name="tc_data">
             <snac_info>
                 <xsl:call-template name="tpt_snac_info"/>
             </snac_info>
             <agency_info>
                 <xsl:copy-of select="$agency_info"/>
             </agency_info>
+            <xsl:copy-of select="$citation"/>
         </xsl:variable>
 
         <xsl:apply-templates select="$all_xx/eac:container">
@@ -485,7 +505,7 @@
                 elements, otherwise XSLT tries to apply to //e_name as well. That makes a mess of the position() inside
                 tpt_container.
             -->
-            <xsl:with-param name="tc_data" select="$cparam_data"/>
+            <xsl:with-param name="tc_data" select="$tc_data"/>
             <xsl:with-param name="rel_entry" select="$rel_entry"/>
             <xsl:with-param name="is_1xx" select="$is_1xx"/>
             <xsl:with-param name="name_entry" select="$name_entry"/>
@@ -644,8 +664,12 @@
         -->
         
         <xsl:variable name="param_data" xmlns="urn:isbn:1-931666-33-4">
+            <inc_orig>
+                <xsl:copy-of select="$inc_orig" />
+            </inc_orig>
             <xsl:copy-of select="$tc_data/eac:agency_info"/>
             <xsl:copy-of select="$tc_data/eac:snac_info"/>
+            <xsl:copy-of select="$tc_data/eac:citation"/>
             <ev_desc>
                 <xsl:value-of select="$ev_desc"/>
             </ev_desc>
@@ -673,6 +697,12 @@
             -->
             <xsl:copy-of select="."/>
         </xsl:variable>
+
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>pd: </xsl:text> -->
+        <!--     <xsl:copy-of select="$param_data"/> -->
+        <!--     <xsl:text>&#x0A;</xsl:text> -->
+        <!-- </xsl:message> -->
 
 
         <!--
@@ -827,12 +857,37 @@
         <xsl:apply-templates />
     </xsl:template>
 
-    <xsl:template match="/">
+    <!-- 
+         Main root template start here.
+    -->
+    <xsl:template name="tpt_main" match="/">
         <xsl:message>
-            <xsl:text>Number of geonames places read in:</xsl:text>
-            <xsl:value-of select="count($places/*)"/>
-            <xsl:text>&#x0A;</xsl:text>
-            <xsl:value-of select="concat('Writing output to:', $output_dir, '&#x0A;')"/>
+            <xsl:value-of select="concat('Number of geonames places read in: ', count($places/*), '&#x0A;')"/>
+            <xsl:value-of select="concat('Writing output to: ', $output_dir, '&#x0A;')"/>
+            <xsl:value-of select="concat('Default authorizedForm: ', $auth_form, '&#x0A;')"/>
+            <xsl:value-of select="concat('Fallback (default) agency code: ', $fallback_default, '&#x0A;')"/>
+            <xsl:value-of select="concat('Default eventDescription: ', $ev_desc, '&#x0A;')"/>
+            <xsl:value-of select="concat('Default xlink href: ', $xlink_href, '&#x0A;')"/>
+            <xsl:value-of select="concat('Default xlink role: ', $xlink_role, '&#x0A;')"/>
+            <xsl:choose>
+                <xsl:when test="$inc_orig">
+                    <xsl:value-of select="concat('Include original record: yes', '&#x0A;')"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat('Include original record: no', '&#x0A;')"/>
+                </xsl:otherwise>
+            </xsl:choose>
+            
+            <xsl:choose>
+            <xsl:when test="$use_chunks">
+                <xsl:value-of select="concat('Using chunks: yes', '&#x0A;')"/>
+                <xsl:value-of select="concat('Chunk size XSLT: ', $chunk_size, '&#x0A;')"/>
+                <xsl:value-of select="concat('Chunk dir prefix: ', $chunk_prefix, '&#x0A;')"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="concat('Using chunks: no', '&#x0A;')"/>
+            </xsl:otherwise>
+            </xsl:choose>
         </xsl:message>
         <xsl:if test="not(boolean(marc:collection))">
             <xsl:text>&#x0A;Warning: Collection element not found.&#x0A;</xsl:text>

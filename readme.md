@@ -36,7 +36,8 @@ Throughout this document we use the generic user id "mst3k" as your user id.
 
 Copyright 2013 University of Virginia. Licensed under the Educational Community License, Version 2.0 (the
 "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
-License at http://www.osedu.org/licenses/ECL-2.0 or see the file license.txt in this repository.
+License at http://www.osedu.org/licenses/ECL-2.0 or http://opensource.org/licenses/ECL-2.0 or see the file
+license.txt in this repository.
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is
 distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
@@ -72,7 +73,11 @@ Beginners may enjoy the introduction to Linux and MacOSX commands:
 http://defindit.com/readme_files/intro_unix.html
 
 The required input file format is MARC21/slim XML, so you may need MARC conversion tools. The open source
-utility yaz will convert MARC .mrc to MARC21/slim XML.
+utility yaz-marcdump will convert MARC .mrc to MARC21/slim XML. If you are running Linux, yaz-marcdump is
+generally part of the yaz package available as a binary install. Windows and MacOS users may have to build yaz
+from source. Here is a sample command line:
+
+    yaz-marcdump -i marc -f marc8 -o marcxml input.mrc > output.xml
 
 http://people.oregonstate.edu/~reeset/marcedit/html/index.php
 

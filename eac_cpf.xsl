@@ -16,6 +16,7 @@
          copy of the License at
          
          http://www.osedu.org/licenses/ECL-2.0
+         http://opensource.org/licenses/ECL-2.0         
          
          Unless required by applicable law or agreed to in writing, software distributed under the License is
          distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
@@ -90,7 +91,12 @@
                 <sources>
                     <source xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}"
                             xlink:type="simple">
-                        <xsl:if test="true()"> <!-- enable in .c only with $is_c_flag, or disable for all with false() -->
+                        <!--
+                            Defaults to true. inc_orig=0 on the command line will make it false. We can't
+                            simply test the value because xlst can't grok the truthiness of node values the
+                            same way it groks the truthiness of variables.
+                        -->
+                        <xsl:if test="$param_data/eac:inc_orig = 'true'"> 
                             <objectXMLWrap>
                                 <xsl:copy-of select="$original"/>
                             </objectXMLWrap>
@@ -137,6 +143,7 @@
                             <xsl:if test="$tag_545 != ''">
                                 <biogHist>
                                     <xsl:copy-of select="$tag_545"/>
+                                    <xsl:copy-of select="$param_data/eac:citation" />
                                 </biogHist>
                             </xsl:if>
                         </xsl:if>
