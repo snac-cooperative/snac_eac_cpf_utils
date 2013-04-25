@@ -264,6 +264,7 @@ Assuming that you are in the ead_cpf_utils directory, you should be able to run 
     Java(TM) SE Runtime Environment (build 1.6.0_37-b06-434-10M3909)
     Java HotSpot(TM) 64-Bit Server VM (build 20.12-b01-434, mixed mode)
 
+    > cp geonames_places.xml.dist geonames_places.xml
     > cp saxon.sh.dist saxon.sh
     > saxon.sh -?
     Saxon-HE 9.4.0.6J from Saxonica
@@ -286,10 +287,11 @@ License. These records are in the file beinecke_sample.xml that we use in the wo
 
 If you have not copied the .dist files to local copies, do so now:
 
-   cp saxon.sh.dist saxon.sh
-   cp worldcat_code.xml.small worldcat_code.xml
+    cp geonames_places.xml.dist geonames_places.xml
+    cp saxon.sh.dist saxon.sh
+    cp worldcat_code.xml.small worldcat_code.xml
 
-Just about the simplest method, relies on some internal defaults, but overrides the output directory name:
+Just about the simplest method relies on some internal defaults, but overrides the output directory name:
 
     saxon.sh beinecke_sample.xml oclc_marc2cpf.xsl output_dir=brbl
 
