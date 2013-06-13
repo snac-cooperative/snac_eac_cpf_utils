@@ -31,7 +31,7 @@
 
     <!--
         
-        oclc_marc2cpf.xsl reads individual MARC xml records and writes out EAD-CFP XML. 
+        oclc_marc2cpf.xsl creates EAC-CPF from MARC21/slim XML.
         
         saxon marc.xml oclc_marc2cpf.xsl
 

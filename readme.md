@@ -28,7 +28,7 @@ Overview of ead_cpf_utils
 
 This software is beta pre-release. It may contain bugs, and it likely to change before the first production version.
 
-These are XSLT scripts that create EAD-CPF (Corporations, Persons, and Families) from MARC21/slim XML. Some sample data
+These are XSLT scripts that create EAC-CPF (Corporations, Persons, and Families) from MARC21/slim XML. Some sample data
 is (or soon will be) included. There are also Perl scripts which are primarily used when the number of input
 records to be processed will exceed the memory of the computer.
 
@@ -65,7 +65,7 @@ install and use cygwin.
 
 http://www.cygwin.com/
 
-You can retrieve the EAD-CPF code from github with a web browser, or via the command line utility "git". The command
+You can retrieve the EAC-CPF code from github with a web browser, or via the command line utility "git". The command
 line utility is faster and easier to use for updates.
 
 Beginners may enjoy the introduction to Linux and MacOSX commands:
@@ -385,7 +385,7 @@ http://www.thaiopensource.com/relaxng/jing.html
 http://code.google.com/p/jing-trang/downloads/list
 
 
-You can find the EAD-CPF schema file cpf.rng (with modifications formally submitted to TS-EAC) on the web at:
+You can find the EAC-CPF schema file cpf.rng (with modifications formally submitted to TS-EAC) on the web at:
 
 http://socialarchive.iath.virginia.edu/shared/cpf.rng
 
@@ -709,7 +709,7 @@ You can get a count of the number of codes with multiple codes via "grep" and "w
     > grep "multi mc:" tmp.log | wc -l
           11
 
-Now you should have a valid worldcat_code.xml, ready for use in generating EAD-CPF.
+Now you should have a valid worldcat_code.xml, ready for use in generating EAC-CPF.
 
 
 Common error messages
@@ -808,7 +808,7 @@ the Perl code deals with that. The script exec_record.pl uses a combination of r
 variables to find a `<record>` element regardless of intervening whitespace (or not).
 
 The XSLT script, oclc_marc2cpf.xsl reads each record, extracting relevant information and putting it into
-variables which are put into parameters for a final template that renders the EAD-CPF output. Each eac-cpf
+variables which are put into parameters for a final template that renders the EAC-CPF output. Each eac-cpf
 output is sent to a separate file. Files are put into a single depth directory hierarchy via some chunking
 code. The script oclc_marc2cpf.xsl includes a two additional XSLT files, eac_cpf.xsl and lib.xsl. The file
 eac_cpf.xsl is which is mostly just an eac-cpf template. It is wrapped in a XSLT named template with
@@ -827,7 +827,7 @@ so tracking history would require a record of the command line arguments. Necess
 via command line arguments.
 
 This example reads MARC21/slim XML input snac.xml, starts with record 1, and reads 10 records. Note that the output file
-name is based on the input record id, so my EAD-CPF XML files have names that begin with an OCLC identifer
+name is based on the input record id, so my EAC-CPF XML files have names that begin with an OCLC identifer
 like "OCLC-8559898". Your output files will have names relative to your record ids.
 
     > get_record.pl file=snac.xml offset=1 limit=10 | saxon.sh -s:- oclc_marc2cpf.xsl
@@ -941,7 +941,7 @@ config options "iterations", and "chunk". test_eac.cfg will process the first 50
 
     ./exec_record.pl config=test_eac.cfg &
 
-Output EAD-CPF will be in the directory specified by config options "output_dir", and "chunk_prefix" with
+Output EAC-CPF will be in the directory specified by config options "output_dir", and "chunk_prefix" with
 numeric suffixes. For example ./devx_1, ./devx_2 and so on. Messages from the scripts will be in "log_file",
 which is tmp_test_er.log for test_eac.cfg. You can monitor the progress of the run with "tail" and the log file.
 
