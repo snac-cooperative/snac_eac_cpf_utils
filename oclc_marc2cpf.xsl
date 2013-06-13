@@ -76,7 +76,7 @@
     <!-- These three params (variables) are passed to the cpf template eac_cpf.xsl via params to tpt_body. -->
 
     <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
-    <!-- xlink:role The $av_ variables are in lib.xml. -->
+    <!-- xlink:role The $av_ variables are in lib.xsl. -->
     <xsl:param name="xlink_role" select="$av_archivalResource"/> 
     <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
 
@@ -181,6 +181,10 @@
 
         <xsl:variable name="name_entry">
             <!-- 
+                 Interestingly, I don't think this is used. It may be a historical artifact. All the entities
+                 are in the $all_xx variable as a node list where each node has all the entity info necessary
+                 to fill in the CPF template.
+
                  The context here is <record>, but tpt_name_entry wants to be called with the single 1xx marc:datafield
                  as context. Applying templates here without a select results in a log of extra (wrong) data in the name
                  entry.

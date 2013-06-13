@@ -28,7 +28,7 @@ Overview of ead_cpf_utils
 
 This software is beta pre-release. It may contain bugs, and it likely to change before the first production version.
 
-These are XSLT scripts that convert MARC21/slim XML into EAD-CPF (Corporations, Persons, and Families). Some sample data
+These are XSLT scripts that create EAD-CPF (Corporations, Persons, and Families) from MARC21/slim XML. Some sample data
 is (or soon will be) included. There are also Perl scripts which are primarily used when the number of input
 records to be processed will exceed the memory of the computer.
 

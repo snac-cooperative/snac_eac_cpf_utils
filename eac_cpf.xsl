@@ -5,7 +5,7 @@
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns="urn:isbn:1-931666-33-4"
-                exclude-result-prefixes="xs eac xlink"
+                exclude-result-prefixes="#all"
                 >
     <!-- 
          Author: Tom Laudeman
@@ -25,6 +25,8 @@
          
          This file is included in oclc_marc2cpf.xsl and called to write files by template tpt_body. In
          general, only the minimum amount of code is here, leaving this file as clean as possible.
+         
+         exclude-result-prefixes="xs eac xlink"
     -->
 
     <xsl:template name="tpt_body">
@@ -112,6 +114,7 @@
                         <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
                     </nameEntry>
                 </identity>
+                
                 <xsl:if test="$is_c_flag">
                     <description>
                         <!--
@@ -171,24 +174,64 @@
 
                 <relations>
                     <xsl:copy-of select="$cpf_relation"/>
-                    <resourceRelation xlink:arcrole="{$arc_role}"
-                                      xlink:role="{$param_data/eac:xlink_role}"
-                                      xlink:type="simple"
-                                      xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}">
-                        <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
-                        <xsl:copy-of select="$mods"/>
+                    <xsl:choose>
+                        <xsl:when test="count($param_data/eac:rrel) > 0">
+                            <!--
+                                NYSA could have multiple resourceRelations, so we put a nodeset with all the
+                                info into $param_data. rrel also allows us to not include a slash at the end
+                                of the xlink_href base URI. Maybe someday another data set will have multiple
+                                resourceRelations. In any case, the otherwise clause supports all the legacy
+                                XSL script.
+                            -->
+                            <!-- <xsl:message> -->
+                            <!--     <xsl:text>newrrel: </xsl:text> -->
+                            <!--     <xsl:copy-of select="$param_data/eac:rrel"/> -->
+                            <!--     <xsl:text>&#x0A;</xsl:text> -->
+                            <!-- </xsl:message> -->
+                            <xsl:for-each select="$param_data/eac:rrel">
+                            <resourceRelation xlink:arcrole="{eac:arc_role}"
+                                              xlink:role="{eac:xlink_role}"
+                                              xlink:type="simple"
+                                              xlink:href="{eac:xlink_href}">
+                                <relationEntry><xsl:value-of select="eac:rel_entry"/></relationEntry>
+                                <xsl:copy-of select="eac:mods/*"/>
+                                <xsl:if test="string-length(eac:leader06)>0 or string-length(eac:leader07)>0 or string-length(eac:leader08)>0">
+        		            <descriptiveNote>
+			                <p>
+				            <span localType="{$param_data/eac:av_Leader06}"><xsl:value-of select="eac:leader06"/></span>
+				            <span localType="{$param_data/eac:av_Leader07}"><xsl:value-of select="eac:leader07"/></span>
+				            <span localType="{$param_data/eac:av_Leader08}"><xsl:value-of select="eac:leader08"/></span>
+			                </p>
+			            </descriptiveNote>
+                                </xsl:if>
+                            </resourceRelation>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!--
+                                The classic, legacy single resourceRelation version with the included slash
+                                character. Use rrel (above) if you don't want the slash.
+                            -->
+                            <resourceRelation xlink:arcrole="{$arc_role}"
+                                              xlink:role="{$param_data/eac:xlink_role}"
+                                              xlink:type="simple"
+                                              xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}">
+                                <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
+                                <xsl:copy-of select="$mods"/>
 
-                        <xsl:if test="string-length($leader06)>0 or string-length($leader07)>0 or string-length($leader08)>0">
-        		    <descriptiveNote>
-			        <p>
-				    <span localType="{$param_data/eac:av_Leader06}"><xsl:value-of select="$leader06"/></span>
-				    <span localType="{$param_data/eac:av_Leader07}"><xsl:value-of select="$leader07"/></span>
-				    <span localType="{$param_data/eac:av_Leader08}"><xsl:value-of select="$leader08"/></span>
-			        </p>
-			    </descriptiveNote>
-                        </xsl:if>
+                                <xsl:if test="string-length($leader06)>0 or string-length($leader07)>0 or string-length($leader08)>0">
+        		            <descriptiveNote>
+			                <p>
+				            <span localType="{$param_data/eac:av_Leader06}"><xsl:value-of select="$leader06"/></span>
+				            <span localType="{$param_data/eac:av_Leader07}"><xsl:value-of select="$leader07"/></span>
+				            <span localType="{$param_data/eac:av_Leader08}"><xsl:value-of select="$leader08"/></span>
+			                </p>
+			            </descriptiveNote>
+                                </xsl:if>
 
-                    </resourceRelation>
+                            </resourceRelation>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </relations>
             </cpfDescription>
         </eac-cpf>
