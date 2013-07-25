@@ -328,12 +328,6 @@
              </xsl:for-each>
          </xsl:variable>
          
-         <!-- <xsl:message> -->
-         <!--     <xsl:text>geo1: </xsl:text> -->
-         <!--     <xsl:copy-of select="$geo1" /> -->
-         <!--     <xsl:text>&#x0A;</xsl:text> -->
-         <!-- </xsl:message> -->
-
          <!--
              Deduping a node set in 6 lines of code, but subtle. We need to
              compare each node to every other node in the node set. That is
@@ -722,7 +716,14 @@
         <xsl:param name="sfield"/>
         <xsl:param name="cname"/>
         <!-- 
-             Works just like tpt_occ_4. 
+             Named "_4" because $sfield is (usually) $df/marc:datafield/marc:subfield[@code='4']
+             
+             This is similar to tpt_ocfu_e, with the addition that it first checks against the relators file.
+
+             Use a double test [[]] on the for-each to find the single matching <mads> element. We're using
+             the for-each to set the context of a record where the singular variant matches our unpunctuated
+             value. Once we have the context, just get the authority/occupation name as usual.
+             
         -->
         <xsl:variable name="test_code" select="lib:unpunct($sfield)"/>
         <xsl:for-each select="$relators/madsrdf:Authority[madsrdf:code = $test_code]">
@@ -742,7 +743,18 @@
         <xsl:param name="sfield"/>
         <xsl:param name="cname"/>
         <!--
-            Works just like tpt_occ_e.
+            Named "_e" because $sfield is (usually) $df/marc:datafield/marc:subfield[@code='e']. 
+            
+            Normally, the $sfield is the $e, thus this historical comment: Test the lowercase, un-punctuated
+            text of the $e (context) against the occupation list.
+            
+            Use a variable to hold the current x00$e, since the context changes once we are inside the
+            for-each. It was a mistake to do lib:unpunct(text()) below in the for-each where $unp is, because
+            at that point the context is the occupations record, not our marc x00$e value.
+            
+            Use a double test [[]] on the for-each to find the single matching <mads> element. We're using
+            the for-each to set the context of a record where the singular variant matches our unpunctuated
+            value. Once we have the context, just get the authority/occupation name as usual.
         -->
         <xsl:variable name="unp" select="lower-case(lib:unpunct($sfield))"/>
 
@@ -1619,6 +1631,7 @@
         <xsl:param name="all_xx"/>
         <xsl:param name="agency_info"/>
         <xsl:param name="controlfield_001"/>
+        <xsl:param name="archive_agency" select="'WorldCat'"/>
         <!--
             We assume that we have at least one 1xx or 7xx name in
             $all_xx/container/ename. Title from MARC 245 (all subfields
@@ -1652,7 +1665,7 @@
 	<xsl:element name="objectXMLWrap" xmlns="urn:isbn:1-931666-33-4">
             <mods xmlns="http://www.loc.gov/mods/v3">
 	        <recordInfo>
-                    <recordOrigin>WorldCat:<xsl:value-of select="$controlfield_001"/></recordOrigin>
+                    <recordOrigin><xsl:value-of select="concat($archive_agency, ':', $controlfield_001)"/></recordOrigin>
                     <recordContentSource>ISIL:<xsl:value-of select="$agency_info/eac:agencyCode"/></recordContentSource>
                 </recordInfo>
                 <xsl:for-each select="$all_xx/eac:container/eac:e_name[matches(@tag, '1(00|10|11)') or @is_creator=true()]">
@@ -3066,5 +3079,51 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:function>
+
+    <xsl:function name="lib:name-cleanse">
+        <xsl:param name="aname"/>
+
+        <!--
+            Called from tpt_name_info in bl2cpf.xsl. Used for proper names. Remove strange punctuation caused
+            by empty elements leaving behind just field separators. This is simpler than some complex
+            conditionals that detect empty elements.
+        -->
+
+        <!-- Remove trailing space from "D' " or "Leyborne- ". When AdditionalInformation is part of the
+             surname, it might have a trailing space after hyphen or apostrophe (single
+             quote). "Leyborne-Popham" or "D'Aeth".
+             
+             Note the fun use of alternation via | and capturing via () and the captured match placeholder $1.
+        -->
+
+        <xsl:variable name="p1">
+            <xsl:value-of select="replace($aname, '(''|-) ', '$1')"/>
+        </xsl:variable>
+
+        <!-- Replace one or more ", " with a single instance of the same. -->
+
+        <xsl:variable name="p2">
+            <xsl:value-of select="replace($p1, '(, )+', ', ')"/>
+        </xsl:variable>
+
+        <!-- remove single ", " at the end of the line -->
+
+        <xsl:variable name="p3">
+            <xsl:value-of select="replace($p2, ', +$', '')"/>
+        </xsl:variable>
+
+        <!-- replace any number of " ," with a single ", ". The " ," happens when a space separated element is
+             empty and an adjacent comma separated element is empty. -->
+
+        <xsl:variable name="p4">
+            <xsl:value-of select="replace($p3, '( ,)+', ', ')"/>
+        </xsl:variable>
+        
+        <!-- Some double spaces may have crept in as well as trailing space. Normalize. -->
+
+        <xsl:value-of select="normalize-space($p4)"/>
+
+    </xsl:function>
+
 
 </xsl:stylesheet>

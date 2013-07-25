@@ -66,7 +66,16 @@
         <xsl:text>&#x0A;</xsl:text>        
         <eac-cpf>
             <control>
-                <recordId><xsl:value-of select="concat($record_id, '.', $fn_suffix)"/></recordId>
+                <xsl:choose>
+                    <xsl:when test="$param_data/eac:cpf_record_id/text()">
+                        <!-- Newer code: BL -->
+                        <recordId><xsl:value-of select="$param_data/eac:cpf_record_id"/></recordId>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!-- Legacy code: WorldCat, SIA agency, SIA fieldbooks, NYSA -->
+                        <recordId><xsl:value-of select="concat($record_id, '.', $fn_suffix)"/></recordId>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <maintenanceStatus>new</maintenanceStatus>
                 <maintenanceAgency>
                     <xsl:copy-of select="$param_data/eac:snac_info/*"/>
@@ -113,6 +122,12 @@
                         <part><xsl:value-of select="$entity_name"/></part>
                         <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
                     </nameEntry>
+                    <xsl:for-each select="$param_data/eac:alt_name">
+                        <nameEntry xml:lang="en-Latn">
+                            <xsl:copy-of select="./*"/>
+                            <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
+                        </nameEntry>
+                    </xsl:for-each>
                 </identity>
                 
                 <xsl:if test="$is_c_flag">
@@ -132,11 +147,6 @@
                         <xsl:copy-of select="$param_data/eac:container/eac:occ/*"/>
                         <xsl:copy-of select="$param_data/eac:container/eac:func/*"/>
                         <xsl:copy-of select="$param_data/eac:function"/>
-                        <!-- <xsl:message> -->
-                        <!--     <xsl:text>fun: </xsl:text> -->
-                        <!--     <xsl:copy-of select="$param_data/eac:function" /> -->
-                        <!-- </xsl:message> -->
-
 
                         <xsl:if test="$is_c_flag">
                             <xsl:copy-of select="$local_affiliation"/>
@@ -175,7 +185,7 @@
                 <relations>
                     <xsl:copy-of select="$cpf_relation"/>
                     <xsl:choose>
-                        <xsl:when test="count($param_data/eac:rrel) > 0">
+                        <xsl:when test="count($param_data/eac:rrel) > 0  or $param_data/eac:use_rrel = true()">
                             <!--
                                 NYSA could have multiple resourceRelations, so we put a nodeset with all the
                                 info into $param_data. rrel also allows us to not include a slash at the end

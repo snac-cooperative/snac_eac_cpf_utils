@@ -462,7 +462,11 @@
         </xsl:variable> <!-- end rel_entry -->
         
         <xsl:variable name="citation">
-            <!-- See tpt_mods in lib.xml -->
+            <!--
+                See tpt_mods in lib.xml. The agency name will be (Unknown) if we can't look up the MARC agency
+                code, or if there are multiple entries in the WorldCat registry for a given MARC agency code
+                such as "CSt-H".
+            -->
             <xsl:variable name="title">
                 <xsl:for-each select="marc:datafield[@tag = '245']/marc:subfield[not(@code = '6') and not(@code = '8')]">
                     <xsl:if test="not(position() = 1)">
@@ -489,9 +493,9 @@
         </xsl:variable>
 
         <!--
-            tc_data to be consistent with usage inside tpt_container. Wast: container param data thus
-            cparam_data. There's already a param_data below, and I find duplicate var names
-            confusing. Although these are in different scope so technically it is ok in this instance.
+            tc_data to be consistent with usage inside tpt_container. SNAC is the maintenanceAgency for the CPF data.
+            
+            This is not the same as the maintenanceAgency of the data that the CPF was extracted from.
         -->
         <xsl:variable name="tc_data">
             <snac_info>
@@ -866,6 +870,7 @@
     -->
     <xsl:template name="tpt_main" match="/">
         <xsl:message>
+            <xsl:value-of select="concat('Date today: ', current-dateTime(), '&#x0A;')"/>
             <xsl:value-of select="concat('Number of geonames places read in: ', count($places/*), '&#x0A;')"/>
             <xsl:value-of select="concat('Writing output to: ', $output_dir, '&#x0A;')"/>
             <xsl:value-of select="concat('Default authorizedForm: ', $auth_form, '&#x0A;')"/>

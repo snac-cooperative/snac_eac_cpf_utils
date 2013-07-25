@@ -134,7 +134,8 @@ http://git-osx-installer.googlecode.com/files/git-1.8.1-intel-universal-snow-leo
 
 Saxon for Java:
 
-http://downloads.sourceforge.net/project/saxon/Saxon-HE/9.4/SaxonHE9-4-0-6J.zip
+http://sourceforge.net/projects/saxon/?source=dlp
+http://sourceforge.net/projects/saxon/files/latest/download?source=dlp
 
 Saxon's main page at Sourceforge:
 
