@@ -97,9 +97,9 @@ We only process 245$f as active for 1xx|7xx. Since the .rxx files are for 6xx, t
 
 ---
 
-    <existDates>
-       <date localType="snac:suspiciousFormat">1735-1???.</date>
-    </existDates>
+         <existDates>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">1735-1???.</date>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac 20333 Nov 26 14:55 qa_122542862_date_nqqq.xml
     less cpf/*122542862.r76.xml
@@ -153,12 +153,18 @@ Date with "or" in the middle, and a trailing "?".
 
     <subfield code="d">1061 or 2-1121?</subfield>
 
-    <existDates>
-       <dateRange>
-          <fromDate standardDate="1061" localType="born" notBefore="1061" notAfter="1062">1061 or 1062</fromDate>
-          <toDate standardDate="1121" localType="died" notBefore="1120" notAfter="1122">1121</toDate>
-       </dateRange>
-    </existDates>
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1061"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth"
+                         notBefore="1061"
+                         notAfter="1062">1061 or 1062</fromDate>
+               <toDate standardDate="1121"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death"
+                       notBefore="1120"
+                       notAfter="1122">1121</toDate>
+            </dateRange>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  3239 Oct  3 11:29 qa/qa_123415450_or_question.xml
     saxon.sh qa/qa_123415450_or_question.xml oclc_marc2cpf.xsl
@@ -168,9 +174,16 @@ Date with "or" in the middle, and a trailing "?".
 
 d. 767 or 8.
 
-    <fromDate/>
-    <toDate standardDate="0767" localType="died" notBefore="0767" notAfter="0768">-0767 or 0768</toDate>
-               
+         <existDates>
+            <dateRange>
+               <fromDate/>
+               <toDate standardDate="0767"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death"
+                       notBefore="0767"
+                       notAfter="0768">0767 or 0768</toDate>
+            </dateRange>
+         </existDates>
+
     -rw-r--r-- 1 mst3k snac  4013 Oct  3 11:40 qa_123415456_died_or.xml
     saxon.sh qa/qa_123415456_died_or.xml oclc_marc2cpf.xsl
     less cpf/*123415456.c.xml
@@ -281,7 +294,7 @@ parsed, thus no existDates at all.
 This verifies that questionable dates display as suspiciousDate.
 
          <existDates>
-            <date localType="http://socialarchive.iath.virginia.edu/control/term#suspiciousDate">1912-0.</date>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">1912-0.</date>
          </existDates>
 
     -rw-r--r-- 1 mst3k snac  3542 Nov 26 14:48 qa_220227335_date_nnnn_hyphen-zero.xml
@@ -308,7 +321,10 @@ Manually modified based on 222612265 so we would have a died ca date. The origin
          <existDates>
             <dateRange>
                <fromDate/>
-               <toDate standardDate="1986" localType="snac:died" notBefore="1983" notAfter="1989">approximately 1986</toDate>
+               <toDate standardDate="1986"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death"
+                       notBefore="1983"
+                       notAfter="1989">approximately 1986</toDate>
             </dateRange>
          </existDates>
 
@@ -322,26 +338,36 @@ Manually modified based on 222612265 so we would have a died ca date. The origin
 by a period (dot) at the end of the born date so this also tests de-duplicating ignores a trailing period (and
 all trailing punctuation, I think).
 
-     <existDates>
-         <dateRange>
-             <fromDate standardDate="1896" localType="snac:born" notBefore="1893" notAfter="1899">approximately 1896</fromDate>
-             <toDate/>
-         </dateRange>
-     </existDates>
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1896"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth"
+                         notBefore="1893"
+                         notAfter="1899">approximately 1896</fromDate>
+               <toDate/>
+            </dateRange>
+         </existDates>
+
+    -rw-r--r-- 1 twl8n snac 3324 Feb 20 16:12 qa/qa_222612265a_b_ca_date.xml
+    less cpf/*222612265a.c.xml
+
+---- 
 
 The "x" file has duplicate died "d. ca. 1896" to exercise the died date code.
 
-    <existDates>
-       <dateRange>
-          <fromDate/>
-          <toDate standardDate="1986" localType="snac:died" notBefore="1983" notAfter="1989">approximately 1986</toDate>
-       </dateRange>
-    </existDates>
+         <existDates>
+            <dateRange>
+               <fromDate/>
+               <toDate standardDate="1986"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death"
+                       notBefore="1983"
+                       notAfter="1989">approximately 1986</toDate>
+            </dateRange>
+         </existDates>
 
-    -rw-r--r-- 1 twl8n snac 3324 Feb 20 16:12 qa/qa_222612265a_b_ca_date.xml
     -rw-r--r-- 1 twl8n snac 3571 Feb 20 16:14 qa/qa_222612265x_fake_died_ca_date.xml
     saxon.sh qa/qa_222612265a_b_ca_date.xml oclc_marc2cpf.xsl
-    less cpf/*222612265a.c.xml
+    less cpf/*222612265x.c.xml
 
 ---
 
@@ -355,6 +381,15 @@ Manually modified.
       <subfield code="a">Academics.</subfield>
       <subfield code="2">local</subfield>
    </datafield>
+
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1893"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth">1893</fromDate>
+               <toDate standardDate="1981"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death">1981</toDate>
+            </dateRange>
+         </existDates>
 
     -rw-r--r-- 1 twl8n snac 3766 Feb 20 16:27 qa/qa_225810091a_600_family_date_dupe_occupation.xml
     less cpf/*225810091a.c.xml
@@ -414,9 +449,9 @@ The questionable date is output in the .r01 file.
     <subfield code="d">1834-1876 or later.</subfield>
 
          <existDates>
-            <date localType="snac:suspiciousFormat">1834-1876 or later.</date>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">1834-1876 or later.</date>
          </existDates>
-
+ 
     -rw-r--r-- 1 mst3k snac  2573 Nov 26 10:40 qa_270873349_date_or_later.xml
     less cpf/*270873349.r01.xml
 
@@ -432,12 +467,16 @@ The questionable date is output in the .r01 file.
 
     <subfield code="d">1837-[1889?]</subfield>
 
-    <existDates>
-       <dateRange>
-          <fromDate standardDate="1837" localType="snac:born">1837</fromDate>
-          <toDate standardDate="1889" localType="snac:died" notBefore="1888" notAfter="1890">1889</toDate>
-       </dateRange>
-    </existDates>
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1837"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth">1837</fromDate>
+               <toDate standardDate="1889"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death"
+                       notBefore="1888"
+                       notAfter="1890">1889</toDate>
+            </dateRange>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  4505 Oct  3 14:41 qa_313817562_sq_bracket_date.xml
     less cpf/*313817562.c.xml
@@ -447,10 +486,9 @@ The questionable date is output in the .r01 file.
 That is an ell, not a one. one nine four ell.
 
     <subfield code="d">194l-</subfield>
-    <existDates>
-      <date localType="snac:suspiciousFormat">194l-</date>
-    </existDates>
-
+         <existDates>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">194l-</date>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  1829 Oct  3 14:51 qa_3427618_date_194ell.xml
     less cpf/*3427618.c.xml
@@ -491,12 +529,14 @@ One of two examples of a 100 family with no 100$d date, so it uses the 245$f dat
         <subfield code="f">1839-1906.</subfield>
     </datafield>
 
-    <existDates>
-       <dateRange>
-          <fromDate localType="snac:active" standardDate="1839">active 1839</fromDate>
-          <toDate localType="snac:active" standardDate="1906">1906</toDate>
-       </dateRange>
-    </existDates>
+         <existDates>
+            <dateRange>
+               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                         standardDate="1839">active 1839</fromDate>
+               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                       standardDate="1906">active 1906</toDate>
+            </dateRange>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac 3826 Dec 19 11:14 qa/qa_42714894_waterman_245f_date.xml
     less cpf/*42714894.c.xml
@@ -511,6 +551,15 @@ Has a lone comma in 700$a which broke the code at one point. I can't remember wh
         <subfield code="e">interviewer.</subfield>
     </datafield>
 
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1905"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth">1905</fromDate>
+               <toDate standardDate="1990"
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death">1990</toDate>
+            </dateRange>
+         </existDates>
+
     -rw-r--r-- 1 mst3k snac  3589 Nov 19 21:03 qa_44529109_multi_sequence.xml
     less cpf/*44529109.c.xml
 
@@ -518,25 +567,27 @@ Has a lone comma in 700$a which broke the code at one point. I can't remember wh
 
 Only in the .r01 file.
 
-    <existDates>
-       <date localType="snac:suspiciousFormat">date -</date>
-    </existDates>
+         <existDates>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">date -</date>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  2912 Nov 26 14:46 qa_495568547_date_hyphen_only.xml
-    less cpf/*495568547.c.xml
     less cpf/*495568547.r01.xml
+
 
 ---
 
 We parse 1870s.
 
-    <existDates>
-       <dateRange>
-          <fromDate standardDate="1870" localType="snac:born" notBefore="1870" notAfter="1879">1870s</fromDate>
-          <toDate/>
-       </dateRange>
-    </existDates>
-
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1870"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth"
+                         notBefore="1870"
+                         notAfter="1879">1870s</fromDate>
+               <toDate/>
+            </dateRange>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  2615 Oct  9 10:24 qa/qa_505818582_date_1870s.xml
     saxon.sh qa/qa_505818582_date_1870s.xml  oclc_marc2cpf.xsl
@@ -547,9 +598,20 @@ We parse 1870s.
 Test that 1800s does the whole 100 years just as 1870s does an entire 10 years. Note the -1 offset between
 "1800s" and "19th century"
 
+         <existDates>
+            <dateRange>
+               <fromDate standardDate="1800"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth"
+                         notBefore="1800"
+                         notAfter="1899">1800s</fromDate>
+               <toDate/>
+            </dateRange>
+         </existDates>
+
+
     saxon.sh qa/qa_505818582a_date_1870s.xml oclc_marc2cpf.xsl
-    less cpf/GHT-505818582a.c.xml
-    less cpf/GHT-505818582a.r01.xml
+    less cpf/*GHT-505818582a.c.xml
+    less cpf/*GHT-505818582a.r01.xml
 
 
 ---
@@ -600,13 +662,12 @@ instead of a single string.
 
 This .r56 should be a questionable date. It broke the code by trying to turn a null string into a
 number. Either it made 0000 which is questionable (wrong), or Saxon died with an error.
-
+ 
          <existDates>
-            <date localType="http://socialarchive.iath.virginia.edu/control/term#suspiciousDate">1714 or -15-1757.</date>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">1714 or -15-1757.</date>
          </existDates>
 
     -rw-r--r-- 1 mst3k snac 14958 Nov 26 10:35 qa_611138843_date_or_hyphen_15_hyphen_1757.xml
-    less cpf/*611138843.c.xml
     less cpf/*611138843.r56.xml
 
 ---
@@ -614,7 +675,7 @@ number. Either it made 0000 which is questionable (wrong), or Saxon died with an
          <existDates>
             <dateRange>
                <fromDate standardDate="1834"
-                         localType="http://socialarchive.iath.virginia.edu/control/term#born"
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth"
                          notBefore="1834"
                          notAfter="1835">1834 or 1835</fromDate>
                <toDate/>
@@ -630,7 +691,7 @@ number. Either it made 0000 which is questionable (wrong), or Saxon died with an
 Is (and should be) questionable, make sure it doesn't crash the script
 
          <existDates>
-            <date localType="http://socialarchive.iath.virginia.edu/control/term#suspiciousDate">16uu-17uu.</date>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate">16uu-17uu.</date>
          </existDates>
 
     -rw-r--r-- 1 mst3k snac  3801 Oct  9 11:57 qa_678631801_date_16uu.xml
@@ -860,7 +921,7 @@ elsewhere.)
 Has 100$e and 656. 
 
          <existDates>
-            <date localType="http://socialarchive.iath.virginia.edu/control/term#active "
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                   standardDate="1976">active 1976</date>
          </existDates>
          <occupation localType="http://socialarchive.iath.virginia.edu/control/term#derivedFromRole">
@@ -886,9 +947,9 @@ Has 110$e which should become a function.
 
          <existDates>
             <dateRange>
-               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#active "
+               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                          standardDate="1989">active 1989</fromDate>
-               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#active "
+               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                        standardDate="1994">active 1994</toDate>
             </dateRange>
          </existDates>
@@ -911,11 +972,12 @@ Has 110$e which should become a function.
                      <subfield code="4">dpt</subfield>
                   </datafield>
 
+         <existDates>
             <dateRange>
                <fromDate standardDate="1901"
-                         localType="http://socialarchive.iath.virginia.edu/control/term#born">1901</fromDate>
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Birth">1901</fromDate>
                <toDate standardDate="1983"
-                       localType="http://socialarchive.iath.virginia.edu/control/term#died">1983</toDate>
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Death">1983</toDate>
             </dateRange>
          </existDates>
          <occupation localType="http://socialarchive.iath.virginia.edu/control/term#derivedFromRole">
@@ -1004,9 +1066,9 @@ After discussion, I think we're sure this is "active 1768 to 1792" and not "acti
          <existDates>
             <dateRange>
                <fromDate standardDate="1768"
-                         localType="http://socialarchive.iath.virginia.edu/control/term#active ">active 1768</fromDate>
+                         localType="http://socialarchive.iath.virginia.edu/control/term#Active">active 1768</fromDate>
                <toDate standardDate="1792"
-                       localType="http://socialarchive.iath.virginia.edu/control/term#active ">active 1792</toDate>
+                       localType="http://socialarchive.iath.virginia.edu/control/term#Active">active 1792</toDate>
             </dateRange>
          </existDates>
 
@@ -1019,11 +1081,11 @@ Test "1980's" in alt date parsing. The "s" should be ignored, and not cause the 
 
          <existDates>
             <dateRange>
-               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#active "
+               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                          standardDate="1920"
                          notBefore="1917"
                          notAfter="1923">active approximately 1920</fromDate>
-               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#active "
+               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                        standardDate="1980">active 1980</toDate>
             </dateRange>
          </existDates>
@@ -1057,11 +1119,11 @@ toDate are both approx. This probably tests all necessary 2 date paths.
 
          <existDates>
             <dateRange>
-               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#active "
+               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                          standardDate="1920"
                          notBefore="1917"
                          notAfter="1923">active approximately 1920</fromDate>
-               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#active "
+               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                        standardDate="1980"
                        notBefore="1977"
                        notAfter="1983">active approximately 1980</toDate>
@@ -1090,7 +1152,7 @@ formatting/factoring (repeated sections not in functions or templates) separate 
                   </datafield>
 
          <existDates>
-            <date localType="http://socialarchive.iath.virginia.edu/control/term#active "
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                   standardDate="1920"
                   notBefore="1917"
                   notAfter="1923">active approximately 1920</date>
