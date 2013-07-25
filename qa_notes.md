@@ -140,8 +140,14 @@ modified.)
 
     <subfield code="f">1917-1960.</subfield>
 
-    <fromDate standardDate="1917" localType="active">active 1917</fromDate>
-    <toDate standardDate="1960" localType="active">1960</toDate>
+         <existDates>
+            <dateRange>
+               <fromDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                         standardDate="1917">active 1917</fromDate>
+               <toDate localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                       standardDate="1960">active 1960</toDate>
+            </dateRange>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  5041 Oct 18 09:54 qa/qa_123410709_family_245f_date.xml
     less cpf/*123410709.c.xml
