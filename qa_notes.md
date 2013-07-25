@@ -76,6 +76,14 @@ on that date.
       <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/cre">Creator</roleTerm>
     </role>
 
+         <existDates>
+            <date localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                  standardDate="1987"
+                  notBefore="1984"
+                  notAfter="1990">active approximately 1987</date>
+         </existDates>
+
+
     -rw-r--r-- 1 mst3k snac  3527 Dec  3 15:51 qa_26891471_not1xx_has_700.xml
     less cpf/*26891471.r01.xml
     less cpf/*26891471.r00.xml
@@ -420,7 +428,13 @@ subject.
 ---
 
     <subfield code="d">fl. 2nd cent.</subfield>
-    <date localType="active " notBefore="0101" notAfter="0200">active 2nd century</date>
+
+         <existDates>
+            <date standardDate="0101"
+                  localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                  notBefore="0101"
+                  notAfter="0200">active 2nd century</date>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  2536 Oct 11 09:29 qa_233844794_fl_2nd_cent_date.xml
     less cpf/*233844794.c.xml
@@ -443,7 +457,13 @@ Multi 1xx has no output at this time.
 ---
 
     <subfield code="d">fl. 1724/25.</subfield>
-    <date standardDate="1724" localType="active" notBefore="1724" notAfter="1725">active 1724 or 1725</date>
+
+         <existDates>
+            <date standardDate="1724"
+                  localType="http://socialarchive.iath.virginia.edu/control/term#Active"
+                  notBefore="1724"
+                  notAfter="1725">active 1724 or 1725</date>
+         </existDates>
 
     -rw-r--r-- 1 mst3k snac  1738 Oct  8 10:07 qa_270657317_fl_date_slash_n.xml
     less cpf/*270657317.c.xml
@@ -930,13 +950,12 @@ Has 100$e and 656.
             <date localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                   standardDate="1976">active 1976</date>
          </existDates>
-         <occupation localType="http://socialarchive.iath.virginia.edu/control/term#derivedFromRole">
+         <occupation localType="http://socialarchive.iath.virginia.edu/control/term#DerivedFromRole">
             <term>Compilers.</term>
          </occupation>
          <occupation>
             <term>Silversmiths.</term>
          </occupation>
-
 
     -rw-r--r-- 1 twl8n snac 3578 Mar 13 16:40 qa/qa_147444338_100e_different_occ_600_656a.xml
     less cpf/OCLC-DLH-147444338.c.xml
