@@ -1138,7 +1138,6 @@
                         </xsl:if>
 
                         <!-- Add attributes notBefore, notAfter.  -->
-                        <!-- <xsl:for-each select="$tokens/tok[text() = 'num']/@*[matches(name(), '^not')]"> -->
                         <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
                             <xsl:choose>
                                 <xsl:when test="string-length(.)>0">
@@ -1198,10 +1197,14 @@
         <!--
             If there is no "to" then we only have one date. Must always have at least one date.
             
-            Give the ways this is used (called from field_books2cpf.xsl) the logic behind dates might be
+            Given the ways this is used (called from field_books2cpf.xsl and bl2cpf.xsl) the logic behind dates might be
             slightly wrong. There is an assumption that multiple expeditions will yield a date set, but it is
             possible (in theory) that the expeditions would have no dates at all. We don't account for a
-            dateSet with an empty dateRange.
+            dateSet with an empty dateRange, so the calling code needs to check before making the call.
+            
+            Fix: aug 7 2013 added word "active" to active (aka flourished) date values.
+
+            Suggested Fix: if only one date and not allow_single, include an empty <toDate/> element.
         -->
 
         <!-- 
@@ -1211,10 +1214,16 @@
         <xsl:variable name="nfrom" select="normalize-space($from)"/>
         <xsl:variable name="nto" select="normalize-space($to)"/>
 
+        <xsl:variable name="active">
+            <xsl:if test="$from_type = $av_active and $to_type = $av_active">
+                <xsl:text>active</xsl:text>
+            </xsl:if>
+        </xsl:variable>
+
         <xsl:choose>
             <xsl:when test="string-length($nto) = 0 and $allow_single">
                 <date standardDate="{$nfrom}" localType="{$from_type}">
-                    <xsl:value-of select="$nfrom"/>
+                    <xsl:value-of select="normalize-space(concat($active, ' ', $nfrom))"/>
                 </date>
             </xsl:when>
             <xsl:when test="string-length($nto) > 0 or string-length($nfrom) > 0">
@@ -1222,10 +1231,14 @@
                     <xsl:choose>
                         <xsl:when test="$from_type = $av_active or $to_type = $av_active">
                             <xsl:if test="string-length($nfrom) > 0">
-                                <fromDate standardDate="{$nfrom}" localType="{$from_type}"><xsl:value-of select="$nfrom"/></fromDate>
+                                <fromDate standardDate="{$nfrom}" localType="{$from_type}">
+                                    <xsl:value-of select="normalize-space(concat($active, ' ', $nfrom))"/>
+                                </fromDate>
                             </xsl:if>
                             <xsl:if test="string-length($nto) > 0">
-                                <toDate standardDate="{$nto}" localType="{$to_type}"><xsl:value-of select="$nto"/></toDate>
+                                <toDate standardDate="{$nto}" localType="{$to_type}">
+                                    <xsl:value-of select="normalize-space(concat($active, ' ', $nto))"/>
+                                </toDate>
                             </xsl:if>
                         </xsl:when>
                         <xsl:otherwise>
@@ -1238,7 +1251,7 @@
                             <xsl:choose>
                                 <xsl:when test="string-length($nfrom) > 0">
                                     <fromDate standardDate="{$nfrom}" localType="{$from_type}">
-                                        <xsl:value-of select="$nfrom"/>
+                                        <xsl:value-of select="normalize-space(concat($active, ' ', $nfrom))"/>
                                     </fromDate>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -1248,7 +1261,7 @@
                             <xsl:choose>
                                 <xsl:when test="string-length($nto) > 0">
                                     <toDate standardDate="{$nto}" localType="{$to_type}">
-                                        <xsl:value-of select="$nto"/>
+                                        <xsl:value-of select="normalize-space(concat($active, ' ', $nto))"/>
                                     </toDate>
                                 </xsl:when>
                                 <xsl:otherwise>
@@ -1261,7 +1274,7 @@
             </xsl:when>
             <!-- otherwise we don't have either from or to, so we don't have a date -->
         </xsl:choose>
-    </xsl:template>
+    </xsl:template> <!-- end tpt_simple_date_range -->
 
     <xsl:template name="tpt_exist_dates">
         <xsl:param name="xx_tag"/>
@@ -2133,16 +2146,19 @@
         </xsl:variable>
 
         <xsl:variable name="pass_2">
-        <xsl:call-template name="tpt_pa_2">
-            <xsl:with-param name="tokens" select="$pass_1"/>
-        </xsl:call-template>
+            <xsl:call-template name="tpt_pa_2">
+                <xsl:with-param name="tokens" select="$pass_1"/>
+            </xsl:call-template>
         </xsl:variable>
 
         <xsl:call-template name="tpt_pa_21">
             <xsl:with-param name="tokens" select="$pass_2"/>
         </xsl:call-template>
-        
-        <!-- Return tokens from the last pass. Final parsing tpt_pa_3 is called from back in lib:edate_core. -->
+
+        <!--
+            Return tokens from the last pass. Final parsing template tpt_pa_3 is called from lib:edate_core.
+            Or in the case of bl2cpf.xsl, the tokens are passed to tpt_simple_date_range for parsing.
+        -->
     </xsl:template>
 
     <xsl:template name="tpt_pa_3" xmlns="urn:isbn:1-931666-33-4">
@@ -2227,14 +2243,34 @@
              will change numeric strings into double, we have to cast the numbers back to strings in order to
              compare them to the text of the (implied) context node. Extra tokens are discarded. It seems nice
              to separate them with a hyphen token, but it will/should never be used.
+             
+             Fix: added = to >= 2 so that we use min and max for 2+ numbers. In the old code, 2 numbers did
+             not sort.
+             
+             Tricky. Use (yadayada)[1] for min and max to only get the first token that is min or
+             max. Otherwise "1744 1790 1744 1790" returns two each of both min and max.
+             
+             Fix: when max and min are the same, only create a token for min.
         -->
         <xsl:copy-of select="$tokens/eac:odate"/>
         <xsl:copy-of select="$tokens/eac:untok"/>
         <xsl:choose>
-            <xsl:when test="count($tokens/eac:tok[matches(., '\d{4}')]) > 2">
-                <xsl:copy-of select="$tokens/eac:tok[text() = xs:string(min($tokens/eac:tok[matches(., '\d{4}')]))]"/>
+            <xsl:when test="count($tokens/eac:tok[matches(., '\d{4}')]) >= 2">
+                <xsl:variable name="tmin">
+                    <xsl:value-of select="($tokens/eac:tok[text() = xs:string(min($tokens/eac:tok[matches(., '\d{4}')]))])[1]"/>
+                </xsl:variable>
+                <xsl:variable name="tmax">
+                    <xsl:value-of select="($tokens/eac:tok[text() = xs:string(max($tokens/eac:tok[matches(., '\d{4}')]))])[1]"/>
+                </xsl:variable>
+                <tok>
+                    <xsl:value-of select="$tmin"/>
+                </tok>
+                <xsl:if test="$tmin != $tmax">
                 <tok>-</tok>
-                <xsl:copy-of select="$tokens/eac:tok[text() = xs:string(max($tokens/eac:tok[matches(., '\d{4}')]))]"/>
+                <tok>
+                    <xsl:value-of select="$tmax"/>
+                </tok>
+                </xsl:if>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy-of select="$tokens/eac:tok"/>
@@ -2339,7 +2375,7 @@
                     <!--
                         Alternate parsing does not fully understand 1980s or 1980's. We only grab the
                         digits. XML and XSLT don't provide a mechanism to escape " or ' inside
-                        strings. Happily, we can match any single character between \d+ and s, so we simply
+                        strings(?). Happily, we can match any single character between \d+ and s, so we simply
                         use . but if you needed a single quote in a regex, that would be a problem.
                     -->
                     <xsl:when test="matches(regex-group(2), '\d+s|\d+.s')">
@@ -3082,20 +3118,20 @@
 
     <xsl:function name="lib:name-cleanse">
         <xsl:param name="aname"/>
-
         <!--
             Called from tpt_name_info in bl2cpf.xsl. Used for proper names. Remove strange punctuation caused
             by empty elements leaving behind just field separators. This is simpler than some complex
             conditionals that detect empty elements.
-        -->
+        -->            
 
-        <!-- Remove trailing space from "D' " or "Leyborne- ". When AdditionalInformation is part of the
-             surname, it might have a trailing space after hyphen or apostrophe (single
-             quote). "Leyborne-Popham" or "D'Aeth".
-             
-             Note the fun use of alternation via | and capturing via () and the captured match placeholder $1.
-        -->
 
+        <!--
+            This first regexp looks confusing due to XSLT single quote char quoting rules. Remove trailing
+            space from "D' " or "Leyborne- ". When AdditionalInformation is part of the surname, it might have
+            a trailing space after hyphen or apostrophe (single quote). "Leyborne-Popham" or "D'Aeth".
+            
+            Note the fun use of alternation via | and capturing via () and the captured match placeholder $1.
+        -->
         <xsl:variable name="p1">
             <xsl:value-of select="replace($aname, '(''|-) ', '$1')"/>
         </xsl:variable>
@@ -3112,17 +3148,234 @@
             <xsl:value-of select="replace($p2, ', +$', '')"/>
         </xsl:variable>
 
-        <!-- replace any number of " ," with a single ", ". The " ," happens when a space separated element is
-             empty and an adjacent comma separated element is empty. -->
+        <!-- remove single ". " at beginning of the line. Example: CorporateName with a missing Jursidiction. -->
+
+        <xsl:variable name="p3_1">
+            <xsl:value-of select="replace($p3, '^\. ', '')"/>
+        </xsl:variable>
+
+        <!--
+            replace any number of " ," with a single ", ". The " ," happens when a space separated element is
+            empty and an adjacent comma separated element is empty.
+        -->
 
         <xsl:variable name="p4">
-            <xsl:value-of select="replace($p3, '( ,)+', ', ')"/>
+            <xsl:value-of select="replace($p3_1, '( ,)+', ', ')"/>
         </xsl:variable>
+
+        <!-- change "(: " to "(" -->
+
+        <xsl:variable name="p4_1">
+            <xsl:value-of select="replace($p4, '\(\s*:\s*', '(')"/>
+        </xsl:variable>
+
+        <!-- change "\s:\s)" to ")" -->
+
+        <xsl:variable name="p4_1_1">
+            <xsl:value-of select="replace($p4_1, '\s*:\s*\)', ')')"/>
+        </xsl:variable>
+
+        <!-- remove "(\s:\s)" -->
+
+        <xsl:variable name="p4_2">
+            <xsl:value-of select="replace($p4_1_1, '\(\s*:\s*\)', '')"/>
+        </xsl:variable>
+
+        <!-- change multi "\s:\s" to single instance-->
+
+        <xsl:variable name="p4_3">
+            <xsl:value-of select="replace($p4_2, '(\s*:\s*)+', ' : ')"/>
+        </xsl:variable>
+
+        <!--
+            Again, change "\s:\s)" to ")" Some replacements can cause this pattern after it would have been
+            check above, so we check it again.
+        -->
+
+        <xsl:variable name="p4_3_1">
+            <xsl:value-of select="replace($p4_3, '\s*:\s*\)', ')')"/>
+        </xsl:variable>
+
+        <!-- remove any "(\s*)" -->
+
+        <xsl:variable name="p4_4">
+            <xsl:value-of select="replace($p4_3_1, '\(\s*\)', '')"/>
+        </xsl:variable>
+
+        <!--
+            Some double spaces may have crept in as well as trailing space. Normalize.
+        -->
+
+        <xsl:variable name="p5">
+            <xsl:value-of select="normalize-space($p4_4)"/>
+        </xsl:variable>
+
+        <xsl:value-of select="lib:capitalize($p5)"/>
+
+    </xsl:function>
+    
+    <xsl:function name="lib:capitalize">
+        <xsl:param name="word"/>
+        <!-- http://stackoverflow.com/questions/9611569/xsl-how-do-you-capitalize-first-letter -->
+        <xsl:sequence select="concat(upper-case(substring($word,1,1)), substring($word, 2), ' '[not(last())])"/>
+    </xsl:function>
+    
+    <xsl:function name="lib:get-lang">
+        <xsl:param name="nlang"/>
         
-        <!-- Some double spaces may have crept in as well as trailing space. Normalize. -->
+        <!--
+            Several (4 I think) of these do not match w3c as supplied by BL, thus the "actual" attribute for Greek, Turkish, Malay, and Nepali.
+            
+            See p17.pl.
+            
+            # saxon.sh british_library/file_target.xml bl2cpf.xsl > bl_lang.log 2>&1 &
+            # grep -v "^$" bl_lang.log | grep rid: | grep -Po "a:.* " | sort -u > bl_lang_all_1.txt
+            # cat bl_lang_all_1.txt | p17.pl
 
-        <xsl:value-of select="normalize-space($p4)"/>
+        -->
+        <xsl:variable name="lang_subtag">
+            <entry>
+                <!--
+                    Manually created, empty entry defaults to English. Yes, there are empty NameLanguage elements
+                    in the British Library data.
+                -->
+                <description></description><subtag>en</subtag>
+            </entry>
+            <!--
+                All the entries below come from p17.pl and the commands above. See comments in p17.pl.
+            -->
+            <entry>
+                <description>English</description><subtag>en</subtag>
+            </entry>
+            <entry>
+                <description>Achinese</description><subtag>ace</subtag>
+            </entry>
+            <entry>
+                <description>Arabic</description><subtag>ar</subtag>
+            </entry>
+            <entry>
+                <description>Armenian</description><subtag>hy</subtag>
+            </entry>
+            <entry>
+                <description>Assamese</description><subtag>as</subtag>
+            </entry>
+            <entry>
+                <description>Bengali</description><subtag>bn</subtag>
+            </entry>
+            <entry>
+                <description>Bulgarian</description><subtag>bg</subtag>
+            </entry>
+            <entry>
+                <description>Burmese</description><subtag>my</subtag>
+            </entry>
+            <entry>
+                <description>Chinese</description><subtag>zh</subtag>
+            </entry>
+            <entry>
+                <description>Danish</description><subtag>da</subtag>
+            </entry>
+            <entry>
+                <description>Dutch</description><subtag>nl</subtag>
+            </entry>
+            <entry>
+                <description>Flemish</description><subtag>nl</subtag>
+            </entry>
+            <entry>
+                <description>French</description><subtag>fr</subtag>
+            </entry>
+            <entry>
+                <description>Georgian</description><subtag>ka</subtag>
+            </entry>
+            <entry>
+                <description>German</description><subtag>de</subtag>
+            </entry>
+            <entry>
+                <description actual="Modern Greek (1453-)">Greek, Modern</description><subtag>el</subtag>
+            </entry>
+            <entry>
+                <description>Hebrew</description><subtag>he</subtag>
+            </entry>
+            <entry>
+                <description>Hindi</description><subtag>hi</subtag>
+            </entry>
+            <entry>
+                <description>Hungarian</description><subtag>hu</subtag>
+            </entry>
+            <entry>
+                <description>Icelandic</description><subtag>is</subtag>
+            </entry>
+            <entry>
+                <description>Indic languages</description><subtag>inc</subtag>
+            </entry>
+            <entry>
+                <description>Indonesian</description><subtag>id</subtag>
+            </entry>
+            <entry>
+                <description>Italian</description><subtag>it</subtag>
+            </entry>
+            <entry>
+                <description>Japanese</description><subtag>ja</subtag>
+            </entry>
+            <entry>
+                <description>Latin</description><subtag>la</subtag>
+            </entry>
+            <entry>
+                <description actual="Malay (macrolanguage)">Malay</description><subtag>ms</subtag>
+            </entry>
+            <entry>
+                <description>Marathi</description><subtag>mr</subtag>
+            </entry>
+            <entry>
+                <description actual="Nepali (macrolanguage)">Nepali</description><subtag>ne</subtag>
+            </entry>
+            <entry>
+                <description>Norwegian</description><subtag>no</subtag>
+            </entry>
+            <entry>
+                <description>Persian</description><subtag>fa</subtag>
+            </entry>
+            <entry>
+                <description>Polish</description><subtag>pl</subtag>
+            </entry>
+            <entry>
+                <description>Portuguese</description><subtag>pt</subtag>
+            </entry>
+            <entry>
+                <description>Punjabi</description><subtag>pa</subtag>
+            </entry>
+            <entry>
+                <description>Romanian</description><subtag>ro</subtag>
+            </entry>
+            <entry>
+                <description>Russian</description><subtag>ru</subtag>
+            </entry>
+            <entry>
+                <description>Slovenian</description><subtag>sl</subtag>
+            </entry>
+            <entry>
+                <description>Spanish</description><subtag>es</subtag>
+            </entry>
+            <entry>
+                <description>Swedish</description><subtag>sv</subtag>
+            </entry>
+            <entry>
+                <description>Tamil</description><subtag>ta</subtag>
+            </entry>
+            <entry>
+                <description>Thai</description><subtag>th</subtag>
+            </entry>
+            <entry>
+                <description actual="Ottoman Turkish (1500-1928)">Turkish, Ottoman</description><subtag>ota</subtag>
+            </entry>
+            <entry>
+                <description>Urdu</description><subtag>ur</subtag>
+            </entry>
+            <entry>
+                <description>Welsh</description><subtag>cy</subtag>
+            </entry>
+        </xsl:variable>
 
+        <xsl:value-of select="concat($lang_subtag/entry[description = $nlang]/subtag, '-Latn')"/>
     </xsl:function>
 
 

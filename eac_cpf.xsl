@@ -118,16 +118,50 @@
             <cpfDescription>
                 <identity>
                     <entityType><xsl:value-of select="$entity_type"/></entityType>
-                    <nameEntry xml:lang="en-Latn">
-                        <part><xsl:value-of select="$entity_name"/></part>
-                        <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
-                    </nameEntry>
-                    <xsl:for-each select="$param_data/eac:alt_name">
-                        <nameEntry xml:lang="en-Latn">
-                            <xsl:copy-of select="./*"/>
-                            <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
-                        </nameEntry>
-                    </xsl:for-each>
+                    <!--
+                        To maintain backward compatibility, don't rely on a new element in $param_data.
+                    -->
+                    <xsl:variable name="nameEntry_lang">
+                        <xsl:choose>
+                            <xsl:when test="$param_data/eac:en_lang/text()">
+                                <xsl:value-of select="$param_data/eac:en_lang"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="'en-Latn'"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <xsl:choose>
+                        <xsl:when test="string-length($entity_name) > 0">
+                            <nameEntry xml:lang="{$nameEntry_lang}">
+                                <part><xsl:value-of select="$entity_name"/></part>
+                                <authorizedForm><xsl:value-of select="$param_data/eac:rules"/></authorizedForm>
+                            </nameEntry>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <!-- See bl2cpf.xsl for element construction esp. tpt_name_info and $param_data. -->
+                            <xsl:for-each select="$param_data/eac:e_name/eac:name_entry">
+                                <nameEntry xml:lang="{@en_lang}">
+                                    <xsl:if test="@localType">
+                                        <xsl:attribute name="localType">
+                                            <xsl:value-of select="@localType"/>
+                                        </xsl:attribute>
+                                    </xsl:if>
+                                    <xsl:copy-of select="./*"/>
+                                    <!-- authorizedForm or alternateForm -->
+                                    
+                                    <xsl:if test="string-length(@a_form) = 0">
+                                        <xsl:message>
+                                            <xsl:text>null: </xsl:text>
+                                            <xsl:copy-of select="."/>
+                                            <xsl:text>&#x0A;</xsl:text>
+                                        </xsl:message>
+                                    </xsl:if>
+                                    <xsl:element name="{@a_form}"><xsl:value-of select="$param_data/eac:rules"/></xsl:element>
+                                </nameEntry>
+                            </xsl:for-each>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </identity>
                 
                 <xsl:if test="$is_c_flag">
@@ -184,6 +218,7 @@
 
                 <relations>
                     <xsl:copy-of select="$cpf_relation"/>
+
                     <xsl:choose>
                         <xsl:when test="count($param_data/eac:rrel) > 0  or $param_data/eac:use_rrel = true()">
                             <!--
@@ -205,6 +240,7 @@
                                               xlink:href="{eac:xlink_href}">
                                 <relationEntry><xsl:value-of select="eac:rel_entry"/></relationEntry>
                                 <xsl:copy-of select="eac:mods/*"/>
+                                <xsl:copy-of select="eac:object_xml/*"/>
                                 <xsl:if test="string-length(eac:leader06)>0 or string-length(eac:leader07)>0 or string-length(eac:leader08)>0">
         		            <descriptiveNote>
 			                <p>
