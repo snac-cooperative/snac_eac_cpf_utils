@@ -2,6 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="2.0"
                 xmlns:lib="http://example.com/"
+                xmlns:rel="http://example.com/relators"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:saxon="http://saxon.sf.net/"
                 xmlns:functx="http://www.functx.com"
@@ -11,7 +12,7 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:mads="http://www.loc.gov/mads/"
                 xmlns:snacwc="http://socialarchive.iath.virginia.edu/worldcat"
-                exclude-result-prefixes="eac lib xs saxon xsl madsrdf rdf mads functx marc snacwc"
+                exclude-result-prefixes="eac lib xs saxon xsl madsrdf rdf mads functx marc snacwc rel"
                 >
     <!-- 
          Author: Tom Laudeman
@@ -107,7 +108,8 @@
 
     <!-- <xsl:output method="xml" /> -->
     <xsl:variable name="occupations" select="document('occupations.xml')/*"/>
-    <xsl:variable name="relators" select="document('vocabularyrelators.rdf')/*"/>
+    <!-- <xsl:variable name="relators" select="document('vocabularyrelators.rdf')/*"/> -->
+    <xsl:variable name="custom_relators" select="document('relatorList.xml')/*"/> 
     <xsl:variable name="languages" select="document('vocabularylanguages.rdf')/*"/>
     <xsl:variable name="org_codes" select="document('worldcat_code.xml')/*"/>
     <!-- Too many files with "places" in the name. geonames_places is less confusing. -->
@@ -726,17 +728,28 @@
              
         -->
         <xsl:variable name="test_code" select="lib:unpunct($sfield)"/>
-        <xsl:for-each select="$relators/madsrdf:Authority[madsrdf:code = $test_code]">
-            <xsl:variable name="unp" select="lower-case(lib:unpunct(madsrdf:authoritativeLabel/text()))"/>
-            <xsl:element name="{$cname}">
-                <xsl:attribute name="localType" select="$av_derivedFromRole"/>
-                <xsl:for-each select="$occupations/mads:mads[mads:variant[@otherType='singular']/mads:occupation[text() = $unp]]">
-                    <term>
-                        <xsl:value-of select="mads:authority/mads:occupation"/>
-                    </term>
-                </xsl:for-each>
-            </xsl:element>
-        </xsl:for-each>
+
+        <xsl:variable name="relator_value" select="lib:relator-lookup($test_code)"/>
+
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>test_code: </xsl:text> -->
+        <!--     <xsl:copy-of select="$test_code"/> -->
+        <!--     <xsl:text> sf: </xsl:text> -->
+        <!--     <xsl:copy-of select="$sfield"/> -->
+        <!--     <xsl:text> rv: </xsl:text> -->
+        <!--     <xsl:copy-of select="$relator_value"/> -->
+        <!--     <xsl:text>&#x0A;</xsl:text> -->
+        <!-- </xsl:message> -->
+
+        <xsl:element name="{$cname}">
+            <xsl:attribute name="localType" select="$av_derivedFromRole"/>
+            <xsl:for-each select="$occupations/mads:mads[mads:variant[@otherType='singular']/mads:occupation[text() = $relator_value]]">
+                <term>
+                    <xsl:value-of select="mads:authority/mads:occupation"/>
+                </term>
+            </xsl:for-each>
+        </xsl:element>
+
     </xsl:template>
 
     <xsl:template name="tpt_ocfu_e" xmlns="urn:isbn:1-931666-33-4">
@@ -809,14 +822,49 @@
             to neaten up the code and allow us to only have a single place where the unparsed date node set is
             constructed. Anything that makes it through these tests should be parse-able, although there is a
             catch-all otherwise at the end of the parsing choose.
+            
+            Forcing the data type of an attribute to be xs:boolean is probably not easy, so I didn't even
+            try. Strong typing fails again.
         -->
+
+        <xsl:variable name="is_active" as="xs:boolean">
+            <xsl:choose>
+                <xsl:when test="$is_family or ($tokens/tok[1])/@is_active = true()">
+                    <xsl:value-of select="true()"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="false()"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
         <xsl:if test="$debug">
             <xsl:message>
                 <xsl:text>tokens: </xsl:text>
                 <xsl:copy-of select="$tokens" />
+                <xsl:text> isa: </xsl:text>
+                <xsl:value-of select="($tokens/tok[1])/@is_active"/>
+                <xsl:text> isf: </xsl:text>
+                <xsl:value-of select="$is_active"/>
                 <xsl:text>&#x0A;</xsl:text>
             </xsl:message>
         </xsl:if>
+
+            <!--
+                This is (perhaps) a bandaid for an extra "active" in is_family. We look for an active token
+                and will not add literal text "active" if there is already and active token, even if is_family
+                is true.
+            -->
+        <!-- <xsl:variable name="has_active" as="xs:boolean"> -->
+        <!--     <xsl:choose> -->
+        <!--         <xsl:when test="count($tokens/tok[matches(text(), 'active')]) = 0"> -->
+        <!--             <xsl:value-of select="false()"/> -->
+        <!--         </xsl:when> -->
+        <!--         <xsl:otherwise> -->
+        <!--             <xsl:value-of select="true()"/> -->
+        <!--         </xsl:otherwise> -->
+        <!--     </xsl:choose> -->
+        <!-- </xsl:variable> -->
 
         <xsl:variable name="is_unparsed" as="xs:boolean">
             <xsl:choose>
@@ -903,10 +951,10 @@
             <xsl:when test="$tokens/tok = 'b'  or (($tokens/tok)[last()] = '-')">
                 <!-- No active since that is illogical with 'born' for persons. -->
                 <xsl:variable name="loc_type">
-                    <xsl:if test="$is_family">
+                    <xsl:if test="$is_active">
                         <xsl:value-of select="$av_active"/>
                     </xsl:if>
-                    <xsl:if test="not($is_family)">
+                    <xsl:if test="not($is_active)">
                         <xsl:value-of select="$av_born"/>
                     </xsl:if>
                 </xsl:variable>
@@ -935,12 +983,12 @@
                             </xsl:for-each>
                             
                             <!--
-                                is_family doesn't have an active token so we need
+                                is_family/is_active doesn't have an active token so we need
                                 to add it here. Maybe it should have been added
                                 earlier.
                             -->
 
-                            <xsl:if test="$is_family">
+                            <xsl:if test="$is_active">
                                 <xsl:text>active </xsl:text>
                             </xsl:if>
                                         
@@ -973,15 +1021,17 @@
             <!-- died --> 
             <xsl:when test="($tokens/tok = 'd') or ($tokens/tok[1] = '-')">
                 <!--
-                    No active since that is illogical with 'died', unless $is_family in which case this is "active" and not "died".
+                    No active since that is illogical with 'died', unless $is_family/$is_active in which case this is "active" and not "died".
                 -->
                 <xsl:variable name="loc_type">
-                    <xsl:if test="$is_family">
-                        <xsl:value-of select="$av_active"/>
-                    </xsl:if>
-                    <xsl:if test="not($is_family)">
-                        <xsl:value-of select="$av_died"/>
-                    </xsl:if>
+                    <xsl:choose>
+                        <xsl:when test="$is_active">
+                            <xsl:value-of select="$av_active"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="$av_died"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:variable>
                 <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
                 <existDates>
@@ -997,10 +1047,10 @@
                                 </xsl:attribute>
                             </xsl:for-each>
 
-                            <!-- is_family doesn't have an active token so we need
+                            <!-- is_family/is_active doesn't have an active token so we need
                                  to add it here. Maybe it should have been added
                                  earlier. -->
-                            <xsl:if test="$is_family">
+                            <xsl:if test="$is_active">
                                 <xsl:text>active </xsl:text>
                             </xsl:if>
 
@@ -1033,10 +1083,15 @@
                             <xsl:variable name="is_century" select="$curr_tok[matches(@val, 'century')]"/>
                             <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
                             <!--
-                                if we have an 'active' token before the hyphen, then then make the subject 'active'.
+                                Old: If we have an 'active' token before the hyphen, then then make the subject 'active'.
+                                
+                                New: if we're active then we're active. There are no more tokens "active",
+                                only an attribute on every <tok> @is_active and thus the local variable
+                                $is_active.
                             -->
                             <xsl:choose>
-                                <xsl:when test="($tokens/tok[text() = '-']/preceding-sibling::tok = 'active') or $is_family or $is_century">
+                                <!-- <xsl:when test="($tokens/tok[text() = '-']/preceding-sibling::tok = 'active') or $is_active or $is_century"> -->
+                                <xsl:when test="$is_active or $is_century">
                                     <xsl:attribute name="localType">
                                         <xsl:value-of select="$av_active"/>
                                     </xsl:attribute>
@@ -1061,10 +1116,10 @@
                             </xsl:for-each>
                             
                             <!--
-                                is_family doesn't have an active token so we need to add it here. Maybe it
+                                is_family/is_active doesn't have an active token so we need to add it here. Maybe it
                                 should have been added earlier.
                             -->
-                            <xsl:if test="$is_family">
+                            <xsl:if test="$is_active">
                                 <xsl:text>active </xsl:text>
                             </xsl:if>
 
@@ -1076,10 +1131,15 @@
                             <xsl:variable name="is_century" select="$curr_tok[matches(@val, 'century')]"/>
                             <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
                             <!--
-                                if we have an 'active' token anywhere  or $is_family then 'active' else 'died'
+                                Old: if we have an 'active' token anywhere  or $is_family then 'active' else 'died'
+                                
+                                New: if we're active then we're active. There are no more tokens "active",
+                                only an attribute on every <tok> @is_active and thus the local variable
+                                $is_active.
                             -->
                             <xsl:choose>
-                                <xsl:when test="($tokens/tok[text() = 'active']) or $is_family or $is_century">
+                                <!-- <xsl:when test="($tokens/tok[text() = 'active']) or $is_family or $is_century"> -->
+                                <xsl:when test="$is_active or $is_century">
                                     <xsl:attribute name="localType">
                                         <xsl:value-of select="$av_active"/>
                                     </xsl:attribute>
@@ -1099,12 +1159,15 @@
                             </xsl:for-each>
 
                             <!--
-                                An 'active' token anywhere makes both dates active, and we need the active
+                                New: active is active.
+                                
+                                Old: An 'active' token anywhere makes both dates active, and we need the active
                                 keyword in the element value (aka human readable).  All tokens after the
                                 hyphen. Assume that anything in @sep of a token should be in the output.
                             -->
 
-                            <xsl:if test="$tokens/tok[text() = 'active'] or $is_family">
+                            <!-- <xsl:if test="$tokens/tok[text() = 'active'] or $is_family"> -->
+                            <xsl:if test="$is_active">
                                 <xsl:text>active </xsl:text>
                             </xsl:if>
 
@@ -1124,14 +1187,15 @@
 
             <xsl:when test="count($tokens/tok[text() = '-']) = 0 and count($tokens/tok[text() = 'num']) = 1">
                 <!--
-                    No hyphen and only one number so this is a single date.  If we have an 'active' token then
-                    $av_active.
+                    No hyphen and only one number so this is a single date.  New: active is active. Old: If we
+                    have an 'active' token then $av_active.
                 -->
                 <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num']"/>
                 <existDates>
                     <date>
                         <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
-                        <xsl:if test="($tokens/tok[text() = 'active']) or $is_family">
+                        <!-- <xsl:if test="($tokens/tok[text() = 'active']) or $is_family"> -->
+                        <xsl:if test="$is_active">
                             <xsl:attribute name="localType">
                                 <xsl:value-of select="$av_active"/>
                             </xsl:attribute>
@@ -1158,10 +1222,10 @@
                         </xsl:for-each>
 
                         <!-- 
-                             is_family doesn't have an active token so we need to add literal text here. Maybe
+                             is_family/is_active doesn't have an active token so we need to add literal text here. Maybe
                              it should have been added earlier.
                         -->
-                        <xsl:if test="$is_family">
+                        <xsl:if test="$is_active">
                             <xsl:text>active </xsl:text>
                         </xsl:if>
 
@@ -1308,16 +1372,11 @@
                 <xsl:copy-of select="lib:pass_1b($token_1)"/>
             </xsl:variable>
             
-            <!-- Deal with NNNNs as in 1870s as well as "or N" -->
+            <!-- Deal with NNNNs as in 1870s as well as "or N", change 'fl' to 'active'. -->
+
             <xsl:variable name="pass_2">
                 <xsl:copy-of select="lib:pass_2($pass_1b)"/>
             </xsl:variable>
-
-            <!-- <xsl:message> -->
-            <!--     <xsl:text>p2: </xsl:text> -->
-            <!--     <xsl:copy-of select="$pass_2"/> -->
-            <!--     <xsl:text>&#x0A;</xsl:text> -->
-            <!-- </xsl:message> -->
 
             <!-- Normalize position of approx and turn related numeric tokens into 'num' -->
             <xsl:variable name="pass_2b">
@@ -1330,13 +1389,17 @@
             </xsl:variable>
 
             <!-- Turn remaining fully numeric tokens into @std, @val, and tok element value 'num'. -->
-            <xsl:copy-of select="lib:pass_4($pass_3)"/>
+            <xsl:variable name="pass_4">
+                <xsl:copy-of select="lib:pass_4($pass_3)"/>
+            </xsl:variable>
 
-            <!-- <xsl:message> -->
-            <!--     <xsl:text>p3: </xsl:text> -->
-            <!--     <xsl:copy-of select="lib:pass_3($pass_2)"/> -->
-            <!--     <xsl:text>&#x0A;</xsl:text> -->
-            <!-- </xsl:message> -->
+            <!--
+                Remove "active" tokens and mark entire date as active.  This needs to be the last step because
+                it sets @is_active on every <tok> and (normally) parse steps fail to copy all the attributes
+                of tokens.
+            -->
+
+            <xsl:copy-of select="lib:pass_5($pass_4)"/>
 
         </xsl:if>
     </xsl:template>
@@ -2589,6 +2652,37 @@
         </xsl:for-each>
     </xsl:function>
 
+    <xsl:function name="lib:pass_5">
+        <xsl:param name="tokens" as="node()*"/> 
+        <!-- 
+             Remove tokens "active", and make the whole date active by putting an is_active attribute in every
+             token. This is in some sense wasteful, but makes it really easy to figure out if this is an
+             active date. It does preclude a mixed active+born/died date, but other things preclude that too.
+        -->
+        <xsl:copy-of select="$tokens/odate"/>
+        <xsl:copy-of select="$tokens/untok"/>
+        <xsl:variable name="is_active" as="xs:boolean">
+            <xsl:choose>
+                <xsl:when test="count($tokens/tok[matches(text(), 'active')]) = 0">
+                    <xsl:value-of select="false()"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="true()"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:for-each select="$tokens/tok">
+            <xsl:if test="text() != 'active'">
+                <tok is_active="{$is_active}">
+                    <!-- Copy all the attributes of the context <tok> node. -->
+                    <xsl:copy-of select="./@*"/>
+                    <xsl:value-of select="."/>
+                </tok>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:function>
+
+
     <xsl:function name="lib:pass_2b">
         <xsl:param name="tokens" as="node()*"/> 
         <!-- 
@@ -2696,7 +2790,8 @@
             <xsl:choose>
 
                 <xsl:when test="matches(text(), '^\d+$')">
-                    <tok std="{format-number(., '0000')}" val="{format-number(., '0000')}">
+                    <tok std="{format-number(., '0000')}"
+                         val="{format-number(., '0000')}">
                         <xsl:text>num</xsl:text>
                     </tok>
                 </xsl:when>
@@ -3378,5 +3473,19 @@
         <xsl:value-of select="concat($lang_subtag/entry[description = $nlang]/subtag, '-Latn')"/>
     </xsl:function>
 
+    <xsl:function name="lib:relator-lookup">
+        <xsl:param name="test_code"/>
+        <!--
+            Look up relator by code or value. This does two things: only valid values will be found, and if
+            the calling code supplied a code, we'll use that instead of a relator value. Only one of the
+            follow two will be true so we don't need if statements.
+            
+            We always look these up in occupations.xml in the singular form, so they must be singular,
+            lowercase, and unpunctuated. In other words: normalized.
+        -->
+
+        <xsl:value-of select="lower-case(lib:unpunct($custom_relators//rel:relator[@code = $test_code]))"/>
+        <xsl:value-of select="lower-case(lib:unpunct($custom_relators//rel:relator[text() = $test_code]))"/>
+    </xsl:function>
 
 </xsl:stylesheet>

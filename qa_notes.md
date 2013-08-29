@@ -71,17 +71,21 @@ on that date.
       <subfield code="a">Morrill, Dan L.</subfield>
     </datafield>
 
-    <namePart>Morrill, Dan L.</namePart>
-    <role>
-      <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/cre">Creator</roleTerm>
-    </role>
 
+      <identity>
+         <entityType>person</entityType>
+         <nameEntry xml:lang="en-Latn">
+            <part>Morrill, Dan L.</part>
+            <authorizedForm>WorldCat</authorizedForm>
+         </nameEntry>
+      </identity>
+      <description>
          <existDates>
             <date localType="http://socialarchive.iath.virginia.edu/control/term#Active"
                   standardDate="1987"
                   notBefore="1984"
                   notAfter="1990">active approximately 1987</date>
-         </existDates>
+         </existDates
 
 
     -rw-r--r-- 1 mst3k snac  3527 Dec  3 15:51 qa_26891471_not1xx_has_700.xml

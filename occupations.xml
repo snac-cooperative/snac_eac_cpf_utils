@@ -2062,6 +2062,14 @@
     </mads>
     <mads>
 	<authority>
+	    <occupation >Librettists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>librettist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
 	    <occupation >Linguists.</occupation>
 	</authority>
         <variant type="other" otherType="singular">
@@ -3010,6 +3018,14 @@
 	</authority>
         <variant type="other" otherType="singular">
             <occupation>scientist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Scribes.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>scribe</occupation>
         </variant>
     </mads>
     <mads>
