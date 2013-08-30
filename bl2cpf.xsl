@@ -4,10 +4,11 @@
                 xmlns:xs="http://www.w3.org/2001/XMLSchema"
                 xmlns:lib="http://example.com/"
                 xmlns:rel="http://example.com/relator"
+                xmlns:bl="http://example.com/bl"
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns="urn:isbn:1-931666-33-4"
                 xmlns:xlink="http://www.w3.org/1999/xlink" 
-                exclude-result-prefixes="xsl xs lib eac xlink rel"
+                exclude-result-prefixes="xsl xs lib eac xlink rel bl"
                 >
     <!--
         Author: Tom Laudeman
@@ -186,7 +187,6 @@
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:for-each>
-
     </xsl:template>
 
 
@@ -543,12 +543,6 @@
                      Context in this loop is the tid of the descs file. Get the file name here, and put it in
                      an attribute of the descs_container so we can easily get it later on.
                 -->
-                <!-- <xsl:message> -->
-                <!--     <xsl:text>radna loop </xsl:text> -->
-                <!--     <xsl:value-of select="concat('rid: ',  $record_id, ' radna: ' , .)"/> -->
-                <!--     <xsl:text>&#x0A;</xsl:text> -->
-                <!-- </xsl:message> -->
-
                 <xsl:variable name="tid" select="."/>
                 <xsl:variable name="descs_file">
                     <xsl:for-each select="$file_target">
@@ -613,11 +607,52 @@
             </tag_545>
         </xsl:variable>
 
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>hist: </xsl:text> -->
-        <!--     <xsl:copy-of select="$tag_545"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
+        <xsl:variable name="all_occ">
+        <xsl:for-each select="$descs_info/eac:descs_container//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $entity_tid]/RelationshipType/text()">
+            <xsl:variable name="rt" select="."/>
+            <xsl:for-each select="bl:split-reltype(.)">
+
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>den: </xsl:text> -->
+                <!--     <xsl:copy-of select="."/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
+
+                <xsl:variable name="occ_element_name">
+                    <xsl:choose>
+                        <xsl:when test="$locn = 'Corporation' or $locn = 'Family'">
+                            <xsl:value-of select="'function'"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:text>occupation</xsl:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <!-- 
+                     tpt_ocfu_4 checks occupation name (or relator code) against the relators file.
+                -->
+                <occ>
+                    <xsl:call-template name="tpt_ocfu_4">
+                        <xsl:with-param name="sfield" select="."/>
+                        <xsl:with-param name="cname" select="$occ_element_name"/>
+                    </xsl:call-template>
+                </occ>
+            </xsl:for-each>
+        </xsl:for-each>
+        </xsl:variable>
+        
+        <!--
+            De-duping in 6 lines. This is explained in a long comment near the end of template tpt_geo
+            in lib.xsl.
+        -->
+        <occ>
+            <xsl:for-each select="$all_occ/eac:occ/*[string-length(eac:term) > 0]">
+                <xsl:variable name="curr" select="."/>
+                <xsl:if test="not(preceding::eac:term[lib:pname-match(text(),  $curr/eac:term)])">
+                    <xsl:copy-of select="$curr" />
+                </xsl:if>
+            </xsl:for-each>
+        </occ>
 
         <xsl:choose>
             <xsl:when test="$locn = 'Corporation'">
@@ -724,26 +759,6 @@
                 </ark>
                 <xsl:copy-of select="$parsed_date/eac:existDates"/>
                 <xsl:copy-of select="$tag_545"/>
-                <xsl:for-each select="$descs_info/eac:descs_container/*">
-                    <!-- See Note2 above. -->
-                    <xsl:variable name="rt">
-                        <xsl:copy-of select=".//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $entity_tid][1]/RelationshipType/text()"/>
-                    </xsl:variable>
-
-                    <!-- <xsl:message> -->
-                    <!--     <xsl:text>radna_rel_typ: </xsl:text> -->
-                    <!--     <xsl:copy-of select="$rt"/> -->
-                    <!--     <xsl:text>&#x0A;</xsl:text> -->
-                    <!-- </xsl:message> -->
-                    
-                    <!-- 
-                         tpt_ocfu_4 checks occupation name (or relator code) against the relators file.
-                    -->
-                    <xsl:call-template name="tpt_ocfu_4">
-                        <xsl:with-param name="sfield" select="$rt"/>
-                        <xsl:with-param name="cname" select="'function'"/>
-                    </xsl:call-template>
-                </xsl:for-each>
             </xsl:when>
 
             <xsl:when test="$locn = 'Person'">
@@ -858,42 +873,6 @@
                 </ark>
                 <xsl:copy-of select="$parsed_date"/>
                 <xsl:copy-of select="$tag_545"/>
-                <xsl:variable name="all_occ">
-                    <xsl:for-each select="$descs_info/eac:descs_container/*">
-                        <occ>
-                            <!-- See Note2 above. -->
-                            <xsl:variable name="rt">
-                                <xsl:copy-of select=".//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $entity_tid][1]/RelationshipType/text()"/>
-                            </xsl:variable>
-                            <!-- <xsl:message> -->
-                            <!--     <xsl:text>radna_rel_typ: </xsl:text> -->
-                            <!--     <xsl:copy-of select="$rt"/> -->
-                            <!--     <xsl:text>&#x0A;</xsl:text> -->
-                            <!-- </xsl:message> -->
-
-                            <!-- 
-                                 tpt_ocfu_4 checks occupation name (or relator code) against the relators file.
-                            -->
-                            <xsl:call-template name="tpt_ocfu_4">
-                                <xsl:with-param name="sfield" select="$rt"/>
-                                <xsl:with-param name="cname" select="'occupation'"/>
-                            </xsl:call-template>
-                        </occ>
-                    </xsl:for-each>
-                </xsl:variable>
-                <!--
-                    De-duping in 6 lines. This is explained in a long comment near the end of template tpt_geo
-                    in lib.xsl.
-                -->
-                <occ>
-                    <xsl:for-each select="$all_occ/eac:occ/eac:occupation[string-length(eac:term) > 0]">
-                        <xsl:variable name="curr" select="."/>
-                        <xsl:if test="not(preceding::eac:term[lib:pname-match(text(),  $curr/eac:term)])">
-                            <xsl:copy-of select="$curr" />
-                        </xsl:if>
-                    </xsl:for-each>
-                </occ>
-                <xsl:text>&#x0A;</xsl:text>
             </xsl:when>
 
             <xsl:when test="$locn = 'Family'">
@@ -1803,5 +1782,20 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
+    <xsl:function name="bl:split-reltype">
+        <xsl:param name="arg"/>
+        <!-- 
+             Tokens are "; " or end of string. Return a sequence of strings. Do we need to put the returned
+             sequence into elements to make a node set?
+        -->
+        <xsl:analyze-string select="$arg"
+                            regex="(.+?)(;\s*|$)">
+            <xsl:matching-substring>
+                <xsl:value-of select="regex-group(1)"/>
+            </xsl:matching-substring>
+        </xsl:analyze-string>
+    </xsl:function>
+
 
 </xsl:stylesheet>

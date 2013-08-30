@@ -339,6 +339,14 @@
     </mads>
     <mads>
 	<authority>
+	    <occupation >Arrangers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>arranger</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
 	    <occupation >Art collectors.</occupation>
 	</authority>
         <variant type="other" otherType="singular">
@@ -511,6 +519,14 @@
 	</authority>
         <variant type="other" otherType="singular">
             <occupation>bibliophile</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Binders.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>binder</occupation>
         </variant>
     </mads>
     <mads>
@@ -1102,6 +1118,14 @@
 	</authority>
         <variant type="other" otherType="singular">
             <occupation>computer scientist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Conductors.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>conductor</occupation>
         </variant>
     </mads>
     <mads>
@@ -1792,6 +1816,14 @@
     </mads>
     <mads>
 	<authority>
+	    <occupation >Illuminators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>illuminator</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
 	    <occupation >Illustrators.</occupation>
 	</authority>
         <variant type="other" otherType="singular">
@@ -2294,6 +2326,14 @@
     </mads>
     <mads>
 	<authority>
+	    <occupation >Music copyists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>music copyist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
 	    <occupation >Musicians.</occupation>
 	</authority>
         <variant type="other" otherType="singular">
@@ -2306,6 +2346,14 @@
 	</authority>
         <variant type="other" otherType="singular">
             <occupation>musicologist</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Narrators.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>narrator</occupation>
         </variant>
     </mads>
     <mads>
@@ -2499,6 +2547,14 @@
 	</authority>
         <variant type="other" otherType="singular">
             <occupation>patriot</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Performers.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>performer</occupation>
         </variant>
     </mads>
     <mads>
@@ -3591,6 +3647,14 @@
 	</authority>
         <variant type="other" otherType="singular">
             <occupation>visionary</occupation>
+        </variant>
+    </mads>
+    <mads>
+	<authority>
+	    <occupation >Vocalists.</occupation>
+	</authority>
+        <variant type="other" otherType="singular">
+            <occupation>vocalist</occupation>
         </variant>
     </mads>
     <mads>
