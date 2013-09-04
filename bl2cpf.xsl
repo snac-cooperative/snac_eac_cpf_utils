@@ -642,8 +642,8 @@
         </xsl:variable>
         
         <!--
-            De-duping in 6 lines. This is explained in a long comment near the end of template tpt_geo
-            in lib.xsl.
+            De-duping in 6 lines. This is explained in a long comment near the end of template tpt_geo in
+            lib.xsl. Note that the child element of eac:occ might be eac:occupation or eac:function.
         -->
         <occ>
             <xsl:for-each select="$all_occ/eac:occ/*[string-length(eac:term) > 0]">
@@ -1382,7 +1382,7 @@
         </xsl:if>
     </xsl:template>
     
-    <xsl:template name="tpt_radna">
+    <xsl:template name="tpt_radna" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="controlfield_001"/>
         <xsl:param name="entity_tid" />
         <xsl:param name="rid"/>
@@ -1445,29 +1445,44 @@
 
                 <!--
                     Both .//ScopeContent and .//Title may be empty elements, contain text, or contain child
-                    nodes (usually p). Both may be very long, and neither can be counted on to be short enough
-                    to use as link text.
+                    nodes (usually p). Both may be very long. On the BL web site, they truncate at 250
+                    characters, so we'll do the same when constructing a relationEntry aka title.
+                    
+                    string-length() can cope both single values and sequences and seems the most robust way to avoid
+                    empty tags.
+                    
+                    This variable is used in at least two places, and the xpath to select only
+                    text/nodes/sequences that aren't empty is tricky.
                 -->
+
+                <xsl:variable name="scope_content_norm">
+                    <!--
+                        Copy the scope content, leaving out empty elements at the top level. All this work so
+                        there won't be an empty P tag at the beginning of the abstract, or an leading "; " on
+                        the relation entry (although we have a regex below that fixes that issue).
+                    -->
+                    <xsl:for-each select=".//ScopeContent/*[string-length() > 0]">
+                        <xsl:copy-of select="."/>
+                    </xsl:for-each>
+                </xsl:variable>
 
                 <xsl:variable name="rel_title_long">
                     <xsl:choose>
                         <xsl:when test=".//Title/* or .//Title/text()">
                             <xsl:value-of select=".//Title"/>
-                            <!-- <xsl:message> -->
-                            <!--     <xsl:text>descs title: </xsl:text> -->
-                            <!--     <xsl:value-of select="@descs_file"/> -->
-                            <!--     <xsl:text> </xsl:text> -->
-                            <!--     <xsl:copy-of select=".//Title"/> -->
-                            <!--     <xsl:text>&#x0A;</xsl:text> -->
-                            <!-- </xsl:message> -->
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:variable name="tmp_title">
-                                <xsl:for-each select=".//ScopeContent/*">
+                                <!-- <xsl:for-each select=".//ScopeContent/*[not(./text() = '')]"> -->
+                                <xsl:for-each select="$scope_content_norm">
                                     <xsl:value-of select="concat(., '; ')"/>
                                 </xsl:for-each>
                             </xsl:variable>
-                            <xsl:value-of select="replace($tmp_title, ';\s*$', '')"/>
+                            <xsl:value-of select="replace(
+                                                  replace(
+                                                  $tmp_title
+                                                  , ';\s*$', '')
+                                                  , '^;\s*', '')"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
@@ -1508,9 +1523,12 @@
                             </repository>
                             <abstract>
                                 <!-- BL:<ScopeContent><P> REPEATABLE if necessary, for each <P> in <ScopeContent> -->
-                                <xsl:for-each select="./*/ScopeContent/p">
-                                    <xsl:copy-of select="."/>
-                                </xsl:for-each>
+                                <!--
+                                    Copy the scope content info into the EAD namespace used by this objectXMLWrap.
+                                -->
+                                <xsl:apply-templates mode="copy-no-ns" select="$scope_content_norm">
+                                    <xsl:with-param name="ns" select="'urn:isbn:1-931666-22-9'"/>
+                                </xsl:apply-templates>
                             </abstract>
                             <langmaterial>
                                 <xsl:for-each select="./*/MaterialLanguages/MaterialLanguage">
