@@ -77,6 +77,10 @@
     <xsl:param name="xlink_role" select="$av_archivalResource"/> 
     <xsl:param name="xlink_href" select="'http://www.bl.uk/place_holder'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
     
+    <xsl:variable name="corp_val" select="'Corporation'"/>
+    <xsl:variable name="pers_val" select="'Person'"/>
+    <xsl:variable name="fami_val" select="'Family'"/>
+
     <!--
         This is the full list of all types of files and target values. This var exists for lookup so we can
         quickly find the file associated with a given target.
@@ -620,7 +624,7 @@
 
                 <xsl:variable name="occ_element_name">
                     <xsl:choose>
-                        <xsl:when test="$locn = 'Corporation' or $locn = 'Family'">
+                        <xsl:when test="$locn = $corp_val or $locn = $fami_val">
                             <xsl:value-of select="'function'"/>
                         </xsl:when>
                         <xsl:otherwise>
@@ -655,7 +659,7 @@
         </occ>
 
         <xsl:choose>
-            <xsl:when test="$locn = 'Corporation'">
+            <xsl:when test="$locn = $corp_val"> <!-- Corporation -->
                 <!-- <CorporationNames> -->
                 <!--     <CorporationName> -->
                 <!--         <CorporateName>Chapel of St Andrew on the new bridge</CorporateName> -->
@@ -676,34 +680,12 @@
                     <xsl:copy-of select="/Corporation/CorporationNames/CorporationName[NameType = 'Authorised']"/>
                 </xsl:variable>
                 <xsl:variable name="parsed_date">
-                    <xsl:for-each select="$auth_name/*">
-                        <xsl:call-template name="tpt_bl_date">
-                            <!-- use family entity_type for corp -->
-                            <xsl:with-param name="entity_type" select="'family'"/>
-                            <xsl:with-param name="date_range" select="DateRange"/>
-                            <xsl:with-param name="from" select="StartDate"/>
-                            <xsl:with-param name="param_from_type" select="$av_active"/>
-                            <xsl:with-param name="to" select="EndDate"/>
-                            <xsl:with-param name="param_to_type" select="$av_active" />
-                            <xsl:with-param name="allow_single" select="false()" />
-                            <xsl:with-param name="descs_info">
-                                <xsl:copy-of select="$descs_info"/>
-                            </xsl:with-param>
-                        </xsl:call-template>
-                    </xsl:for-each>
-                </xsl:variable>
-                <xsl:variable name="parsed_date_range">
-                    <xsl:variable name="pd_temp">
-                        <!--
-                            Corporation dates are always active, so remove the word "active " which is (in some sense) redundant.
-                            We will only have one of existDates/date or existDates/dateRange, so no need for an if statement.
-                        -->
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:date[@localType=$av_active], 'active ', '')"/>
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:dateRange/eac:fromDate[@localType=$av_active], 'active ', '')"/>
-                        <xsl:text>-</xsl:text>
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:dateRange/eac:toDate[@localType=$av_active], 'active', '')"/>
-                    </xsl:variable>
-                    <xsl:value-of select="replace($pd_temp, '-$', '')"/>
+                    <xsl:call-template name="tpt_normalized_date">
+                        <xsl:with-param name="date_range" select="DateRange"/>
+                        <xsl:with-param name="descs_info" select="$descs_info"/>
+                        <xsl:with-param name="locn" select="$locn"/>
+                        <xsl:with-param name="auth_name" select="$auth_name"/>
+                    </xsl:call-template>
                 </xsl:variable>
                 <e_name enid="{$entity_tid}"
                         record_id="{$record_id}"
@@ -737,7 +719,7 @@
                                                       Jurisdiction, '. ',
                                                       CorporateName, ' (',
                                                       AdditionalQualifiers, ' : ',
-                                                      $parsed_date_range, ')')
+                                                      $parsed_date/eac:parsed_date_range, ')')
                                                       )"/>
                             </part>
                         </name_entry>
@@ -761,7 +743,7 @@
                 <xsl:copy-of select="$tag_545"/>
             </xsl:when>
 
-            <xsl:when test="$locn = 'Person'">
+            <xsl:when test="$locn = $pers_val"> <!-- Person -->
                 <!-- <PersonNames> -->
                 <!--   <PersonName> -->
                 <!--     <Surname>le Bretun</Surname> -->
@@ -777,51 +759,16 @@
                 <xsl:variable name="auth_name">
                     <xsl:copy-of select="/Person/PersonNames/PersonName[NameType = 'Authorised']"/>
                 </xsl:variable>
+                
                 <xsl:variable name="parsed_date">
-                    <xsl:for-each select="$auth_name/*">
-                        <xsl:call-template name="tpt_bl_date">
-                            <xsl:with-param name="entity_type" select="'person'"/>
-                            <xsl:with-param name="date_range" select="DateRange"/>
-                            <xsl:with-param name="from" select="BirthDate"/>
-                            <xsl:with-param name="param_from_type" select="$av_born"/>
-                            <xsl:with-param name="to" select="DeathDate"/>
-                            <xsl:with-param name="param_to_type" select="$av_died" />
-                            <xsl:with-param name="allow_single" select="false()" />
-                            <xsl:with-param name="descs_info">
-                                <xsl:copy-of select="$descs_info"/>
-                            </xsl:with-param>
-                        </xsl:call-template>
-                    </xsl:for-each>
+                    <xsl:call-template name="tpt_normalized_date">
+                        <xsl:with-param name="date_range" select="DateRange"/>
+                        <xsl:with-param name="descs_info" select="$descs_info"/>
+                        <xsl:with-param name="locn" select="$locn"/>
+                        <xsl:with-param name="auth_name" select="$auth_name"/>
+                    </xsl:call-template>
                 </xsl:variable>
-                <xsl:variable name="parsed_date_range">
-                    <xsl:variable name="pd_temp">
-                        <!--
-                            Start using the word "active" in the date that is part of the cpf name
-                            entry. Corporations and Families do use active, and at least for British Library,
-                            we are adding active date to the name, but only for Corporations and Families.
-                            
-                            We use the value-of both eac:date and eac:fromDate because only one will have a value.
-                            
-                            Don't allow "active" before the toDate. This assumes that active is always a date
-                            range or a single date, and that a "active" date is never only a toDate (like a
-                            death date that is active).
-                            
-                            Allow a trailing hyphen when we have a birth date, otherwise remove it.
-                        -->
-                        <xsl:value-of select="$parsed_date/eac:existDates/eac:date"/>
-                        <xsl:value-of select="$parsed_date/eac:existDates/eac:dateRange/eac:fromDate"/>
-                        <xsl:text>-</xsl:text>
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:dateRange/eac:toDate, 'active', '')"/>
-                    </xsl:variable>
-                    <xsl:choose>
-                        <xsl:when test="$parsed_date/eac:existDates/eac:dateRange/eac:fromDate/@localType = $av_born">
-                            <xsl:value-of select="$pd_temp"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="replace($pd_temp, '-$', '')"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:variable>
+
                 <e_name enid="{$entity_tid}"
                         record_id="{$record_id}"
                         fn_suffix="{$fn_suffix/eac:key[text() = $is_c_flag]/@value}"
@@ -851,7 +798,7 @@
                                                       Surname, ', ',
                                                       FirstName, ', ',
                                                       PreTitle, ', ',
-                                                      $parsed_date_range)
+                                                      $parsed_date/eac:parsed_date_range)
                                                       ), '.')"/>
                             </part>
                         </name_entry>
@@ -871,11 +818,11 @@
                 <ark>
                     <xsl:value-of select=".//MDARK"/>
                 </ark>
-                <xsl:copy-of select="$parsed_date"/>
+                <xsl:copy-of select="$parsed_date/eac:existDates"/>
                 <xsl:copy-of select="$tag_545"/>
             </xsl:when>
 
-            <xsl:when test="$locn = 'Family'">
+            <xsl:when test="$locn = $fami_val"> <!-- Family -->
                 <!-- <FamilyNames> -->
                 <!--     <FamilyName> -->
                 <!--         <AdditionalInformation/> -->
@@ -898,40 +845,12 @@
                     <xsl:copy-of select="/Family/FamilyNames/FamilyName[NameType = 'Authorised']"/>
                 </xsl:variable>
                 <xsl:variable name="parsed_date">
-                    <xsl:for-each select="$auth_name/*">
-                        <xsl:call-template name="tpt_bl_date">
-                            <xsl:with-param name="entity_type" select="'family'"/>
-                            <xsl:with-param name="date_range" select="DateRange"/>
-                            <xsl:with-param name="from" select="StartDate"/>
-                            <xsl:with-param name="param_from_type" select="$av_active"/>
-                            <xsl:with-param name="to" select="EndDate"/>
-                            <xsl:with-param name="param_to_type" select="$av_active" />
-                            <xsl:with-param name="allow_single" select="true()" />
-                            <xsl:with-param name="descs_info">
-                                <xsl:copy-of select="$descs_info"/>
-                            </xsl:with-param>
-                        </xsl:call-template>
-                    </xsl:for-each>
-                </xsl:variable>
-
-                <!-- <xsl:message> -->
-                <!--     <xsl:text>famdate: </xsl:text> -->
-                <!--     <xsl:copy-of select="$parsed_date"/> -->
-                <!--     <xsl:text>&#x0A;</xsl:text> -->
-                <!-- </xsl:message> -->
-
-                <xsl:variable name="parsed_date_range">
-                    <xsl:variable name="pd_temp">
-                        <!--
-                            Family dates are always active, so remove an "active " word which is (in some sense) redundant.
-                            We will only have one of existDates/date or existDates/dateRange, so no need for an if statement.
-                        -->
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:date[@localType=$av_active], 'active ', '')"/>
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:dateRange/eac:fromDate[@localType=$av_active], 'active ', '')"/>
-                        <xsl:text>-</xsl:text>
-                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:dateRange/eac:toDate[@localType=$av_active], 'active', '')"/>
-                    </xsl:variable>
-                    <xsl:value-of select="replace($pd_temp, '-$', '')"/>
+                    <xsl:call-template name="tpt_normalized_date">
+                        <xsl:with-param name="date_range" select="DateRange"/>
+                        <xsl:with-param name="descs_info" select="$descs_info"/>
+                        <xsl:with-param name="locn" select="$locn"/>
+                        <xsl:with-param name="auth_name" select="$auth_name"/>
+                    </xsl:call-template>
                 </xsl:variable>
                 <e_name enid="{$entity_tid}"
                         record_id="{$record_id}"
@@ -965,7 +884,7 @@
                                                               concat(
                                                               FamilySurname, ' (',
                                                               lib:capitalize(FamilyEpithet), ' : ',
-                                                              $parsed_date_range, ' : ',
+                                                              $parsed_date/eac:parsed_date_range, ' : ',
                                                               TerritorialDesignation, ')'
                                                               ))"/>
                                     </xsl:when>
@@ -980,7 +899,7 @@
                                                               lib:capitalize(AdditionalInformation), ' ',
                                                               FamilySurname, ' (',
                                                               lib:capitalize(FamilyEpithet), ' : ',
-                                                              $parsed_date_range, ' : ',
+                                                              $parsed_date/eac:parsed_date_range, ' : ',
                                                               TerritorialDesignation, ')'
                                                               ))"/>
                                     </xsl:otherwise>
@@ -1003,7 +922,7 @@
                 <ark>
                     <xsl:value-of select=".//MDARK"/>
                 </ark>
-                <xsl:copy-of select="$parsed_date"/>
+                <xsl:copy-of select="$parsed_date/eac:existDates"/>
                 <xsl:copy-of select="$tag_545"/>
             </xsl:when>
         </xsl:choose>
@@ -1011,10 +930,10 @@
     
     <xsl:template name="tpt_bl_date" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="date_range"/>
-        <xsl:param name="from"/>
-        <xsl:param name="param_from_type"/>
-        <xsl:param name="to"/>
-        <xsl:param name="param_to_type"/>
+        <!-- <xsl:param name="from"/> -->
+        <!-- <xsl:param name="param_from_type"/> -->
+        <!-- <xsl:param name="to"/> -->
+        <!-- <xsl:param name="param_to_type"/> -->
         <xsl:param name="allow_single" select="false()" />
         <xsl:param name="descs_info"/>
         <xsl:param name="entity_type"/>
@@ -1039,10 +958,18 @@
         <xsl:variable name="show_date">
             <xsl:call-template name="tpt_show_date">
                 <xsl:with-param name="tokens" select="$tokens"/>
-                <xsl:with-param name="is_family" select="$entity_type = 'family'"/>
+                <xsl:with-param name="is_family" select="$entity_type = $fami_val"/>
                 <xsl:with-param name="rec_pos" select="'not_used'"/>
             </xsl:call-template>
         </xsl:variable>
+
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>dran: </xsl:text> -->
+        <!--     <xsl:copy-of select="$date_range"/> -->
+        <!--     <xsl:text> sdate: </xsl:text> -->
+        <!--     <xsl:copy-of select="$show_date"/> -->
+        <!--     <xsl:text>&#x0A;</xsl:text> -->
+        <!-- </xsl:message> -->
 
         <!--
             We never want to see suspicious alternative dates. I think extra logic prevented the really
@@ -1125,13 +1052,6 @@
 
                         <xsl:variable name="min" select="format-number(min($multi_date//@standardDate), '0000')"/>
                         <xsl:variable name="max" select="format-number(max($multi_date//@standardDate), '0000')"/>
-
-                        <!-- <xsl:message> -->
-                        <!--     <xsl:text>multi_date: </xsl:text> -->
-                        <!--     <xsl:copy-of select="$multi_date"/> -->
-                        <!--     <xsl:text>&#x0A;</xsl:text> -->
-                        <!-- </xsl:message> -->
-
                         
                         <xsl:if test="$min != 'NaN' and $max != 'NaN'">
                             <!-- See lib.xml Since this is active, change allow_single to be true. -->
@@ -1145,40 +1065,8 @@
                                 </xsl:call-template>
                             </existDates>
                         </xsl:if>
-
-                        <!-- if there are no localType attributes anywhere then we're ok. -->
-                        <!-- <xsl:if test="not($multi_date//*[@localType = $av_suspiciousDate])"> -->
-                        <!--     <xsl:copy-of select="($multi_date/*)[1]"/> -->
-                        <!-- </xsl:if> -->
                     </xsl:otherwise>
                 </xsl:choose>
-
-
-                <!-- <xsl:variable name="acdate"> -->
-                <!-- 
-                     Send a string that is a list of date years to tpt_parse_alt which will parse this as
-                     though it were a date string. Which it is.
-                -->
-                <!--     <xsl:call-template name="tpt_parse_alt"> -->
-                <!--         <xsl:with-param name="alt_date"> -->
-                <!--             <xsl:for-each select="$descs_info//StartDate[text() != '-9999']|$descs_info//EndDate[text() != '-9999']"> -->
-                <!--                 <xsl:value-of select="concat(' ', .)"/> -->
-                <!--             </xsl:for-each> -->
-                <!--         </xsl:with-param> -->
-                <!--     </xsl:call-template> -->
-                <!-- </xsl:variable> -->
-                <!-- <xsl:if test="count($acdate/eac:tok) >= 1"> -->
-                <!--     <existDates> -->
-                <!-- See lib.xml Since this is active, change allow_single to be true. -->
-                <!--         <xsl:call-template name="tpt_simple_date_range"> -->
-                <!--             <xsl:with-param name="from" select="$acdate/eac:tok[1]"/> -->
-                <!--             <xsl:with-param name="from_type" select="$av_active"/> -->
-                <!--             <xsl:with-param name="to" select="$acdate/eac:tok[3]"/> -->
-                <!--             <xsl:with-param name="to_type" select="$av_active" /> -->
-                <!--             <xsl:with-param name="allow_single" select="true()" /> -->
-                <!--         </xsl:call-template> -->
-                <!--     </existDates> -->
-                <!-- </xsl:if> -->
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -1431,10 +1319,6 @@
                 </arc_role>
                 <xlink_role><xsl:value-of select="$xlink_role"/></xlink_role>
                 
-                <!--
-      http://searcharchives.bl.uk/primo_library/libweb/action/search.do?srt=rank&ct=search&mode=Basic&indx=1&vl(freeText0)=032-000001282&fn=search&vid=IAMS_VU2 
-                -->
-                
                 <xlink_href>
                     <xsl:value-of
                         select="concat('http://searcharchives.bl.uk/primo_library/libweb/action/search.do?srt=rank&amp;ct=search&amp;mode=Basic&amp;indx=1&amp;vl(freeText0)=',
@@ -1496,7 +1380,65 @@
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:variable>
-                <rel_entry><xsl:value-of select="concat($rel_title, ' ', ./*/DateRange) "/></rel_entry>
+                
+                <!--
+                    Only one of these copy-of will be true, so we should only end up with the value we want.
+                    
+                    We must only use the first element in $descs_info aka the current context.
+                    
+                    $descs_info has the original file element which is any of several archival
+                    classifications: fonds, file, series, etc. followoed by zero or more: places, subjects.
+
+                    <file>
+                    ...
+                    </file>
+                    <places>...</places>
+
+
+                -->
+
+                <xsl:variable name="auth_name">
+                    <xsl:copy-of select="(./*)[1]"/>
+
+                    <!-- The current context is a descs_info record, so we do not have a Names record as usual for $auth_name. -->
+                    
+                    <!-- <xsl:copy-of select=".//Corporation/CorporationNames/CorporationName[NameType = 'Authorised']"/> -->
+                    <!-- <xsl:copy-of select=".//Person/PersonNames/PersonName[NameType = 'Authorised']"/> -->
+                    <!-- <xsl:copy-of select=".//Family/FamilyNames/FamilyName[NameType = 'Authorised']"/> -->
+                </xsl:variable>
+
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>rrpd: </xsl:text> -->
+                <!--     <xsl:copy-of select="./*"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
+                
+                <!--
+                    Since these are descs_info records, there is no locn as with Names records. All these
+                    dates should be active, so for now we'll just tell the date parser we are a family.
+                    
+                    This works, but seems only marginally robust. Normally tpt_normalized_date parses a date
+                    range from a Names record, and uses the descs_info for alternate date parsing. We don't
+                    want any alternate date parsing, but since the context is a descs, and we're sending the
+                    context as alternate, is seems unlikely anything alternative can be parsed.
+                -->
+                <xsl:variable name="parsed_date">
+                    <xsl:call-template name="tpt_normalized_date">
+                        <xsl:with-param name="date_range" select="./*/DateRange"/>
+                        <xsl:with-param name="descs_info" select="."/>
+                        <xsl:with-param name="locn" select="$fami_val"/>
+                        <xsl:with-param name="auth_name" select="$auth_name"/>
+                    </xsl:call-template>
+                </xsl:variable>
+
+                <!--
+                    Remove trailing ", " with a regex replace() since parsed date range is often empty.
+                -->
+                <rel_entry>
+                    <xsl:value-of select="replace(
+                                          normalize-space(concat($rel_title, ', ', $parsed_date/eac:parsed_date_range))
+                                          , ',\s*$', '')"/>
+                </rel_entry>
                 <object_xml>
                     <objectXMLWrap>
                         <did xmlns="urn:isbn:1-931666-22-9">
@@ -1814,6 +1756,131 @@
             </xsl:matching-substring>
         </xsl:analyze-string>
     </xsl:function>
+
+    <xsl:template name="tpt_normalized_date">
+        <xsl:param name="date_range"/>
+        <xsl:param name="descs_info"/>
+        <xsl:param name="locn"/>
+        <xsl:param name="auth_name"/>
+
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>tptnd: </xsl:text> -->
+                <!--     <xsl:copy-of select="$locn"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
+
+
+        <xsl:choose>
+            <xsl:when test="$locn = $corp_val or $locn = $fami_val">
+                <xsl:variable name="parsed_date">
+                    <xsl:for-each select="$auth_name/*"> <!-- one value only, set context -->
+                        <!-- <xsl:message> -->
+                        <!--     <xsl:text>foreach: </xsl:text> -->
+                        <!--     <xsl:copy-of select="."/> -->
+                        <!--     <xsl:text>&#x0A;</xsl:text> -->
+                        <!-- </xsl:message> -->
+
+                        <xsl:call-template name="tpt_bl_date">
+                            <!-- use family entity_type for corp -->
+                            <xsl:with-param name="entity_type" select="$locn"/>
+                            <xsl:with-param name="date_range" select="$date_range"/>
+                            <xsl:with-param name="allow_single" select="false()" />
+                            <xsl:with-param name="descs_info">
+                                <xsl:copy-of select="$descs_info"/>
+                            </xsl:with-param>
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </xsl:variable>
+
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>pdate: </xsl:text> -->
+                <!--     <xsl:copy-of select="$parsed_date"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
+
+                <xsl:variable name="parsed_date_range">
+                    <xsl:variable name="pd_temp">
+                        <!--
+                            Corporation and Family dates are always active, so remove the word "active " which
+                            is (in some sense) redundant.  We will only have one of existDates/date or
+                            existDates/dateRange, so no need for an if statement.
+                            
+                            Q: Don't these need min() and max() because $parsed_date may contain multiple dates?
+                            A: No, because the for-each above is context setting only. There is only one $auth_name.
+                        -->
+                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:date[@localType=$av_active], 'active ', '')"/>
+                        <xsl:value-of select="replace(
+                                              $parsed_date/eac:existDates/eac:dateRange/eac:fromDate[@localType=$av_active],
+                                              'active\s*', '')"/>
+                        <xsl:text>-</xsl:text>
+                        <xsl:value-of select="replace(
+                                              $parsed_date/eac:existDates/eac:dateRange/eac:toDate[@localType=$av_active],
+                                              'active\s*', '')"/>
+                    </xsl:variable>
+                    <xsl:value-of select="replace($pd_temp, '-$', '')"/>
+                </xsl:variable>
+                
+                <!-- the existDates CPF element -->
+                <xsl:copy-of select="$parsed_date/eac:existDates"/>
+                <parsed_date_range>
+                    <xsl:value-of select="$parsed_date_range"/>
+                </parsed_date_range>
+
+            </xsl:when>
+
+            <xsl:when test="$locn = $pers_val">
+                <xsl:variable name="parsed_date">
+                    <xsl:for-each select="$auth_name/*">
+                        <xsl:call-template name="tpt_bl_date">
+                            <xsl:with-param name="entity_type" select="$locn"/>
+                            <xsl:with-param name="date_range" select="DateRange"/>
+                            <xsl:with-param name="allow_single" select="false()" />
+                            <xsl:with-param name="descs_info">
+                                <xsl:copy-of select="$descs_info"/>
+                            </xsl:with-param>
+                        </xsl:call-template>
+                    </xsl:for-each>
+                </xsl:variable>
+                <xsl:variable name="parsed_date_range">
+                    <xsl:variable name="pd_temp">
+                        <!--
+                            Start using the word "active" in the date that is part of the cpf name
+                            entry. Corporations and Families do use active, and at least for British Library,
+                            we are adding active date to the name, but only for Corporations and Families.
+                            
+                            We use the value-of both eac:date and eac:fromDate because only one will have a value.
+                            
+                            Don't allow "active" before the toDate. This assumes that active is always a date
+                            range or a single date, and that a "active" date is never only a toDate (like a
+                            death date that is active).
+                            
+                            Allow a trailing hyphen when we have a birth date, otherwise remove it.
+                        -->
+                        <xsl:value-of select="$parsed_date/eac:existDates/eac:date"/>
+                        <xsl:value-of select="$parsed_date/eac:existDates/eac:dateRange/eac:fromDate"/>
+                        <xsl:text>-</xsl:text>
+                        <xsl:value-of select="replace($parsed_date/eac:existDates/eac:dateRange/eac:toDate, 'active', '')"/>
+                    </xsl:variable>
+                    <xsl:choose>
+                        <xsl:when test="$parsed_date/eac:existDates/eac:dateRange/eac:fromDate/@localType = $av_born">
+                            <xsl:value-of select="$pd_temp"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="replace($pd_temp, '-$', '')"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+
+                <!-- the existDates CPF element -->
+                <xsl:copy-of select="$parsed_date/eac:existDates"/>
+                <parsed_date_range>
+                    <xsl:value-of select="$parsed_date_range"/>
+                </parsed_date_range>
+            </xsl:when>
+
+        </xsl:choose>
+
+    </xsl:template>
 
 
 </xsl:stylesheet>

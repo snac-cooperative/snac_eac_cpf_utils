@@ -1269,10 +1269,10 @@
             Fix: aug 7 2013 added word "active" to active (aka flourished) date values.
 
             Suggested Fix: if only one date and not allow_single, include an empty <toDate/> element.
-        -->
+            
+            Fix: sep 5 2013 If from and to are equal, then create a single date.
 
-        <!-- 
-             normalize-space on the dates. Can't modify vars so we'll just make new ones.
+            normalize-space on the dates. Can't modify vars so we'll just make new ones.
         -->
 
         <xsl:variable name="nfrom" select="normalize-space($from)"/>
@@ -1285,7 +1285,7 @@
         </xsl:variable>
 
         <xsl:choose>
-            <xsl:when test="string-length($nto) = 0 and $allow_single">
+            <xsl:when test="(($from = $to) or (string-length($nto) = 0)) and $allow_single">
                 <date standardDate="{$nfrom}" localType="{$from_type}">
                     <xsl:value-of select="normalize-space(concat($active, ' ', $nfrom))"/>
                 </date>
