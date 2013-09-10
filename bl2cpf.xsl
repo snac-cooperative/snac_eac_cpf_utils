@@ -77,7 +77,11 @@
     <xsl:param name="xlink_role" select="$av_archivalResource"/> 
     <xsl:param name="xlink_href" select="'http://www.bl.uk/place_holder'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
     
-    <xsl:variable name="corp_val" select="'Corporation'"/>
+    
+    <!--
+        When we find the tag <Corporation> we set the locn to 'CorporateBody'. Person and Family are ok.
+    -->
+    <xsl:variable name="corp_val" select="'CorporateBody'"/>
     <xsl:variable name="pers_val" select="'Person'"/>
     <xsl:variable name="fami_val" select="'Family'"/>
 
@@ -326,7 +330,7 @@
                                 <xsl:text> rid: </xsl:text>
                                 <xsl:value-of select="$record_id"/>
                                 <xsl:text> Called from: tpt_match</xsl:text>
-                                <xsl:text>&#x0A;</xsl:text>
+                                <!-- <xsl:text>&#x0A;</xsl:text> -->
                             </xsl:message>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -492,9 +496,17 @@
             
             Daniel says: BL's manuscript collections. We will call every last one of these "archival," and
             almost every name will either be the creator or referencedIn a resource. (Almost?)
+            
+            Use value-of to turn one or more nodes (or a sequence) into a single string that we can test with
+            a regex matches().
         -->
+
+        <xsl:variable name="denorm_role">
+            <xsl:value-of select="$rel_type"/>
+        </xsl:variable>
+
         <xsl:choose>
-            <xsl:when test="matches($rel_type, 'subject', 'i')">
+            <xsl:when test="matches($denorm_role, 'subject', 'i')">
                 <xsl:value-of select="$av_referencedIn"/>
             </xsl:when>
             <xsl:otherwise>
@@ -510,14 +522,22 @@
         <xsl:param name="cf"/>
         
         <!-- 
-             Process data in the current context. We set the context via a for-each (or something).  Note that
-             we need both @enid and @record_id because our records are all peers and may refer to each
-             other. We have to be consistent in how record id value are determined. Other data has .c records
-             that refer to .r records which are contained internally in the original MARC record. BL has
+             We have to be consistent in how record id values are determined. Other data has .c records that
+             refer to .r records which are contained internally in the original MARC record. BL has
              independent CPF entities, some of which refer to each other.
         -->
 
-        <xsl:variable name="locn" select="./local-name()"/>
+        <xsl:variable name="locn">
+            <xsl:choose>
+                <xsl:when test="./local-name() = 'Corporation'">
+                    <xsl:value-of select="$corp_val"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="./local-name()"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
         <xsl:variable name="entity_tid" select="./@RecordID"/>
 
         <!--
@@ -533,13 +553,6 @@
                 </radna>
             </xsl:for-each>
         </xsl:variable>
-
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>ni radna: </xsl:text> -->
-        <!--     <xsl:value-of select="concat('(', $cf, ') ')"/> -->
-        <!--     <xsl:copy-of select="$radna"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
 
         <xsl:variable name="descs_info">
             <xsl:for-each select="$radna/*">
@@ -681,12 +694,13 @@
                 </xsl:variable>
                 <xsl:variable name="parsed_date">
                     <xsl:call-template name="tpt_normalized_date">
-                        <xsl:with-param name="date_range" select="DateRange"/>
+                        <xsl:with-param name="date_range" select="$auth_name/CorporationName/DateRange"/>
                         <xsl:with-param name="descs_info" select="$descs_info"/>
                         <xsl:with-param name="locn" select="$locn"/>
                         <xsl:with-param name="auth_name" select="$auth_name"/>
                     </xsl:call-template>
                 </xsl:variable>
+
                 <e_name enid="{$entity_tid}"
                         record_id="{$record_id}"
                         fn_suffix="{$fn_suffix/eac:key[text() = $is_c_flag]/@value}"
@@ -705,11 +719,6 @@
                                 <xsl:with-param name="type" select="NameType"/>
                             </xsl:call-template>
                         </xsl:variable>
-                        <!-- <xsl:message> -->
-                        <!--     <xsl:text>afdump: </xsl:text> -->
-                        <!--     <xsl:copy-of select="$a_form"/> -->
-                        <!--     <xsl:text>&#x0A;</xsl:text> -->
-                        <!-- </xsl:message> -->
                         <name_entry en_lang="{lib:get-lang(NameLanguage)}"
                                     a_form="{$a_form}">
                             <part>
@@ -762,12 +771,18 @@
                 
                 <xsl:variable name="parsed_date">
                     <xsl:call-template name="tpt_normalized_date">
-                        <xsl:with-param name="date_range" select="DateRange"/>
+                        <xsl:with-param name="date_range" select="$auth_name/PersonName/DateRange"/>
                         <xsl:with-param name="descs_info" select="$descs_info"/>
                         <xsl:with-param name="locn" select="$locn"/>
                         <xsl:with-param name="auth_name" select="$auth_name"/>
                     </xsl:call-template>
                 </xsl:variable>
+
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>pers: </xsl:text> -->
+                <!--     <xsl:copy-of select="$auth_name/DateRange"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
 
                 <e_name enid="{$entity_tid}"
                         record_id="{$record_id}"
@@ -846,12 +861,19 @@
                 </xsl:variable>
                 <xsl:variable name="parsed_date">
                     <xsl:call-template name="tpt_normalized_date">
-                        <xsl:with-param name="date_range" select="DateRange"/>
+                        <xsl:with-param name="date_range" select="$auth_name/FamilyName/DateRange"/>
                         <xsl:with-param name="descs_info" select="$descs_info"/>
                         <xsl:with-param name="locn" select="$locn"/>
                         <xsl:with-param name="auth_name" select="$auth_name"/>
                     </xsl:call-template>
                 </xsl:variable>
+                
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>fami: </xsl:text> -->
+                <!--     <xsl:copy-of select="$auth_name/FamilyName/DateRange"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
+
                 <e_name enid="{$entity_tid}"
                         record_id="{$record_id}"
                         fn_suffix="{$fn_suffix/eac:key[text() = $is_c_flag]/@value}"
@@ -930,10 +952,6 @@
     
     <xsl:template name="tpt_bl_date" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="date_range"/>
-        <!-- <xsl:param name="from"/> -->
-        <!-- <xsl:param name="param_from_type"/> -->
-        <!-- <xsl:param name="to"/> -->
-        <!-- <xsl:param name="param_to_type"/> -->
         <xsl:param name="allow_single" select="false()" />
         <xsl:param name="descs_info"/>
         <xsl:param name="entity_type"/>
@@ -950,26 +968,19 @@
         </xsl:variable>
 
         <!-- 
-             Note: select="$entity_type = 'family'" is a short way of saying if the entity type is family then
-             true else false. This controls is_active so it should be true for corp and for dates from
-             $descs_info.
+             Note: select="$entity_type = $fami_val or $entity_type = $corp_val" is a short way of saying if
+             the entity type is family or corporation then true (else false). This controls is_active so it
+             should be true for family and corporatebody. Different code makes active true for dates from
+             $descs_info in the alt date parsing below.
         -->
 
         <xsl:variable name="show_date">
             <xsl:call-template name="tpt_show_date">
                 <xsl:with-param name="tokens" select="$tokens"/>
-                <xsl:with-param name="is_family" select="$entity_type = $fami_val"/>
+                <xsl:with-param name="is_family" select="$entity_type = $fami_val or $entity_type = $corp_val"/>
                 <xsl:with-param name="rec_pos" select="'not_used'"/>
             </xsl:call-template>
         </xsl:variable>
-
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>dran: </xsl:text> -->
-        <!--     <xsl:copy-of select="$date_range"/> -->
-        <!--     <xsl:text> sdate: </xsl:text> -->
-        <!--     <xsl:copy-of select="$show_date"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
 
         <!--
             We never want to see suspicious alternative dates. I think extra logic prevented the really
@@ -1057,9 +1068,9 @@
                             <!-- See lib.xml Since this is active, change allow_single to be true. -->
                             <existDates>
                                 <xsl:call-template name="tpt_simple_date_range">
-                                    <xsl:with-param name="from" select="$max"/>
+                                    <xsl:with-param name="from" select="$min"/>
                                     <xsl:with-param name="from_type" select="$av_active"/>
-                                    <xsl:with-param name="to" select="$min"/>
+                                    <xsl:with-param name="to" select="$max"/>
                                     <xsl:with-param name="to_type" select="$av_active" />
                                     <xsl:with-param name="allow_single" select="true()" />
                                 </xsl:call-template>
@@ -1069,119 +1080,7 @@
                 </xsl:choose>
             </xsl:otherwise>
         </xsl:choose>
-    </xsl:template>
-
-    <xsl:template name="old_tpt_bl_date" xmlns="urn:isbn:1-931666-33-4">
-        <xsl:param name="date_range"/>
-        <xsl:param name="from"/>
-        <xsl:param name="param_from_type"/>
-        <xsl:param name="to"/>
-        <xsl:param name="param_to_type"/>
-        <xsl:param name="allow_single" select="false()" />
-        <xsl:param name="descs_info"/>
-
-        <xsl:message>
-            <xsl:text>from: </xsl:text>
-            <xsl:value-of select="$from"/>
-            <xsl:text> to: </xsl:text>
-            <xsl:value-of select="$to"/>
-            <xsl:text> range: </xsl:text>
-            <xsl:value-of select="$date_range"/>
-            <xsl:text>&#x0A;</xsl:text>
-        </xsl:message>
-
-        <xsl:variable name="is_active" as="xs:boolean">
-            <xsl:choose>
-                <xsl:when test="matches($date_range, 'fl')">
-                    <xsl:value-of select="true()"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="true()"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
-        <xsl:variable name="from_type">
-            <xsl:choose>
-                <xsl:when test="$is_active">
-                    <xsl:value-of select="$av_active"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="$param_from_type"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
-        <xsl:variable name="to_type">
-            <xsl:choose>
-                <xsl:when test="$is_active">
-                    <xsl:value-of select="$av_active"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="$param_to_type"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-
-        <xsl:variable name="bdate">
-            <xsl:if test="not ($from = '-9999') and $from != '0000'">
-                <xsl:value-of select="$from"/>
-            </xsl:if>
-        </xsl:variable>
-
-        <xsl:variable name="ddate">
-            <xsl:if test="not ($to = '-9999') and $to != '0000'">
-                <xsl:value-of select="$to"/>
-            </xsl:if>
-        </xsl:variable>
-
-        <xsl:choose>
-        <xsl:when test="($from or $to) and ($from[text() != '-9999'] and $to[text() != '-9999'])">
-            <!-- <xsl:message> -->
-            <!--     <xsl:text>from: </xsl:text> -->
-            <!--     <xsl:copy-of select="$from/text()"/> -->
-            <!--     <xsl:text>&#x0A;</xsl:text> -->
-            <!-- </xsl:message> -->
-            <existDates>
-                <!-- See lib.xml -->
-                <xsl:call-template name="tpt_simple_date_range">
-                    <xsl:with-param name="from" select="$bdate"/>
-                    <xsl:with-param name="from_type" select="$from_type"/>
-                    <xsl:with-param name="to" select="$ddate"/>
-                    <xsl:with-param name="to_type" select="$to_type" />
-                    <xsl:with-param name="allow_single" select="$allow_single" />
-                </xsl:call-template>
-            </existDates>
-        </xsl:when>
-        <xsl:otherwise>
-            <xsl:variable name="acdate">
-                <!-- 
-                     Send a string that is a list of date years to tpt_parse_alt which will parse this as
-                     though it were a date string. Which it is.
-                -->
-                <xsl:call-template name="tpt_parse_alt">
-                    <xsl:with-param name="alt_date">
-                        <xsl:for-each select="$descs_info//StartDate[text() != '-9999']|$descs_info//EndDate[text() != '-9999']">
-                            <xsl:value-of select="concat(' ', .)"/>
-                        </xsl:for-each>
-                    </xsl:with-param>
-                </xsl:call-template>
-            </xsl:variable>
-            <xsl:if test="count($acdate/eac:tok) >= 1">
-                <existDates>
-                    <!-- See lib.xml Since this is active, change allow_single to be true. -->
-                    <xsl:call-template name="tpt_simple_date_range">
-                        <xsl:with-param name="from" select="$acdate/eac:tok[1]"/>
-                        <xsl:with-param name="from_type" select="$av_active"/>
-                        <xsl:with-param name="to" select="$acdate/eac:tok[3]"/>
-                        <xsl:with-param name="to_type" select="$av_active" />
-                        <xsl:with-param name="allow_single" select="true()" />
-                    </xsl:call-template>
-                </existDates>
-            </xsl:if>
-        </xsl:otherwise>
-        </xsl:choose>
-    </xsl:template> <!-- end tpt_bl_date -->
+    </xsl:template> <!-- tpt_bl_date -->
 
     <xsl:template name="tpt_cpf_relation"  xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="all_xx"/>
@@ -1296,12 +1195,6 @@
             </RelatedArchiveDescriptionNamedAuthority>
             
         -->
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>rrel context (tpt_radna): </xsl:text> -->
-        <!--     <xsl:copy-of select="."/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
-        
         <xsl:if test="./*">
             <rrel>
                 <!--
@@ -1309,14 +1202,18 @@
                     
                     Note that BL is different from MARC derived records. With BL, the cpf comes from Names*
                     and the resources that refer to the cpf are Descs*. Thus xlink:href is the Descs file for the BL data.
+                    
+                    We send the RelationshipType to tpt_bl_arc_role which filters the value, therefore we can
+                    send multiple values. There are only two possible roles: $av_referencedIn, $av_creatorOf.
                 -->
                 <arc_role>
                     <xsl:call-template name="tpt_bl_arc_role">
                         <xsl:with-param
                             name="rel_type"
-                            select="(.//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $entity_tid])[1]/RelationshipType"/>
+                            select=".//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $entity_tid]/RelationshipType"/>
                     </xsl:call-template>
                 </arc_role>
+
                 <xlink_role><xsl:value-of select="$xlink_role"/></xlink_role>
                 
                 <xlink_href>
@@ -1407,12 +1304,6 @@
                     <!-- <xsl:copy-of select=".//Family/FamilyNames/FamilyName[NameType = 'Authorised']"/> -->
                 </xsl:variable>
 
-                <!-- <xsl:message> -->
-                <!--     <xsl:text>rrpd: </xsl:text> -->
-                <!--     <xsl:copy-of select="./*"/> -->
-                <!--     <xsl:text>&#x0A;</xsl:text> -->
-                <!-- </xsl:message> -->
-                
                 <!--
                     Since these are descs_info records, there is no locn as with Names records. All these
                     dates should be active, so for now we'll just tell the date parser we are a family.
@@ -1499,6 +1390,9 @@
             SXXP0003: Error reported by XML parser: Content is not allowed in prolog.
             Recoverable error on line 734 of bl2cpf.xsl:
             FODC0002: org.xml.sax.SAXParseException: Content is not allowed in prolog.
+            
+            There are no multi tid messages in the log, so apparently, there are none of these records. It
+            that possible? Why is there code testing for multi tids?
         -->
 
         <xsl:choose>
@@ -1516,7 +1410,7 @@
                         <xsl:value-of select="$descs_file"/>
                         <xsl:text>&#x0A;</xsl:text>
                         
-                        <xsl:copy-of select="$descs_info//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $tid][1]/RelationshipType"/>
+                        <xsl:value-of separator=", " select="$descs_info//RelatedArchiveDescriptionNamedAuthority[@TargetNumber = $tid]/RelationshipType"/>
                         <xsl:text>&#x0A;</xsl:text>
                     </xsl:message>
                 </xsl:if>
@@ -1549,8 +1443,8 @@
                 <xsl:message>
                     <xsl:text>Missing Descs tid: </xsl:text>
                     <xsl:value-of select="$tid"/>
-                    <xsl:value-of select="concat(' rid:', $rid, ' Called from: ', $cf)"/>
-                    <xsl:text>&#x0A;</xsl:text>
+                    <xsl:value-of select="concat(' rid: ', $rid, ' Called from: ', $cf)"/>
+                    <!-- <xsl:text>&#x0A;</xsl:text> -->
                 </xsl:message>
             </xsl:otherwise>
         </xsl:choose>
@@ -1763,13 +1657,6 @@
         <xsl:param name="locn"/>
         <xsl:param name="auth_name"/>
 
-                <!-- <xsl:message> -->
-                <!--     <xsl:text>tptnd: </xsl:text> -->
-                <!--     <xsl:copy-of select="$locn"/> -->
-                <!--     <xsl:text>&#x0A;</xsl:text> -->
-                <!-- </xsl:message> -->
-
-
         <xsl:choose>
             <xsl:when test="$locn = $corp_val or $locn = $fami_val">
                 <xsl:variable name="parsed_date">
@@ -1791,12 +1678,6 @@
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:variable>
-
-                <!-- <xsl:message> -->
-                <!--     <xsl:text>pdate: </xsl:text> -->
-                <!--     <xsl:copy-of select="$parsed_date"/> -->
-                <!--     <xsl:text>&#x0A;</xsl:text> -->
-                <!-- </xsl:message> -->
 
                 <xsl:variable name="parsed_date_range">
                     <xsl:variable name="pd_temp">
