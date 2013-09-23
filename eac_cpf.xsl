@@ -162,6 +162,9 @@
                             </xsl:for-each>
                         </xsl:otherwise>
                     </xsl:choose>
+                    <xsl:if test="string-length($param_data/eac:descriptiveNote)">
+                        <xsl:copy-of select="$param_data/eac:descriptiveNote"/>
+                    </xsl:if>
                 </identity>
                 
                 <xsl:if test="$is_c_flag">
