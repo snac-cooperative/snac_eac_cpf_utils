@@ -77,7 +77,6 @@
     <xsl:param name="xlink_role" select="$av_archivalResource"/> 
     <xsl:param name="xlink_href" select="'http://www.bl.uk/place_holder'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
     
-    
     <!--
         When we find the tag <Corporation> we set the locn to 'CorporateBody'. Person and Family are ok.
         
@@ -402,6 +401,10 @@
                     <xsl:call-template name="tpt_snac_info"/>
                 </snac_info>
                 
+                <!--
+                    Calling capitalize() doesn't hurt, but we shouldn't need to capitalized @entity_type
+                    because the values are from $pers_val etc. from lib.xsl.
+                -->
                 <citation>
                     <xsl:text>British Library Archives and Manuscripts Catalogue : </xsl:text>
                     <xsl:value-of select="lib:capitalize(eac:e_name/@entity_type)"/>
@@ -411,14 +414,27 @@
 
                 <!-- 
                      tpt_radna creates the necessary rrel elements (resourceRelation) for this CPF entry.
+                     
+                     Create a couple of vars because the outer context is not available to the inner context
+                     of the for-each.
                 -->
                 <xsl:variable name="entity_tid" select="eac:e_name/@enid"/>
+                <xsl:variable name="entity_type" select="string(eac:e_name/@entity_type)"/>
+
                 <xsl:for-each select="eac:dinfo/*">
+
+                    <!-- <xsl:message> -->
+                    <!--     <xsl:text>calling radna et: </xsl:text> -->
+                    <!--     <xsl:copy-of select="."/> -->
+                    <!--     <xsl:text>&#x0A;</xsl:text> -->
+                    <!-- </xsl:message> -->
+
+
                     <xsl:call-template name="tpt_radna">
                         <xsl:with-param name="entity_tid" select="$entity_tid"/>
                         <xsl:with-param name="controlfield_001" select="$controlfield_001"/>
                         <xsl:with-param name="rid" select="$record_id"/>
-                        <xsl:with-param name="entity_type" select="eac:e_name/@entity_type"/>
+                        <xsl:with-param name="entity_type" select="$entity_type"/>
                     </xsl:call-template>
                 </xsl:for-each>
 
@@ -448,7 +464,7 @@
                 <xsl:call-template name="tpt_body">
                     <xsl:with-param name="param_data" select="$param_data" />
                     <xsl:with-param name="exist_dates" select="./eac:existDates" as="node()*" />
-                    <xsl:with-param name="entity_type" select="eac:e_name/@entity_type" />
+                    <xsl:with-param name="entity_type" select="eac:e_name/@entity_type_cpf" />
                     
                     <!-- Do not use. Superceded by $param_data/e_name for records with multi or alternative names. -->
                     <!-- <xsl:with-param name="entity_name" select="eac:e_name"/> -->
@@ -533,8 +549,21 @@
                 <xsl:when test="./local-name() = 'Corporation'">
                     <xsl:value-of select="$corp_val"/>
                 </xsl:when>
+                <xsl:when test="./local-name() = 'Family'">
+                    <xsl:value-of select="$fami_val"/>
+                </xsl:when>
+                <xsl:when test="./local-name() = 'Person'">
+                    <xsl:value-of select="$pers_val"/>
+                </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="./local-name()"/>
+                    <xsl:message terminate="yes">
+                        <xsl:text>Bad input root element: </xsl:text>
+                        <xsl:value-of select="./local-name()"/>
+                        <xsl:text>&#x0A;RecordID: &#x0A;</xsl:text>
+                        <xsl:value-of select="./@RecordID"/>
+                        <xsl:text>&#x0A;Exiting.&#x0A;</xsl:text>
+                    </xsl:message>
+                    <!-- <xsl:value-of select="./local-name()"/> -->
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -720,7 +749,8 @@
                         fn_suffix="{$fn_suffix/eac:key[text() = $is_c_flag]/@value}"
                         is_c_flag="{$is_c_flag}" 
                         is_r_flag="{$is_r_flag}"
-                        entity_type="corporateBody"
+                        entity_type="{$corp_val}"
+                        entity_type_cpf="{$cpf_corp_val}"
                         en_lang="{lib:get-lang($auth_name/*/NameLanguage)}">
                     <!--
                         Use for-each to set context. See lib.xsl for lib:name-cleanse. See
@@ -805,7 +835,8 @@
                         fn_suffix="{$fn_suffix/eac:key[text() = $is_c_flag]/@value}"
                         is_c_flag="{$is_c_flag}" 
                         is_r_flag="{$is_r_flag}"
-                        entity_type="person"
+                        entity_type="{$pers_val}"
+                        entity_type_cpf="{$cpf_pers_val}"
                         en_lang="{lib:get-lang($auth_name/*/NameLanguage)}">
                     <!--
                         Use for-each to set context. See lib.xsl for lib:name-cleanse. See british_library/qa_file_target.xml comments.
@@ -897,7 +928,8 @@
                         fn_suffix="{$fn_suffix/eac:key[text() = $is_c_flag]/@value}"
                         is_c_flag="{$is_c_flag}" 
                         is_r_flag="{$is_r_flag}"
-                        entity_type="family"
+                        entity_type="{$fami_val}"
+                        entity_type_cpf="{$cpf_fami_val}"
                         en_lang="{lib:get-lang($auth_name/*/NameLanguage)}">
                     <!--
                         Use for-each to set context. See Note1 above. See lib.xsl for lib:name-cleanse. See
@@ -1137,6 +1169,10 @@
                     become an element in the output.
                     
                     Changes to relationEntry here should probably also be made to relationEntry below.
+                    
+                    Var et is used as a key, and the keys are $pers_val, etc. There are slight capitalization
+                    differences between the two sets of entity type variables. @entity_type is normal and
+                    @entity_type_cpf is only for entityType in eac_cpf.xsl. See lib.xsl.
                 -->
                 <xsl:variable name="et" select="@entity_type"/>
 
@@ -1355,25 +1391,34 @@
                     <xsl:call-template name="tpt_normalized_date">
                         <xsl:with-param name="date_range" select="./*/DateRange"/>
                         <xsl:with-param name="descs_info" select="."/>
-                        <xsl:with-param name="locn" select="$entity_type"/>
+                        <xsl:with-param name="locn" select="''"/> <!-- No locn for archival records because they are not entities. -->
                         <xsl:with-param name="is_active" select="true()"/>
                         <xsl:with-param name="auth_name" select="$auth_name"/>
                     </xsl:call-template>
                 </xsl:variable>
 
-                <xsl:message>
-                    <xsl:text>tpt_radna pd: </xsl:text>
-                    <xsl:copy-of select="$parsed_date"/>
-                    <xsl:text>&#x0A;</xsl:text>
-                </xsl:message>
+                <!-- <xsl:message> -->
+                <!--     <xsl:text>tpt_radna pd: </xsl:text> -->
+                <!--     <xsl:text>date_range: </xsl:text> -->
+                <!--     <xsl:copy-of select=".//DateRange"/> -->
+                <!--     <xsl:text> entity_type: </xsl:text> -->
+                <!--     <xsl:copy-of select="$entity_type"/> -->
+                <!--     <xsl:copy-of select="$parsed_date"/> -->
+                <!--     <xsl:text>&#x0A;</xsl:text> -->
+                <!-- </xsl:message> -->
 
                 <!--
                     Remove trailing ", " with a regex replace() since parsed date range is often empty.
+                    The two outer replace() calls change "active 1837- 1897" to "1837-1897". 
                 -->
                 <rel_entry>
                     <xsl:value-of select="replace(
+                                          replace(
+                                          replace(
                                           normalize-space(concat($rel_title, ', ', $parsed_date/eac:parsed_date_range))
-                                          , ',\s*$', '')"/>
+                                          , ',\s*$', '')
+                                          , 'active\s*', '')
+                                          , '-\s*', '-')"/>
                 </rel_entry>
                 <object_xml>
                     <objectXMLWrap>
@@ -1721,12 +1766,19 @@
         <!-- <xsl:message> -->
         <!--     <xsl:text>tnd locn: </xsl:text> -->
         <!--     <xsl:copy-of select="$locn"/> -->
+        <!--     <xsl:text> date_range: </xsl:text> -->
+        <!--     <xsl:copy-of select="$date_range"/> -->
         <!--     <xsl:text>&#x0A;</xsl:text> -->
         <!-- </xsl:message> -->
+
+        <!--
+            Descs records are archival records, not corp, family, or person. However, for our purposes, they
+            are most like corp and family.
+        -->
         
         <xsl:variable name="norm_date">
             <xsl:choose>
-                <xsl:when test="$locn = $corp_val or $locn = $fami_val">
+                <xsl:when test="$locn = $corp_val or $locn = $fami_val or $locn = ''">
                     <xsl:variable name="parsed_date">
                         <xsl:for-each select="$auth_name/*"> <!-- one value only, set context -->
                             <xsl:call-template name="tpt_bl_date">
@@ -1763,6 +1815,12 @@
                         </xsl:variable>
                         <xsl:value-of select="replace($pd_temp, '-$', '')"/>
                     </xsl:variable>
+                    
+                    <!-- <xsl:message> -->
+                    <!--     <xsl:text>tpt_norm corp/fami pdr: </xsl:text> -->
+                    <!--     <xsl:copy-of select="$parsed_date_range"/> -->
+                    <!--     <xsl:text>&#x0A;</xsl:text> -->
+                    <!-- </xsl:message> -->
                     
                     <!-- the existDates CPF element -->
                     <xsl:copy-of select="$parsed_date/eac:existDates"/>
@@ -1817,6 +1875,15 @@
                             </xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
+
+                    <!-- <xsl:message> -->
+                    <!--     <xsl:text>tpt_norm pers pd: </xsl:text> -->
+                    <!--     <xsl:copy-of select="$parsed_date"/> -->
+                    <!--     <xsl:text>&#x0A;</xsl:text> -->
+                    <!--     <xsl:text>tpt_norm pers pdr: </xsl:text> -->
+                    <!--     <xsl:copy-of select="$parsed_date_range"/> -->
+                    <!--     <xsl:text>&#x0A;</xsl:text> -->
+                    <!-- </xsl:message> -->
 
                     <!--
                         The existDates CPF element and <parsed_date_range>. We do not have a parsed_date_range if the date is suspicious.

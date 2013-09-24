@@ -92,27 +92,36 @@
 
     <!--
         When we find the tag <Corporation> we set the locn to 'CorporateBody'. Person and Family are ok.
+        
+        The "cpf" versions are used in CPF cpfDescription/identity/entityType
     -->
     <xsl:variable name="corp_val" select="'CorporateBody'"/>
     <xsl:variable name="pers_val" select="'Person'"/>
     <xsl:variable name="fami_val" select="'Family'"/>
+    <xsl:variable name="expe_val" select="'Expedition'"/>
 
+    <xsl:variable name="cpf_corp_val" select="'corporateBody'"/>
+    <xsl:variable name="cpf_pers_val" select="'person'"/>
+    <xsl:variable name="cpf_fami_val" select="'family'"/>
+    <xsl:variable name="cpf_expe_val" select="'expedition'"/>
+    
     
     <!-- 
-         The XSLT equivalent of a key-value lookup list.
+         The XSLT equivalent of a key-value lookup list. Use the "normal" versions of $pers_val etc. and
+         *only* use $cpf_pers_val etc. in the CPF entityType in eac_cpf.xsl.
     -->
     <xsl:variable name="etype" xmlns="urn:isbn:1-931666-33-4">
-        <value key="person">
+        <value key="{$pers_val}">
             <xsl:value-of select="$av_Person"/>
         </value>
-        <value key="corporateBody">
+        <value key="{$corp_val}">
             <xsl:value-of select="$av_CorporateBody"/>
         </value>
-        <value key="expedition">
+        <value key="{$expe_val}">
             <!-- Added to deal with field books -->
             <xsl:value-of select="$av_CorporateBody"/>
         </value>
-        <value key="family">
+        <value key="{$fami_val}">
             <xsl:value-of  select="$av_Family"/>
         </value>
     </xsl:variable>
@@ -1263,14 +1272,6 @@
         <xsl:choose>
             <xsl:when test="$entity_type = $pers_val and
                             $active_range > 60">
-                <xsl:message>
-                    <xsl:text>show_one: </xsl:text>
-                    <xsl:copy-of select="$show_one/eac:existDates/eac:dateRange"/>
-                    <!-- <xsl:copy-of select="$show_one"/> -->
-                    <xsl:text>&#x0A;</xsl:text>
-                </xsl:message>
-
-
                 <existDates localType="{$av_suspiciousDate}">
                     <xsl:copy-of select="$show_one/eac:existDates/eac:date"/>
                     <xsl:copy-of select="$show_one/eac:existDates/eac:dateRange"/>
