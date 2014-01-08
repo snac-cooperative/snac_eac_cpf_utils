@@ -231,14 +231,9 @@
                                 resourceRelations. In any case, the otherwise clause supports all the legacy
                                 XSL script.
                             -->
-                            <!-- <xsl:message> -->
-                            <!--     <xsl:text>newrrel: </xsl:text> -->
-                            <!--     <xsl:copy-of select="$param_data/eac:rrel"/> -->
-                            <!--     <xsl:text>&#x0A;</xsl:text> -->
-                            <!-- </xsl:message> -->
                             <xsl:for-each select="$param_data/eac:rrel">
                             <resourceRelation xlink:arcrole="{eac:arc_role}"
-                                              xlink:role="{eac:xlink_role}"
+                                              xlink:role="{$param_data/eac:xlink_role}"
                                               xlink:type="simple"
                                               xlink:href="{eac:xlink_href}">
                                 <relationEntry><xsl:value-of select="eac:rel_entry"/></relationEntry>

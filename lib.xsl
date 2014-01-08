@@ -57,13 +57,16 @@
     -->
     
     <!-- 
-         Variables for the localType values. These have changed at least 3 times, so now they go into variables.
-         "av_" is mnemonic for Attribute Value.
+         Variables for the localType values. The values have changed several times, so now they go into
+         variables.  "av_" is mnemonic for Attribute Value.
+         
+         av_DatabaseName Added Sep 13 2013
     -->
-    <!-- Added Sep 13 2013 -->
+
+    <xsl:variable name="cr" select="'&#x0A;'"/>
+
     <xsl:variable name="av_DatabaseName" select="'http://socialarchive.iath.virginia.edu/control/term#DatabaseName'"/>
 
-    <xsl:variable name="av_mergedRecord" select="'http://socialarchive.iath.virginia.edu/control/term#MergedRecord'"/>
     <xsl:variable name="av_suspiciousDate" select="'http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate'"/>
     <xsl:variable name="av_active " select="'http://socialarchive.iath.virginia.edu/control/term#Active'"/>
     <xsl:variable name="av_born" select="'http://socialarchive.iath.virginia.edu/control/term#Birth'"/>
@@ -85,7 +88,8 @@
     <xsl:variable name="av_referencedIn" select="'http://socialarchive.iath.virginia.edu/control/term#referencedIn'"/>
     <xsl:variable name="av_archivalResource" select="'http://socialarchive.iath.virginia.edu/control/term#ArchivalResource'"/>
 
-    <!-- As far as I know these aren't used in the XSLT that generates CPF. -->
+    <!-- As far as I know these aren't used in any of Tom's XSLT that generates CPF. -->
+    <xsl:variable name="av_mergedRecord" select="'http://socialarchive.iath.virginia.edu/control/term#MergedRecord'"/>
     <xsl:variable name="av_BibliographicResource" select="'http://socialarchive.iath.virginia.edu/control/term#BibliographicResource'"/>
     <xsl:variable name="av_mayBeSameAs" select="'http://socialarchive.iath.virginia.edu/control/term#mayBeSameAs'"/>
     <xsl:variable name="av_sameAs" select="'http://www.w3.org/2002/07/owl#sameAs'"/>
@@ -109,6 +113,8 @@
     <!-- 
          The XSLT equivalent of a key-value lookup list. Use the "normal" versions of $pers_val etc. and
          *only* use $cpf_pers_val etc. in the CPF entityType in eac_cpf.xsl.
+         
+         Nov 18 2013 New attribute cpf is used to select the cpf value when we know the "normal" version.
     -->
     <xsl:variable name="etype" xmlns="urn:isbn:1-931666-33-4">
         <value key="{$pers_val}">
@@ -124,6 +130,17 @@
         <value key="{$fami_val}">
             <xsl:value-of  select="$av_Family"/>
         </value>
+
+        <value cpf="{$pers_val}">
+            <xsl:value-of select="$cpf_pers_val"/>
+        </value>
+        <value cpf="{$corp_val}">
+            <xsl:value-of select="$cpf_corp_val"/>
+        </value>
+        <value cpf="{$fami_val}">
+            <xsl:value-of  select="$cpf_fami_val"/>
+        </value>
+
     </xsl:variable>
 
     <!-- <xsl:output method="xml" /> -->
@@ -186,21 +203,6 @@
                  </xsl:element>
              </xsl:otherwise>
          </xsl:choose>
-     </xsl:template>
-
-     <xsl:template name="tpt_is_cp">
-         <xsl:variable name="temp">
-             <xsl:for-each select="marc:datafield[@tag='600' or @tag='610' or @tag='611' or @tag='700' or @tag='710' or @tag='711']/marc:subfield[@code='v']">
-                 <val>
-                     <xsl:value-of select="matches(., 'correspondence', 'i')"/>
-                 </val>
-             </xsl:for-each>
-         </xsl:variable>
-         <!--
-             Use boolean() so that true returns true, and "" returns false. XSLT will not automatically cast "" to
-             false. We will get true if there is at least one true value.
-         -->
-         <xsl:value-of select="boolean($temp/val[.=true()][1])"/>
      </xsl:template>
 
 
@@ -435,20 +437,23 @@
      </xsl:template>
 
 
+     <!--
+         Nov 18 2013. This should only be used for 6xx, per new email from Daniel.
+         
+         template tpt_is_cp replaced by improved code.
+     -->
+
+
      <xsl:template name="tpt_arc_role">
-         <xsl:param name="is_c_flag"/>
-         <xsl:param name="is_cp"/>
+         <xsl:param name="is_c_flag"  as="xs:boolean"/>
          <xsl:param name="is_r_flag"/>
          <!--
-             I think the probably ends up in /eac-cpf/cpfDescription/relations/resourceRelation in the output
+             I think this probably ends up in /eac-cpf/cpfDescription/relations/resourceRelation in the output
              template eac_cpf.xsl.
          --> 
          <xsl:choose>
              <xsl:when test="$is_c_flag or (eac:e_name/@is_creator=true())">
                  <xsl:value-of select="$av_creatorOf"/>
-             </xsl:when>
-             <xsl:when test="$is_cp">
-                 <xsl:value-of select="$av_correspondedWith"/>
              </xsl:when>
              <xsl:when test="$is_r_flag">
                  <xsl:value-of select="$av_referencedIn"/>
@@ -456,7 +461,7 @@
              <xsl:otherwise>
                  <!--
                      Old comment: This can't happen given current logic. New comment: Really? Maybe not for
-                     WorldCat because all those are either is_c_flag or is_r_flag, but the SIA data may come
+                     WorldCat because all those are either is_c_flag or is_r_flag, but the SIA data might get
                      here.
                  -->
                  <xsl:value-of select="$av_associatedWith"/>
@@ -928,50 +933,302 @@
         </xsl:variable>
         
         <xsl:variable name="show_one">
-        <xsl:choose>
-            <!-- There is another unparsed "suspicious" date below in the otherwise element of this choose. -->
-            <xsl:when test="$is_unparsed">
-                <existDates>
-                    <date localType="{$av_suspiciousDate}">
-                        <xsl:value-of select="$tokens/odate"/>
-                    </date>
-                </existDates>
-            </xsl:when>
-        
-            <!--
-                This test may be meaningless now that numeric tokens have the value 'num'. Except for century,
-                we don't like any token that mixes digits and non-digits. We also to not like strings of 5 or
-                more digits.
-            -->
+            <xsl:choose>
+                <!-- There is another unparsed "suspicious" date below in the otherwise element of this choose. -->
+                <xsl:when test="$is_unparsed">
+                    <existDates>
+                        <date localType="{$av_suspiciousDate}">
+                            <xsl:value-of select="$tokens/odate"/>
+                        </date>
+                    </existDates>
+                </xsl:when>
+                
+                <!--
+                    This test may be meaningless now that numeric tokens have the value 'num'. Except for century,
+                    we don't like any token that mixes digits and non-digits. We also to not like strings of 5 or
+                    more digits.
+                -->
 
-            <xsl:when test="$tokens/tok[(matches(@std, '\d+[^\d]+|[^\d]+\d+') or matches(@std, '\d{5}')) and not(matches(@val, 'century'))]">
-                <existDates>
-                    <date localType="{$av_suspiciousDate}">
-                        <xsl:value-of select="$tokens/odate"/>
-                    </date>
-                </existDates>
-            </xsl:when>
+                <xsl:when test="$tokens/tok[(matches(@std, '\d+[^\d]+|[^\d]+\d+') or matches(@std, '\d{5}')) and not(matches(@val, 'century'))]">
+                    <existDates>
+                        <date localType="{$av_suspiciousDate}">
+                            <xsl:value-of select="$tokens/odate"/>
+                        </date>
+                    </existDates>
+                </xsl:when>
 
-            <!-- born -->
+                <!-- Real parsing begins here. -->
+                <!-- born -->
 
-            <xsl:when test="$tokens/tok = 'b'  or (($tokens/tok)[last()] = '-')">
-                <!-- No active since that is illogical with 'born' for persons. -->
-                <xsl:variable name="loc_type">
-                    <xsl:if test="$is_active">
-                        <xsl:value-of select="$av_active"/>
-                    </xsl:if>
-                    <xsl:if test="not($is_active)">
-                        <xsl:value-of select="$av_born"/>
-                    </xsl:if>
-                </xsl:variable>
-                <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
-                <existDates>
-                    <dateRange>
-                        <fromDate>
+                <xsl:when test="$tokens/tok = 'b'  or (($tokens/tok)[last()] = '-')">
+                    <!-- No active since that is illogical with 'born' for persons. -->
+                    <xsl:variable name="loc_type">
+                        <xsl:if test="$is_active">
+                            <xsl:value-of select="$av_active"/>
+                        </xsl:if>
+                        <xsl:if test="not($is_active)">
+                            <xsl:value-of select="$av_born"/>
+                        </xsl:if>
+                    </xsl:variable>
+                    <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
+                    <existDates>
+                        <dateRange>
+                            <fromDate>
+                                <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
+                                <xsl:attribute name="localType" select="$loc_type"/>
+                                <!-- Add attributes notBefore, notAfter.  -->
+                                <xsl:for-each select="$curr_tok[text() = 'num'][1]/@*[matches(name(), '^not')]">
+                                    <xsl:choose>
+                                        <xsl:when test="string-length(.)>0">
+                                            <xsl:attribute name="{name()}">
+                                                <xsl:value-of select="format-number(., '0000')"/>
+                                            </xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:message>
+                                                <xsl:copy-of select="$rec_pos" />
+                                                <xsl:text> line 395 fromDate empty attr: </xsl:text>
+                                                <xsl:copy-of select="." />
+                                            </xsl:message>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:for-each>
+                                
+                                <!--
+                                    new: Used to follow the for-each. 
+                                    old: is_family/is_active doesn't have an active token so we need
+                                    to add it here. Maybe it should have been added
+                                    earlier.
+                                -->
+
+                                <xsl:if test="$is_active">
+                                    <xsl:text>active </xsl:text>
+                                </xsl:if>
+
+                                <!--
+                                    We know this is a birth date so make that clear in the human readable part of
+                                    the date by putting a '-' (hyphen, dash) after the date.
+                                    
+                                    Put @sep in. If it is blank that's fine, but if not blank, we need it.
+                                -->
+                                <!-- all tokens before the first date, this includes things like "approximately" -->
+                                <xsl:for-each select="$tokens/tok[text() = 'num'][1]/preceding-sibling::tok">
+                                    <xsl:choose>
+                                        <xsl:when test="text() = 'b' or text() = '-'">
+                                            <!-- Skip. We already added human readable "born" above. -->
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="concat(., ' ')"/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:for-each>
+
+                                <xsl:value-of select="normalize-space(concat($curr_tok/@val, $curr_tok/@sep))"/>
+
+                            </fromDate>
+                            <toDate/>
+                        </dateRange>
+                    </existDates>
+                </xsl:when>
+                
+                <!-- died --> 
+                <xsl:when test="($tokens/tok = 'd') or ($tokens/tok[1] = '-')">
+                    <!--
+                        No active since that is illogical with 'died', unless $is_family/$is_active in which case
+                        this is "active" and not "died".
+                    -->
+                    <xsl:variable name="loc_type">
+                        <xsl:choose>
+                            <xsl:when test="$is_active">
+                                <xsl:value-of select="$av_active"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="$av_died"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
+                    <existDates>
+                        <dateRange>
+                            <fromDate/>
+                            <toDate>
+                                <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
+                                <xsl:attribute name="localType" select="$loc_type"/>
+                                <!-- Add attributes notBefore, notAfter.  -->
+                                <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
+                                    <xsl:attribute name="{name()}">
+                                        <xsl:value-of select="format-number(., '0000')"/>
+                                    </xsl:attribute>
+                                </xsl:for-each>
+                                <!-- 
+                                     is_family/is_active doesn't have an active token so we add text "active"
+                                     here. We want "active" to appear before "approximately" if both are in the
+                                     date.
+                                -->
+                                <xsl:if test="$is_active">
+                                    <xsl:text>active </xsl:text>
+                                </xsl:if>
+
+                                <!-- all tokens before the first date, this includes things like "approximately" -->
+                                <xsl:for-each select="$tokens/tok[text() = 'num'][1]/preceding-sibling::tok">
+                                    <xsl:choose>
+                                        <xsl:when test="text() = 'd' or text() = '-'">
+                                            <!-- Skip. We already added human readable "died" above. -->
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:value-of select="concat(., ' ')"/>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:for-each>
+                                
+                                <xsl:value-of select="normalize-space(concat($curr_tok/@val, ' ', $curr_tok/@sep))"/>
+                            </toDate>
+                        </dateRange>
+                    </existDates>
+                </xsl:when>
+                
+                <!--
+                    We have a hyphen and two numbers so it must be from-to. Just in case you're wondering what
+                    1920s looks like as tokens. Oddly, we don't use the is_active from the tokens. Seems too
+                    bad since quite a bit of effort (and bugs) involve passing is_family/is_active to
+                    tpt_show_date (this template).
+                    
+                    <odate>ca. 1920's- ca. 1980's.</odate>
+                    <tok is_active="false">approximately</tok>
+                    <tok is_active="false" notBefore="1920" notAfter="1929" sep="s" std="1920" val="1920">num</tok>
+                    <tok is_active="false">-</tok>
+                    <tok is_active="false">approximately</tok>
+                    <tok is_active="false" notBefore="1980" notAfter="1989" sep="s" std="1980" val="1980">num</tok>
+                -->
+                <xsl:when test="count($tokens/tok[text() = '-']) > 0 and count($tokens/tok[text() = 'num']) > 1">
+                    <existDates>
+                        <dateRange>
+                            <fromDate>
+                                <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
+                                <xsl:variable name="is_century" select="$curr_tok[matches(@val, 'century')]"/>
+                                <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
+                                <xsl:choose>
+                                    <xsl:when test="$is_active or $is_century">
+                                        <xsl:attribute name="localType">
+                                            <xsl:value-of select="$av_active"/>
+                                        </xsl:attribute>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="localType">
+                                            <xsl:value-of select="$av_born"/>
+                                        </xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                                <!-- Add attributes notBefore, notAfter.  -->
+                                <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
+                                    <xsl:attribute name="{name()}">
+                                        <xsl:value-of select="format-number(., '0000')"/>
+                                    </xsl:attribute>
+                                </xsl:for-each>
+                                <!--
+                                    is_family/is_active doesn't have an active token so we add the text "active"
+                                    here. This must come before the code below that adds the rest of the tokens.
+                                -->
+                                <xsl:if test="$is_active">
+                                    <xsl:text>active </xsl:text>
+                                </xsl:if>
+
+                                <!-- Text of all tokens before the first date such as "active", "approximately". -->
+                                <xsl:for-each select="$tokens/tok[text() = 'num'][1]/preceding-sibling::tok">
+                                    <xsl:value-of select="concat(., ' ')"/>
+                                </xsl:for-each>
+
+                                <xsl:value-of select="concat($curr_tok/@val, $curr_tok/@sep)"/>
+                            </fromDate>
+
+                            <toDate>
+                                <!--
+                                    Check if the portion of the date after the hyphen has any tokens that
+                                    match approx. Blindly outputting all the tokens that weren't numbers ran
+                                    into problems with certain dates. This works for the known cases, and
+                                    should be a bit more robust.
+
+                                    Old: if we have an 'active' token anywhere  or $is_family then 'active' else 'died'
+                                    
+                                    New: if we're active then we're active. There are no more tokens "active",
+                                    only an attribute on every <tok> @is_active and thus the local variable
+                                    $is_active.
+                                    
+                                    A toDate that is a century must be active. 
+                                -->
+                                <xsl:variable
+                                    name="is_approx"
+                                    select="count(
+                                            $tokens/tok[text() = '-']/following-sibling::tok[matches(text(), 'approx')]) >=1"/>
+                                
+                                <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][2]"/>
+                                <xsl:variable name="is_century" select="$curr_tok[matches(@val, 'century')]"/>
+                                <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
+                                <xsl:choose>
+                                    <xsl:when test="$is_active or $is_century">
+                                        <xsl:attribute name="localType">
+                                            <xsl:value-of select="$av_active"/>
+                                        </xsl:attribute>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="localType">
+                                            <xsl:value-of select="$av_died"/>
+                                        </xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+
+                                <!-- Add attributes notBefore, notAfter.  -->
+                                <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
+                                    <xsl:attribute name="{name()}">
+                                        <xsl:value-of select="format-number(., '0000')"/>
+                                    </xsl:attribute>
+                                </xsl:for-each>
+                                <!--
+                                    Active is active, and comes before the toDate value. Then we do all tokens
+                                    after the hyphen. Assume that anything in @sep of a token should be in the
+                                    output.
+                                -->
+                                <xsl:if test="$is_active">
+                                    <xsl:text>active </xsl:text>
+                                </xsl:if>
+                                <xsl:if test="$is_approx">
+                                    <xsl:text>approximately </xsl:text>
+                                </xsl:if>
+                                <xsl:value-of select="concat($curr_tok/@val, $curr_tok/@sep)"/>
+                                <!-- 
+                                     At one time there was a for-each here that output non-numeric tokens
+                                     after the - and that may have done tokens like 'approximately', but it
+                                     didn't work properly.
+                                -->
+                            </toDate>
+                        </dateRange>
+                    </existDates>
+                </xsl:when>
+
+                <!--
+                    No hyphen and only one number so this is a single date.  New: active is active. Old: If we
+                    have an 'active' token then $av_active.  Oct 8 via email Daniel says these are active, at
+                    least when applied to a person. If we have a CPF entity then force this to be active. Date
+                    parsing could happen for dates from archival materials (and heaven only knows what else)
+                    so we should not assume that the date we've been given was a C, P, or F.
+                -->
+                <xsl:when test="count($tokens/tok[text() = '-']) = 0 and count($tokens/tok[text() = 'num']) = 1">
+                    <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num']"/>
+                    <existDates>
+                        <date>
                             <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
-                            <xsl:attribute name="localType" select="$loc_type"/>
+                            <!-- See repeat of this test below. -->
+                            <xsl:if test="$is_active or
+                                          $entity_type = $corp_val or
+                                          $entity_type = $pers_val or
+                                          $entity_type = $fami_val" >
+                                <xsl:attribute name="localType">
+                                    <xsl:value-of select="$av_active"/>
+                                </xsl:attribute>
+                            </xsl:if>
+
                             <!-- Add attributes notBefore, notAfter.  -->
-                            <xsl:for-each select="$curr_tok[text() = 'num'][1]/@*[matches(name(), '^not')]">
+                            <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
                                 <xsl:choose>
                                     <xsl:when test="string-length(.)>0">
                                         <xsl:attribute name="{name()}">
@@ -981,280 +1238,46 @@
                                     <xsl:otherwise>
                                         <xsl:message>
                                             <xsl:copy-of select="$rec_pos" />
-                                            <xsl:text> line 395 fromDate empty attr: </xsl:text>
+                                            <xsl:text> line 576 date empty attr: </xsl:text>
                                             <xsl:copy-of select="." />
+                                            <xsl:text>&#x0A;</xsl:text>
+                                            <xsl:copy-of select="$tokens" />
                                         </xsl:message>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:for-each>
-                            
-                            <!--
-                                is_family/is_active doesn't have an active token so we need
-                                to add it here. Maybe it should have been added
-                                earlier.
+
+                            <!-- 
+                                 is_family/is_active doesn't have an active token so we need to add literal text here. Maybe
+                                 it should have been added earlier. See repeat of this test above.
                             -->
-
-                            <xsl:if test="$is_active">
-                                <xsl:text>active </xsl:text>
-                            </xsl:if>
-                                        
-                            <!--
-                                We know this is a birth date so make that clear in the human readable part of
-                                the date by putting a '-' (hyphen, dash) after the date.
-                                
-                                Put @sep in. If it is blank that's fine, but if not blank, we need it.
-                            -->
-                            <!-- all tokens before the first date, this includes things like "approximately" -->
-                            <xsl:for-each select="$tokens/tok[text() = 'num'][1]/preceding-sibling::tok">
-                                <xsl:choose>
-                                    <xsl:when test="text() = 'b' or text() = '-'">
-                                        <!-- Skip. We already added human readable "born" above. -->
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="concat(., ' ')"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:for-each>
-
-                            <xsl:value-of select="normalize-space(concat($curr_tok/@val, $curr_tok/@sep))"/>
-
-                        </fromDate>
-                        <toDate/>
-                    </dateRange>
-                </existDates>
-            </xsl:when>
-            
-            <!-- died --> 
-            <xsl:when test="($tokens/tok = 'd') or ($tokens/tok[1] = '-')">
-                <!--
-                    No active since that is illogical with 'died', unless $is_family/$is_active in which case this is "active" and not "died".
-                -->
-                <xsl:variable name="loc_type">
-                    <xsl:choose>
-                        <xsl:when test="$is_active">
-                            <xsl:value-of select="$av_active"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="$av_died"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:variable>
-                <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
-                <existDates>
-                    <dateRange>
-                        <fromDate/>
-                        <toDate>
-                            <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
-                            <xsl:attribute name="localType" select="$loc_type"/>
-                            <!-- Add attributes notBefore, notAfter.  -->
-                            <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
-                                <xsl:attribute name="{name()}">
-                                    <xsl:value-of select="format-number(., '0000')"/>
-                                </xsl:attribute>
-                            </xsl:for-each>
-
-                            <!-- is_family/is_active doesn't have an active token so we need
-                                 to add it here. Maybe it should have been added
-                                 earlier. -->
-                            <xsl:if test="$is_active">
+                            <xsl:if test="$is_active or
+                                          $entity_type = $corp_val or
+                                          $entity_type = $pers_val or
+                                          $entity_type = $fami_val">
                                 <xsl:text>active </xsl:text>
                             </xsl:if>
 
-                            <!-- all tokens before the first date, this includes things like "approximately" -->
-                            <xsl:for-each select="$tokens/tok[text() = 'num'][1]/preceding-sibling::tok">
-                                <xsl:choose>
-                                    <xsl:when test="text() = 'd' or text() = '-'">
-                                        <!-- Skip. We already added human readable "died" above. -->
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="concat(., ' ')"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:for-each>
-                            
-                            <xsl:value-of select="normalize-space(concat($curr_tok/@val, ' ', $curr_tok/@sep))"/>
-                        </toDate>
-                    </dateRange>
-                </existDates>
-            </xsl:when>
-
-            <xsl:when test="count($tokens/tok[text() = '-']) > 0 and count($tokens/tok[text() = 'num']) > 1">
-                <!--
-                    We have a hyphen and two numbers so it must be from-to.
-                -->
-                <existDates>
-                    <dateRange>
-                        <fromDate>
-                            <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][1]"/>
-                            <xsl:variable name="is_century" select="$curr_tok[matches(@val, 'century')]"/>
-                            <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
-                            <!--
-                                Old: If we have an 'active' token before the hyphen, then then make the subject 'active'.
-                                
-                                New: if we're active then we're active. There are no more tokens "active",
-                                only an attribute on every <tok> @is_active and thus the local variable
-                                $is_active.
-                            -->
-                            <xsl:choose>
-                                <!-- <xsl:when test="($tokens/tok[text() = '-']/preceding-sibling::tok = 'active') or $is_active or $is_century"> -->
-                                <xsl:when test="$is_active or $is_century">
-                                    <xsl:attribute name="localType">
-                                        <xsl:value-of select="$av_active"/>
-                                    </xsl:attribute>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:attribute name="localType">
-                                        <xsl:value-of select="$av_born"/>
-                                    </xsl:attribute>
-                                </xsl:otherwise>
-                            </xsl:choose>
-
-                            <!-- Add attributes notBefore, notAfter.  -->
-                            <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
-                                <xsl:attribute name="{name()}">
-                                    <xsl:value-of select="format-number(., '0000')"/>
-                                </xsl:attribute>
-                            </xsl:for-each>
-
-                            <!-- Text of all tokens before the first date such as "active", "approximately". -->
-                            <xsl:for-each select="$tokens/tok[text() = 'num'][1]/preceding-sibling::tok">
+                            <!-- all tokens before the first date -->
+                            <xsl:for-each select="$curr_tok[text() = 'num'][1]/preceding-sibling::tok">
                                 <xsl:value-of select="concat(., ' ')"/>
                             </xsl:for-each>
                             
-                            <!--
-                                is_family/is_active doesn't have an active token so we need to add it here. Maybe it
-                                should have been added earlier.
-                            -->
-                            <xsl:if test="$is_active">
-                                <xsl:text>active </xsl:text>
-                            </xsl:if>
-
+                            <!-- the date itself, with @sep. -->
                             <xsl:value-of select="concat($curr_tok/@val, $curr_tok/@sep)"/>
-                        </fromDate>
 
-                        <toDate>
-                            <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num'][2]"/>
-                            <xsl:variable name="is_century" select="$curr_tok[matches(@val, 'century')]"/>
-                            <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
-                            <!--
-                                Old: if we have an 'active' token anywhere  or $is_family then 'active' else 'died'
-                                
-                                New: if we're active then we're active. There are no more tokens "active",
-                                only an attribute on every <tok> @is_active and thus the local variable
-                                $is_active.
-                            -->
-                            <xsl:choose>
-                                <!-- <xsl:when test="($tokens/tok[text() = 'active']) or $is_family or $is_century"> -->
-                                <xsl:when test="$is_active or $is_century">
-                                    <xsl:attribute name="localType">
-                                        <xsl:value-of select="$av_active"/>
-                                    </xsl:attribute>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:attribute name="localType">
-                                        <xsl:value-of select="$av_died"/>
-                                    </xsl:attribute>
-                                </xsl:otherwise>
-                            </xsl:choose>
+                        </date>
+                    </existDates>
+                </xsl:when>
 
-                            <!-- Add attributes notBefore, notAfter.  -->
-                            <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
-                                <xsl:attribute name="{name()}">
-                                    <xsl:value-of select="format-number(., '0000')"/>
-                                </xsl:attribute>
-                            </xsl:for-each>
-
-                            <!--
-                                New: active is active.
-                                
-                                Old: An 'active' token anywhere makes both dates active, and we need the active
-                                keyword in the element value (aka human readable).  All tokens after the
-                                hyphen. Assume that anything in @sep of a token should be in the output.
-                            -->
-
-                            <!-- <xsl:if test="$tokens/tok[text() = 'active'] or $is_family"> -->
-                            <xsl:if test="$is_active">
-                                <xsl:text>active </xsl:text>
-                            </xsl:if>
-
-                            <xsl:value-of select="$curr_tok/@val"/>
-
-                            <xsl:for-each select="$tokens/tok[matches(text(), '-')]/following-sibling::tok">
-                                <xsl:value-of select="@sep"/>
-                                <xsl:if test="not(text() = 'num')">
-                                    <xsl:text> </xsl:text>
-                                </xsl:if>
-                                <!-- no @sep or active here. It would look odd to humans. -->
-                            </xsl:for-each>
-                        </toDate>
-                    </dateRange>
-                </existDates>
-            </xsl:when>
-
-            <xsl:when test="count($tokens/tok[text() = '-']) = 0 and count($tokens/tok[text() = 'num']) = 1">
-                <!--
-                    No hyphen and only one number so this is a single date.  New: active is active. Old: If we
-                    have an 'active' token then $av_active.
-                -->
-                <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num']"/>
-                <existDates>
-                    <date>
-                        <xsl:attribute name="standardDate" select="$curr_tok/@std"/>
-                        <!-- <xsl:if test="($tokens/tok[text() = 'active']) or $is_family"> -->
-                        <xsl:if test="$is_active">
-                            <xsl:attribute name="localType">
-                                <xsl:value-of select="$av_active"/>
-                            </xsl:attribute>
-                        </xsl:if>
-
-                        <!-- Add attributes notBefore, notAfter.  -->
-                        <xsl:for-each select="$curr_tok/@*[matches(name(), '^not')]">
-                            <xsl:choose>
-                                <xsl:when test="string-length(.)>0">
-                                    <xsl:attribute name="{name()}">
-                                        <xsl:value-of select="format-number(., '0000')"/>
-                                    </xsl:attribute>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:message>
-                                        <xsl:copy-of select="$rec_pos" />
-                                        <xsl:text> line 576 date empty attr: </xsl:text>
-                                        <xsl:copy-of select="." />
-                                        <xsl:text>&#x0A;</xsl:text>
-                                        <xsl:copy-of select="$tokens" />
-                                    </xsl:message>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
-
-                        <!-- 
-                             is_family/is_active doesn't have an active token so we need to add literal text here. Maybe
-                             it should have been added earlier.
-                        -->
-                        <xsl:if test="$is_active">
-                            <xsl:text>active </xsl:text>
-                        </xsl:if>
-
-                        <!-- all tokens before the first date -->
-                        <xsl:for-each select="$curr_tok[text() = 'num'][1]/preceding-sibling::tok">
-                            <xsl:value-of select="concat(., ' ')"/>
-                        </xsl:for-each>
-                        
-                        <!-- the date itself, with @sep. -->
-                        <xsl:value-of select="concat($curr_tok/@val, $curr_tok/@sep)"/>
-
-                    </date>
-                </existDates>
-            </xsl:when>
-
-            <xsl:otherwise>
-                <existDates>
-                    <date localType="{$av_suspiciousDate}">
-                        <xsl:value-of select="$tokens/odate"/>
-                    </date>
-                </existDates>
-            </xsl:otherwise>
-        </xsl:choose>
+                <xsl:otherwise>
+                    <existDates>
+                        <date localType="{$av_suspiciousDate}">
+                            <xsl:value-of select="$tokens/odate"/>
+                        </date>
+                    </existDates>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable> <!-- end show_one -->
         
         <xsl:variable name="active_range">
@@ -1262,16 +1285,49 @@
                                   $show_one/eac:existDates/eac:dateRange/eac:fromDate[@localType=$av_active]/@standardDate -
                                   $show_one/eac:existDates/eac:dateRange/eac:toDate[@localType=$av_active]/@standardDate))"/>
         </xsl:variable>
+
+        <xsl:variable name="is_century" as="xs:boolean">
+            <xsl:value-of
+                select="count(
+                        $show_one/eac:existDates/eac:dateRange/eac:fromDate[matches(., 'century', 'i')]) > 0
+                        or
+                        count(
+                        $show_one/eac:existDates/eac:dateRange/eac:toDate[matches(., 'century', 'i')]) > 0"/>
+        </xsl:variable>
         
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>so: </xsl:text> -->
+        <!--     <xsl:copy-of select="$show_one"/> -->
+        <!--     <xsl:text>ar: </xsl:text> -->
+        <!--     <xsl:copy-of select="($entity_type = $pers_val) and $active_range > 60"/> -->
+        <!--     <xsl:text> xet: </xsl:text> -->
+        <!--     <xsl:copy-of select="$entity_type = $pers_val"/> -->
+        <!--     <xsl:text> pv: </xsl:text> -->
+        <!--     <xsl:copy-of select="$pers_val"/> -->
+        <!-- </xsl:message> -->
+
         <!--
             Any active person >60 years or NaN is suspicious. While we're at it, set existDates@localType to
-            suspicious for all suspicious dates.
-                            $active_range != 'NaN'))">
-
+            suspicious for all suspicious dates. Also see tpt_simple_date_range call in bl2cpf.xsl.
+            
+            Century dates >60 years range aren't suspicious.
+            
+            Be aware that there is downstream code testing for suspicious dates, and changes here may set off
+            those tests.
         -->
         <xsl:choose>
-            <xsl:when test="$entity_type = $pers_val and
-                            $active_range > 60">
+            <xsl:when test="count(
+                            $show_one/eac:existDates/eac:dateRange/eac:fromDate
+                            [@notBefore>$this_year or @notAfter>$this_year]) > 0 or
+                            count(
+                            $show_one/eac:existDates/eac:dateRange/eac:toDate
+                            [@notBefore>$this_year or @notAfter>$this_year]) > 0">
+                <existDates localType="{$av_suspiciousDate}">
+                    <xsl:copy-of select="$show_one/eac:existDates/eac:date"/>
+                    <xsl:copy-of select="$show_one/eac:existDates/eac:dateRange"/>
+                </existDates>
+            </xsl:when>
+            <xsl:when test="($entity_type = $pers_val) and $active_range > 60 and not($is_century)">
                 <existDates localType="{$av_suspiciousDate}">
                     <xsl:copy-of select="$show_one/eac:existDates/eac:date"/>
                     <xsl:copy-of select="$show_one/eac:existDates/eac:dateRange"/>
@@ -1416,6 +1472,11 @@
                 <xsl:copy-of select="lib:pass_2($pass_1b)"/>
             </xsl:variable>
 
+            <!-- <xsl:message> -->
+            <!--     <xsl:text>p2: </xsl:text> -->
+            <!--     <xsl:copy-of select="$pass_2"/> -->
+            <!-- </xsl:message> -->
+
             <!-- Normalize position of approx and turn related numeric tokens into 'num' -->
             <xsl:variable name="pass_2b">
                 <xsl:copy-of select="lib:pass_2b($pass_2)"/>
@@ -1474,138 +1535,296 @@
         
         <xsl:variable name="rec_pos"
                       select="concat('offset: ', $record_position, ' id:', $record_id)"/>
-
-        <xsl:variable name="tokens">
-            <xsl:choose>
-                <!--
-                    Get date tokens. Below we pass these to tpt_show_date to
-                    generate actual normative dates as a node set.  Any person
-                    is equivalent as long as $df contains that person's info,
-                    whether 1xx or 6xx/7xx.
-                -->
-                <xsl:when test="$entity_type = 'person' and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
-                    <xsl:call-template name="tpt_exist_dates">
-                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
-                        <xsl:with-param name="entity_type" select="$entity_type"/>
-                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
-                        <xsl:with-param name="subfield_d">
-                            <xsl:copy-of select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
-                        </xsl:with-param>
-                    </xsl:call-template>
-                </xsl:when>
-
-                <!-- 
-                     1xx and 7xx persons with 245$f dates as active dates. We get here if the person does not
-                     have a $d date.
-                -->
-
-                <xsl:when test="$is_17xx and $entity_type = 'person' and string-length($alt_date)>0">
-                    <xsl:call-template name="tpt_parse_alt">
-                        <xsl:with-param name="alt_date" select="$alt_date"/>
-                    </xsl:call-template>
-                </xsl:when>
-
-                <xsl:when test=" $is_1xx and $entity_type = 'family' and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
-                    <xsl:call-template name="tpt_exist_dates">
-                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
-                        <xsl:with-param name="entity_type" select="$entity_type"/>
-                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
-                        <xsl:with-param name="subfield_d">
-                            <xsl:copy-of select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
-                        </xsl:with-param>
-                    </xsl:call-template>
-                </xsl:when>
-
-                <xsl:when test=" $is_1xx and $entity_type = 'family' and $alt_date">
-                    <!-- Family with no $d but which does have a 245$f aka alt_date. -->
-                    <xsl:call-template name="tpt_parse_alt">
-                        <xsl:with-param name="alt_date" select="$alt_date"/>
-                    </xsl:call-template>
-                </xsl:when>
-
-                <xsl:when test=" $is_67xx and $entity_type = 'family' and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
-                    <xsl:call-template name="tpt_exist_dates">
-                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
-                        <xsl:with-param name="entity_type" select="$entity_type"/>
-                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
-                        <xsl:with-param name="subfield_d">
-                            <xsl:copy-of select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
-                        </xsl:with-param>
-                    </xsl:call-template>
-                </xsl:when>
-
-                <xsl:when test="$entity_type = 'corporateBody' and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
-                    <!-- 
-                        When corporateBody and 167xx$d then use $d as active date.
-                    -->
-                    <xsl:call-template name="tpt_parse_alt">
-                        <xsl:with-param name="alt_date" select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
-                    </xsl:call-template>
-                </xsl:when>
-                
-                <xsl:when test="$is_17xx and $entity_type = 'corporateBody' and string-length($alt_date)>0">
-                    <!-- 
-                         When corporateBody and no $d (test above) and have a 245$f, then use 245$f as an alt
-                         date.
-                    -->
-                    <xsl:call-template name="tpt_parse_alt">
-                        <xsl:with-param name="alt_date" select="$alt_date"/>
-                    </xsl:call-template>
-                </xsl:when>
-
-                <xsl:otherwise>
-                    <!-- Nothing. -->
-                </xsl:otherwise>
-
-            </xsl:choose>
-        </xsl:variable> <!-- end tokens -->
         
-        <xsl:if test="$debug">
-            <xsl:message>
-                <xsl:text>epx: </xsl:text>
-                <xsl:apply-templates mode="copy-no-ns" select="$tokens"/>
-                <xsl:text>&#x0A;</xsl:text>
-            </xsl:message>
-        </xsl:if>
-
-        <xsl:variable name="exist_dates">
-            <xsl:choose>
-                <xsl:when test="$tokens/eac:odate[@is_alt = 1]">
-                    <xsl:call-template name="tpt_pa_3">
-                        <xsl:with-param name="tokens" select="$tokens"/>
+        <xsl:choose>
+            <!--
+                Get date tokens. Below we pass these to tpt_show_date to
+                generate actual normative dates as a node set.  Any person
+                is equivalent as long as $df contains that person's info,
+                whether 1xx or 6xx/7xx.
+                
+                Oct 8 via email Daniel says a single date for a person is active, regardless. See tpt_show_date.
+            -->
+            <xsl:when test="($entity_type = $pers_val or $entity_type = 'person')
+                            and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
+                <xsl:variable name="tokens">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
+                        <xsl:with-param name="entity_type" select="$entity_type"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d">
+                            <xsl:copy-of select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
+                        </xsl:with-param>
                     </xsl:call-template>
-                </xsl:when>
-                <xsl:when test="string-length($tokens) > 0">
+                </xsl:variable>
+                <xsl:variable name="show_date">
                     <xsl:call-template name="tpt_show_date">
                         <xsl:with-param name="tokens" select="$tokens"/>
-                        <xsl:with-param name="is_family" select="$entity_type = 'family'"/>
-                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="is_family" select="false()"/>
+                        <xsl:with-param name="entity_type" select="$pers_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
                     </xsl:call-template>
-                </xsl:when>
-            </xsl:choose>
-        </xsl:variable>
-        
-        <xsl:if test="$debug">
-            <xsl:message>
-                <xsl:value-of select="$rec_pos"/>
-                <xsl:text> et: </xsl:text>
-                <xsl:value-of select="$entity_type"/>
-                <xsl:text> alt_date: </xsl:text>
-                <xsl:value-of select="$alt_date"/>
-                <xsl:text> is_1xx: </xsl:text>
-                <xsl:value-of select="$is_1xx"/>
-                <xsl:text> is_67xx: </xsl:text>
-                <xsl:value-of select="$is_67xx"/>
-                <xsl:text> 1xx: </xsl:text>
-                <xsl:apply-templates mode="copy-no-ns" select="$df"/>
-                <xsl:text>&#x0A;</xsl:text>
-                <xsl:copy-of select="$exist_dates"/>
-                <xsl:text>&#x0A;</xsl:text>
-            </xsl:message>
-        </xsl:if>
+                </xsl:variable>
+                <xsl:copy-of select="$show_date"/>
+            </xsl:when>
 
-        <xsl:copy-of select="$tokens"/>
-        <xsl:copy-of select="$exist_dates"/>
+            <!-- 
+                 1xx and 7xx persons with 245$f dates as active dates. We get here if the person does not
+                 have a $d date.
+            -->
+            <xsl:when test="$is_17xx and
+                            ($entity_type = $pers_val or $entity_type = 'person')
+                            and string-length($alt_date)>0">
+                <xsl:variable name="tokens">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/> <!-- When to use $xx_tag? -->
+                        <xsl:with-param name="entity_type" select="$pers_val"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d" select="$alt_date"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="show_date">
+                    <xsl:call-template name="tpt_show_date">
+                        <xsl:with-param name="tokens" select="$tokens"/>
+                        <xsl:with-param name="is_family" select="true()"/> <!-- Alt dates must be active. -->
+                        <xsl:with-param name="entity_type" select="$pers_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <!--
+                    Dec 09 2013 It seems to be a previously unrecognized bug that when the data is suspicious
+                    and there's no alt_date, we still want to use the suspicious date. Previous to adding the
+                    alt_date tests, we could end up with no date at all.
+                    
+                    OMG. We have to parse the alt_date before we know whether or not to throw out a suspicious date.
+                -->
+                <xsl:choose>
+                    <xsl:when test="count($show_date/eac:existDates[@localType = $av_suspiciousDate]) = 0">
+                        <xsl:copy-of select="$show_date"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:variable name="tokens">
+                            <xsl:call-template name="tpt_parse_alt">
+                                <xsl:with-param name="alt_date" select="$alt_date"/>
+                                <xsl:with-param name="entity_type" select="$pers_val"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:variable name="alt_show_date">
+                            <xsl:call-template name="tpt_pa_3">
+                                <xsl:with-param name="tokens" select="$tokens"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:choose>
+                            <xsl:when test="string-length($alt_show_date) > 0">
+                                <xsl:copy-of select="$alt_show_date"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy-of select="$show_date"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+
+            <xsl:when test=" $is_1xx and
+                            ($entity_type = $fami_val or $entity_type = 'family') and
+                            (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
+                <xsl:variable name="tokens">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
+                        <xsl:with-param name="entity_type" select="$entity_type"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d">
+                            <xsl:copy-of select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="show_date">
+                    <xsl:call-template name="tpt_show_date">
+                        <xsl:with-param name="tokens" select="$tokens"/>
+                        <xsl:with-param name="is_family" select="true()"/> <!-- Alt dates must be active. -->
+                        <xsl:with-param name="entity_type" select="$fami_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:copy-of select="$show_date"/>
+            </xsl:when>
+
+            <xsl:when test="$is_1xx and
+                            ($entity_type = $fami_val or $entity_type = 'family') and 
+                            string-length($alt_date) > 0">
+                <!-- Family with no $d but which does have a 245$f aka alt_date. -->
+                <xsl:variable name="tokens">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
+                        <xsl:with-param name="entity_type" select="$fami_val"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d" select="$alt_date"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="show_date">
+                    <xsl:call-template name="tpt_show_date">
+                        <xsl:with-param name="tokens" select="$tokens"/>
+                        <xsl:with-param name="is_family" select="true()"/> <!-- Alt dates must be active. -->
+                        <xsl:with-param name="entity_type" select="$fami_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:choose>
+                    <xsl:when test="count($show_date/eac:existDates[@localType = $av_suspiciousDate]) = 0">
+                        <xsl:copy-of select="$show_date"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:variable name="tokens">
+                            <xsl:call-template name="tpt_parse_alt">
+                                <xsl:with-param name="alt_date" select="$alt_date"/>
+                                <xsl:with-param name="entity_type" select="$fami_val"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:variable name="alt_show_date">
+                            <xsl:call-template name="tpt_pa_3">
+                                <xsl:with-param name="tokens" select="$tokens"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:choose>
+                            <xsl:when test="string-length($alt_show_date) > 0">
+                                <xsl:copy-of select="$alt_show_date"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy-of select="$show_date"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+
+            <xsl:when test=" $is_67xx and
+                            ($entity_type = $fami_val or $entity_type = 'family') and
+                            (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
+                <xsl:variable name="tokens"> 
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
+                        <xsl:with-param name="entity_type" select="$entity_type"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d">
+                            <xsl:copy-of select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
+                        </xsl:with-param>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="show_date">
+                    <xsl:call-template name="tpt_show_date">
+                        <xsl:with-param name="tokens" select="$tokens"/>
+                        <xsl:with-param name="is_family" select="true()"/> <!-- Alt dates must be active. -->
+                        <xsl:with-param name="entity_type" select="$fami_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:copy-of select="$show_date"/>
+            </xsl:when>
+
+            <xsl:when test="($entity_type = $corp_val or $entity_type = 'corporateBody')
+                            and (count($df/marc:datafield/marc:subfield[@code = 'd']) = 1)">
+                <xsl:variable name="tokens">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/>
+                        <xsl:with-param name="entity_type" select="$corp_val"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d" select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="show_date">
+                    <xsl:call-template name="tpt_show_date">
+                        <xsl:with-param name="tokens" select="$tokens"/>
+                        <xsl:with-param name="is_family" select="true()"/> <!-- Alt dates must be active. -->
+                        <xsl:with-param name="entity_type" select="$corp_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:choose>
+                    <xsl:when test="count($show_date/eac:existDates[@localType = $av_suspiciousDate]) = 0">
+                        <xsl:copy-of select="$show_date"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!-- 
+                             When corporateBody and 167xx$d then use $d as active date.
+                        -->
+                        <xsl:variable name="tokens">
+                            <xsl:call-template name="tpt_parse_alt">
+                                <xsl:with-param name="alt_date" select="$df/marc:datafield/marc:subfield[@code = 'd']"/>
+                                <xsl:with-param name="entity_type" select="$corp_val"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:variable name="alt_show_date">
+                            <xsl:call-template name="tpt_pa_3">
+                                <xsl:with-param name="tokens" select="$tokens"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:choose>
+                            <xsl:when test="string-length($alt_show_date) > 0">
+                                <xsl:copy-of select="$alt_show_date"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy-of select="$show_date"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            
+            <xsl:when test="$is_17xx and
+                            ($entity_type = $corp_val or $entity_type = 'corporateBody') and
+                            string-length($alt_date)>0">
+                <xsl:variable name="tokens">
+                    <xsl:call-template name="tpt_exist_dates">
+                        <xsl:with-param name="xx_tag" select="$xx_tag"/> <!-- When to use $xx_tag? -->
+                        <xsl:with-param name="entity_type" select="$corp_val"/>
+                        <xsl:with-param name="rec_pos" select="$rec_pos"/>
+                        <xsl:with-param name="subfield_d" select="$alt_date"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:variable name="show_date">
+                    <xsl:call-template name="tpt_show_date">
+                        <xsl:with-param name="tokens" select="$tokens"/>
+                        <xsl:with-param name="is_family" select="true()"/> <!-- Alt dates must be active. -->
+                        <xsl:with-param name="entity_type" select="$corp_val"/>
+                        <xsl:with-param name="rec_pos" select="'not_used'"/>
+                    </xsl:call-template>
+                </xsl:variable>
+                <xsl:choose>
+                    <xsl:when test="count($show_date/eac:existDates[@localType = $av_suspiciousDate]) = 0">
+                        <xsl:copy-of select="$show_date"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!-- 
+                             When corporateBody and no $d (test above) and have a 245$f, then use 245$f as an alt
+                             date.
+                        -->
+                        <xsl:variable name="tokens">
+                            <xsl:call-template name="tpt_parse_alt">
+                                <xsl:with-param name="alt_date" select="$alt_date"/>
+                                <xsl:with-param name="entity_type" select="$corp_val"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:variable name="alt_show_date">
+                            <xsl:call-template name="tpt_pa_3">
+                                <xsl:with-param name="tokens" select="$tokens"/>
+                            </xsl:call-template>
+                        </xsl:variable>
+                        <xsl:choose>
+                            <xsl:when test="string-length($alt_show_date) > 0">
+                                <xsl:copy-of select="$alt_show_date"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy-of select="$show_date"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- Nothing. -->
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:function> <!-- lib:edate_core -->
 
     <xsl:template name="tpt_file_suffix">
@@ -2070,31 +2289,72 @@
                         <xsl:value-of select="marc:datafield[@tag = '245']/marc:subfield[@code = 'f']"/>
                     </xsl:variable>
 
+                    <xsl:variable name="cp_count">
                     <!--
+                        This works for the current, single, cpf entity because we are recursing over each 1xx,
+                        6xx, and 7xx and using $index. The context is a single [167]xx. 1xx entities will have
+                        cp_count of zero. Algo logic says that each of cp_count > 0 correspondedWith the
+                        1xx. In other words, in the 1xx CFP record, cpfRelation where cp_count > 0 is
+                        correspondedWith. And in each .rxx record where cp_count > 0 has cpfRelation
+                        correspondedWith the 1xx entity.
+                        
+                        To some extent it is redundant to select @tag = 6xx or @tag = 7xx because $df already
+                        did that.
+
+                        Create var/attribute cp_count because is it both easier and safer to test $var>=1 than
+                        it is to test booleans which usually change to strings containing "true" or "false".
+
                         Namespace for the scope of the current template is eac due to xmlns attr in opening
                         template element above.
                     -->
+                        <xsl:value-of
+                            select="count(
+                                    $df/marc:datafield
+                                    [@tag='600' or @tag='610' or @tag='611']/marc:subfield
+                                    [@code='v' and matches(., 'correspondence', 'i')]) +
+                                    count(
+                                    $df/marc:datafield
+                                    [@tag='700' or @tag='710' or @tag='711']/marc:subfield
+                                    [@code='v' and matches(., 'correspondence', 'i')]) + 
+                                    count(
+                                    $df/marc:datafield
+                                    [@tag='700' or @tag='710' or @tag='711']/marc:subfield
+                                    [@code='k' and matches(., 'correspondence', 'i')])"/>
+                    </xsl:variable>
+
+                    <xsl:variable name="is_creator">
+                        <xsl:choose>
+                            <xsl:when test="lib:pname-match($creator_info/marc:creator_name, $ne_temp)">
+                                <xsl:value-of  select="true()"/>
+                            </xsl:when>
+                            <xsl:when test="$df/marc:datafield[matches(@tag, '[17]{1}(00|10|11)')]">
+                                <xsl:value-of  select="true()"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="false()"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    
+                    <!-- <xsl:message> -->
+                    <!--     <xsl:text>rid: </xsl:text> -->
+                    <!--     <xsl:value-of select="$record_id"/> -->
+                    <!--     <xsl:text> tag: </xsl:text> -->
+                    <!--     <xsl:value-of select="$df/marc:datafield/@tag"/> -->
+                    <!--     <xsl:text> cp: </xsl:text> -->
+                    <!--     <xsl:value-of select="$cp_count"/> -->
+                    <!-- </xsl:message> -->
+
                     <container> 
-                        <e_name>
-                            <xsl:attribute name="tag" select="$df/marc:datafield/@tag"/>
-                            <xsl:attribute name="record_id" select="$record_id"/>
-                            <xsl:attribute name="entity_type" select="$temp_et"/>
-                            <xsl:attribute name="entity_type_fc" select="$entity_type_fc"/>
-                            <xsl:attribute name="fn_suffix" select="$fn_suffix"/>
-                            <xsl:attribute name="expanded_suffix" select="$expanded_suffix"/>
-                            <xsl:attribute name="is_creator">
-                                <xsl:choose>
-                                    <xsl:when test="lib:pname-match($creator_info/marc:creator_name, $ne_temp)">
-                                        <xsl:value-of  select="true()"/>
-                                    </xsl:when>
-                                    <xsl:when test="$df/marc:datafield[matches(@tag, '[17]{1}(00|10|11)')]">
-                                        <xsl:value-of  select="true()"/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select="false()"/>
-                                    </xsl:otherwise>
-                                </xsl:choose>
-                            </xsl:attribute>
+                        <e_name cpf_entity_type="{$etype/eac:value[@cpf = $temp_et]}"
+                                cp_count="{$cp_count}"
+                                tag="{$df/marc:datafield/@tag}"
+                                record_id="{$record_id}"
+                                entity_type="{$temp_et}"
+                                entity_type_fc="{$entity_type_fc}"
+                                fn_suffix="{$fn_suffix}"
+                                expanded_suffix="{$expanded_suffix}"
+                                is_creator="{$is_creator}">
                             <xsl:value-of select="normalize-space($ne_temp)"/>
                         </e_name>
                         <occ>
@@ -2229,7 +2489,13 @@
 
     <xsl:template name="tpt_parse_alt" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="alt_date" as="xs:string?"/> 
+        <xsl:param name="entity_type"/>
         <!-- 
+             Alt date parsing more or less equivalent to tpt_exist_dates. Returns a node set of tokens.
+
+             Nov 25 2013. This makes errors parsing some dates that tpt_exist_dates and tpt_show_date can
+             parse. Try them first, and only fall back to alt parsing if the result is suspicious.
+
              Use a much simpler date parsing that looks for 1 or 2 \d{4} (four digit) numbers and uses them as
              active year values. Because this is called from inside lib:edate_core, we need to return a
              typical token node list, but with <odate is_alt="1">. Back in lib:edate_core the final
@@ -2238,6 +2504,7 @@
              are creating output (and our new-found dedication to always using explicit namespaces because
              otherwise namespaces are prone to extreme time wasting and frustration). The other date parser
              uses the implicit current namespace which is apparently marc:, but could be lib:.
+
         -->
 
         <xsl:variable name="pass_1">
@@ -2258,10 +2525,9 @@
 
         <!--
             Return tokens from the last pass. Final parsing template tpt_pa_3 is called from lib:edate_core.
-            Or in the case of bl2cpf.xsl, the tokens are passed to tpt_simple_date_range for parsing.
         -->
     </xsl:template>
-
+    
     <xsl:template name="tpt_pa_3" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="tokens" as="node()*"/> 
         <xsl:choose>
@@ -2271,16 +2537,16 @@
                 </xsl:variable>
                 <existDates>
                     <date localType="{$av_active}" standardDate="{format-number($local_date, '0000')}">
-                            <!-- Add attributes notBefore, notAfter for date [1] which should be the only date. -->
-                            <xsl:for-each select="$local_date/eac:tok[1]/@*[matches(name(), '^not')]">
-                                <xsl:choose>
-                                    <xsl:when test="string-length(.)>0">
-                                        <xsl:attribute name="{name()}">
-                                            <xsl:value-of select="format-number(., '0000')"/>
-                                        </xsl:attribute>
-                                    </xsl:when>
-                                </xsl:choose>
-                            </xsl:for-each>
+                        <!-- Add attributes notBefore, notAfter for date [1] which should be the only date. -->
+                        <xsl:for-each select="$local_date/eac:tok[1]/@*[matches(name(), '^not')]">
+                            <xsl:choose>
+                                <xsl:when test="string-length(.)>0">
+                                    <xsl:attribute name="{name()}">
+                                        <xsl:value-of select="format-number(., '0000')"/>
+                                    </xsl:attribute>
+                                </xsl:when>
+                            </xsl:choose>
+                        </xsl:for-each>
                         <xsl:text>active </xsl:text>
                         <xsl:if test="$local_date/eac:tok[@approx = 1]">
                             <xsl:text>approximately </xsl:text>
@@ -2445,11 +2711,18 @@
 
     <xsl:template name="tpt_pa_1" xmlns="urn:isbn:1-931666-33-4">
         <xsl:param name="alt_date" as="xs:string?"/> 
-        <!-- Tokenize alt dates. Similar to lib:tokenize -->
+        <!--
+            Tokenize alt dates. Similar to lib:tokenize
+            
+            Before we even get started, change 1980's to 1980s.
+        -->
         <odate is_alt="1">
             <xsl:value-of select="lower-case(normalize-space($alt_date))"/>
         </odate>
-        <xsl:analyze-string select="$alt_date"
+
+        <xsl:variable name="working_date" select="replace($alt_date, '''s', 's')"/>
+
+        <xsl:analyze-string select="$working_date"
                             regex="([ ;/,\.\-\?:\(\)\[\]]+)|([^ ;/,\.\-\?:\(\)\[\]]+)">
             <xsl:matching-substring>
                 <xsl:choose>
@@ -2518,11 +2791,16 @@
             separator matches '-' then create a "-" token. If separator matches '/' then create an "or"
             token. "1601/2" is conceptually "1601 or 2". If - or / occur in some other context, bad things may
             happen. All other separators are discarded.
+            
+            Nov 26 2013 Added regex to change 1920's into 1920s. The apostrophe used to not be handled by this
+            code, but was parsed, albeit wrongly, by tpt_parse_alt.
         -->
         <xsl:element name="odate">
             <xsl:value-of select="lower-case(normalize-space($subfield_d))"/>
         </xsl:element>
-        <xsl:analyze-string select="$subfield_d"
+        <xsl:variable name="working_date" select="replace($subfield_d, '''s', 's')" as="xs:string?"/>
+
+        <xsl:analyze-string select="$working_date"
                             regex="([ ;/,\.\-\?:\(\)\[\]]+)|([^ ;/,\.\-\?:\(\)\[\]]+)">
             <xsl:matching-substring>
                 <xsl:choose>
@@ -3014,16 +3292,19 @@
         <!--
             Determine the entity type. Give the template a name so we can talk about it in the documentataion and
             comments. The input param $df must be a copy-of node set, not a value-of string.
+            
+            Variables xxxx_val (pers_val) are the first letter capitalized versions. The all lowercase
+            versions are cpf_xxxx_val (cpf_pers_val).
         -->
         <xsl:choose>
             <xsl:when test="$df/marc:datafield[(@tag='100' or @tag='600' or @tag='700') and @ind1 = '3']">
-                <xsl:text>family</xsl:text>
+                <xsl:value-of select="$fami_val"/>
             </xsl:when >
             <xsl:when test="$df/marc:datafield[(@tag='100' or @tag='600' or @tag='700') and not(@ind1 = '3')]">
-                <xsl:text>person</xsl:text>
+                <xsl:value-of select="$pers_val"/>
             </xsl:when>
             <xsl:when test="$df/marc:datafield[@tag='110' or @tag='111' or @tag='610' or @tag='611' or @tag='710' or @tag='711']">
-                <xsl:text>corporateBody</xsl:text>
+                <xsl:value-of select="$corp_val"/>
             </xsl:when>
         </xsl:choose>
     </xsl:template>
@@ -3256,72 +3537,109 @@
         </xsl:choose>
     </xsl:function>
 
+    <!-- 
+         Single arg name-cleanse(str) is a wrapper calling name-cleanse(str, int) where the second arg is
+         forced to zero, that is has_trailing_dot=0. Michael Kay recommends it:
+         http://p2p.wrox.com/xslt/77336-functions-multiple-optional-parameters.html
+    -->
     <xsl:function name="lib:name-cleanse">
         <xsl:param name="aname"/>
+        <xsl:value-of select="lib:name-cleanse($aname, 0)"/>
+    </xsl:function>
+
+    <xsl:function name="lib:name-cleanse">
+        <xsl:param name="aname"/>
+        <xsl:param name="has_trailing_dot"/>
         <!--
             Called from tpt_name_info in bl2cpf.xsl. Used for proper names. Remove strange punctuation caused
             by empty elements leaving behind just field separators. This is simpler than some complex
             conditionals that detect empty elements.
+            
+            No trailing . when the name ends in ) or - controlled via param has_trailing_dot. See the end of
+            the function.
         -->            
-
+        <!--
+            Put a white space after every "." before normalizing space, and a fair number of initials are
+            "D.F." when in fact they should be "D. F. This will lead to trailing whitespace, but we clean that
+            up with normalize-space(). Well, this leads to bigger problems than trailing whitespace. It leads
+            to internal spaces where they do not belong.
+        -->
+        <xsl:variable name="pzero">
+            <xsl:value-of select="replace($aname, '\.', '. ')"/>
+        </xsl:variable>
 
         <!--
-            This first regexp looks confusing due to XSLT single quote char quoting rules. Remove trailing
-            space from "D' " or "Leyborne- ". When AdditionalInformation is part of the surname, it might have
-            a trailing space after hyphen or apostrophe (single quote). "Leyborne-Popham" or "D'Aeth".
+            This regexp looks confusing due to XSLT single quote char quoting rules. Remove trailing space
+            from "D' " or "Leyborne- ". When AdditionalInformation is part of the surname, it might have a
+            trailing space after hyphen or apostrophe (single quote). "Leyborne-Popham" or "D'Aeth".
             
+            But only when ' is not follow s which would be plural possessive.
+
             Note the fun use of alternation via | and capturing via () and the captured match placeholder $1.
         -->
         <xsl:variable name="p1">
-            <xsl:value-of select="replace($aname, '(''|-) ', '$1')"/>
+            <xsl:value-of select="replace($pzero, '([^s]''|-) ', '$1')"/>
         </xsl:variable>
 
-        <!-- Replace one or more ", " with a single instance of the same. -->
+        <!-- Replace "(, " having zero or more whitespace with "(" -->
+
+        <xsl:variable name="p1_1">
+            <xsl:value-of select="replace($p1, '\(,\s*', '(')"/>
+        </xsl:variable>
+
+        <!-- Replace one or more ", " (or with leading space " , ") with a single instance of the same. -->
 
         <xsl:variable name="p2">
-            <xsl:value-of select="replace($p1, '(, )+', ', ')"/>
+            <xsl:value-of select="replace($p1_1, '(\s*, )+', ', ')"/>
         </xsl:variable>
 
-        <!-- remove single ", " at the end of the line -->
+        <!-- Remove single "," with zero or more space at the end of the line -->
 
         <xsl:variable name="p3">
-            <xsl:value-of select="replace($p2, ', +$', '')"/>
+            <!-- <xsl:value-of select="replace($p2, '(,$)|(,\s+$)', '')"/> -->
+            <xsl:value-of select="replace($p2, ',+\s*$', '')"/>
         </xsl:variable>
 
-        <!-- remove single ". " at beginning of the line. Example: CorporateName with a missing Jursidiction. -->
+        <!-- Remove single ". " at beginning of the line. Example: CorporateName with a missing Jursidiction. -->
 
         <xsl:variable name="p3_1">
             <xsl:value-of select="replace($p3, '^\. ', '')"/>
         </xsl:variable>
 
+        <!-- Remove ", " before ( that is change ", (" to " (". If there is an extra space, normalize-space() will clean it up later. -->
+
+        <xsl:variable name="p3_2">
+            <xsl:value-of select="replace($p3_1, ',\s*\(', ' (')"/>
+        </xsl:variable>
+
         <!--
-            replace any number of " ," with a single ", ". The " ," happens when a space separated element is
-            empty and an adjacent comma separated element is empty.
+            (Why are we doing this a second time?) Replace any number of " ," with a single ", ". The " ,"
+            happens when a space separated element is empty and an adjacent comma separated element is empty.
         -->
 
         <xsl:variable name="p4">
-            <xsl:value-of select="replace($p3_1, '( ,)+', ', ')"/>
+            <xsl:value-of select="replace($p3_2, '( ,)+', ', ')"/>
         </xsl:variable>
 
-        <!-- change "(: " to "(" -->
+        <!-- Change "(: " to "(" -->
 
         <xsl:variable name="p4_1">
             <xsl:value-of select="replace($p4, '\(\s*:\s*', '(')"/>
         </xsl:variable>
 
-        <!-- change "\s:\s)" to ")" -->
+        <!-- Change "\s*:\s*)" to ")" -->
 
         <xsl:variable name="p4_1_1">
             <xsl:value-of select="replace($p4_1, '\s*:\s*\)', ')')"/>
         </xsl:variable>
 
-        <!-- remove "(\s:\s)" -->
+        <!-- Remove "(\s:\s)" -->
 
         <xsl:variable name="p4_2">
             <xsl:value-of select="replace($p4_1_1, '\(\s*:\s*\)', '')"/>
         </xsl:variable>
 
-        <!-- change multi "\s:\s" to single instance-->
+        <!-- Change multi "\s*:\s*" to single instance -->
 
         <xsl:variable name="p4_3">
             <xsl:value-of select="replace($p4_2, '(\s*:\s*)+', ' : ')"/>
@@ -3336,22 +3654,41 @@
             <xsl:value-of select="replace($p4_3, '\s*:\s*\)', ')')"/>
         </xsl:variable>
 
-        <!-- remove any "(\s*)" -->
+        <!-- Remove any "(\s*)" -->
 
         <xsl:variable name="p4_4">
             <xsl:value-of select="replace($p4_3_1, '\(\s*\)', '')"/>
         </xsl:variable>
 
+        <!-- Replace ",, "  with ", " -->
+
+        <xsl:variable name="p4_5">
+            <xsl:value-of select="replace($p4_4, ',,\s*', ', ')"/>
+        </xsl:variable>
+
+
         <!--
             Some double spaces may have crept in as well as trailing space. Normalize.
         -->
-
         <xsl:variable name="p5">
-            <xsl:value-of select="normalize-space($p4_4)"/>
+            <xsl:value-of select="normalize-space($p4_5)"/>
+        </xsl:variable>
+
+        <!-- 
+             Typecast to boolean and then return the value of the logical expression.
+             Trailing dot is ok if the name doesn't end in . ) or -
+        -->
+        <xsl:variable name="trailing_ok" as="xs:boolean">
+            <xsl:value-of select="not(matches($p5, '\.$')) and not(matches($p5, '\)$')) and not(matches($p5, '\-$', ''))"/>
         </xsl:variable>
 
         <xsl:value-of select="lib:capitalize($p5)"/>
+        
+        <!-- As of approximately Sep 26 2013 stop doing the trailing dot on names. -->
 
+        <!-- <xsl:if test="$has_trailing_dot=1 and $trailing_ok=true()"> -->
+        <!--     <xsl:text>.</xsl:text> -->
+        <!-- </xsl:if> -->
     </xsl:function>
     
     <xsl:function name="lib:capitalize">
@@ -3533,4 +3870,34 @@
         <xsl:value-of select="lower-case(lib:unpunct($custom_relators//rel:relator[text() = $test_code]))"/>
     </xsl:function>
 
+    <!--
+        Special deep-copy element lowercasing code. This came up because we need to lc the P elements in
+        British Library History. Uppercase P broke sometime around Sep 30, and had been working (jing
+        validated) before that. Unknown why the change in behavior.
+    -->
+    <xsl:template name="tpt_lc" mode="mode_lc" match="*" xmlns="urn:isbn:1-931666-33-4">
+        <xsl:element name="{lower-case(local-name())}">
+            <xsl:apply-templates mode="mode_lc"/>
+        </xsl:element>
+    </xsl:template>   
+
+    <xsl:function name="lib:cpf_arc_role">
+        <xsl:param name="context"/>
+        <!--
+            cp_count is count of 6xx/$v matches 'correspondence' and it part of every container/e_name
+            element. Greater than or equal to 1 means we have some sort of correspondent.
+        -->
+        <xsl:variable name="result">
+            <xsl:choose>
+                <xsl:when test="$context/@cp_count >= 1">
+                    <xsl:value-of select="$av_correspondedWith"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$av_associatedWith"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:value-of select="$result"/>
+    </xsl:function>
+    
 </xsl:stylesheet>

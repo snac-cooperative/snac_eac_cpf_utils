@@ -207,6 +207,9 @@
             <!--
                 This template invokes tpt_entity_type template below. Use a specific node match and we won't need
                 matches elsewhere to catch other marc:datafield and marc:subfield nodes.
+                
+                The returned values are not for use in cpf identities. The values are only for use internally
+                for things like etype and entity type comparisons (conditionals, if, when, test).
             -->
             <xsl:call-template name="tpt_entity_type">
                 <xsl:with-param name="df">
@@ -357,10 +360,6 @@
             <xsl:copy-of select="."/>
         </xsl:variable>
         
-        <xsl:variable name="is_cp" as="xs:boolean">
-            <xsl:call-template name="tpt_is_cp"/>
-        </xsl:variable>
-
         <!-- leader character numbering is zero based, although xslt substring is one based. -->
         <!-- <leader>00000cpcaa  00000La     </leader> -->
         <!-- marc    012345678901234567890123 -->
@@ -522,7 +521,6 @@
             <xsl:with-param name="leader07" select="$leader07"/>
             <xsl:with-param name="leader08" select="$leader08"/>
             <xsl:with-param name="local_affiliation" select="$local_affiliation"/>
-            <xsl:with-param name="is_cp" select="$is_cp"/>
             <xsl:with-param name="controlfield_001" select="$controlfield_001"/>
             <xsl:with-param name="all_xx" select="$all_xx" />
             <xsl:with-param name="chunk_dir" select="$chunk_dir" />
@@ -540,6 +538,8 @@
             <xsl:with-param name="geographic_subject" select="$geographic_subject"/>
             <xsl:with-param name="language" select="$language"/>
             <xsl:with-param name="rules" select="$rules"/>
+            <!-- unused -->
+            <!-- <xsl:with-param name="is_cp" select="$is_cp"/> -->
         </xsl:apply-templates>
     </xsl:template> <!-- end tpt_match_record -->
     
@@ -563,7 +563,7 @@
         <xsl:param name="leader07"/>
         <xsl:param name="leader08"/>
         <xsl:param name="local_affiliation"/>
-        <xsl:param name="is_cp" />
+        <!-- <xsl:param name="is_cp" /> -->
         <xsl:param name="controlfield_001"/>
         <xsl:param name="all_xx"/>
         <xsl:param name="chunk_dir"/>
@@ -594,38 +594,42 @@
             <xsl:value-of select="substring(eac:e_name/@fn_suffix, 1, 1) = 'r'"/>
         </xsl:variable>
         
+        <!--
+            This would more accurately be name rrel_arc_role since this is for resourceRelation ONLY.
+            It is impossible to correspond with an archival record.
+        -->
         <xsl:variable name="arc_role">
             <xsl:call-template name="tpt_arc_role">
-                <xsl:with-param name="is_c_flag" select="$is_c_flag"/>
-                <xsl:with-param name="is_cp" select="$is_cp"/>
+                <xsl:with-param name="is_c_flag" select="$is_c_flag" as="xs:boolean"/>
                 <xsl:with-param name="is_r_flag" select="$is_r_flag"/>
             </xsl:call-template>
         </xsl:variable>
 
         <!-- 
-             New: We could probably just set the eac: namespace in the template element above and that would
+             We could probably just set the eac: namespace in the template element above and that would
              take care of all this. Maybe do that and test this some day. In the meantime, the extra xmlns
              namespace assignments may be redundant, but they are working.
-
-             Old: Must declare xmlns. The documents will not validate with xmlns="". There is a note above that putting it in
-             the stylesheet declaration breaks <container> elements. Might follow that up some day.
         -->
+
+        <!-- <xsl:message> -->
+        <!--     <xsl:text>pc: </xsl:text> -->
+        <!--     <xsl:copy-of select="."/> -->
+            <!-- <xsl:text>&#x0A;</xsl:text> -->
+        <!-- </xsl:message> -->
+
         <xsl:variable name="cpf_relation" xmlns="urn:isbn:1-931666-33-4">
-            <!--
-                arcrole="snac:associatedWith" for both .c and .r records.
-                For a local .c record being processed by this template, outoput all the (global) .rNN nodes;
-            -->
             <xsl:if test="$is_c_flag">
                 <xsl:for-each select="$all_xx/eac:container/eac:e_name[substring(@fn_suffix, 1, 1) = 'r']">
                     <!--
                         Paths here are realtive to $all_xx/container/e_name. Note, here we are looking at $all_xx, not
                         the current record matching this template. 
                     -->
+                    <xsl:variable name="cpf_arc_role" select="lib:cpf_arc_role(.)"/>
                     <xsl:variable name="et" select="@entity_type"/>
 
                     <cpfRelation xlink:type="simple"
                                  xlink:role="{$etype/eac:value[@key = $et]}"
-                                 xlink:arcrole="{$av_associatedWith}">
+                                 xlink:arcrole="{$cpf_arc_role}">
                         <relationEntry><xsl:value-of select="."/></relationEntry>
                         <descriptiveNote>
                             <p>
@@ -639,18 +643,28 @@
             </xsl:if>
 
             <!--
+                Context note: The context root in this template is eac:container thus lib:cpf_arc_role() must
+                have an eac:e_name path. Above lib:cpf_arc_role() is inside a for-each which sets the (new,
+                inner) context to eac:e_name. In the code below, we have to call it explicitly with the
+                correct xpath.
+
                 For a local .r record which also has a 1xx being processed by this template, output
                 the (global) single .c node. If this record did not have a 1xx, there would be no .c
                 file to refer to.
+                
+                We need some fields from the the main C record. Put that C e_name node set in a variable cmain.
+
+                If the .c corresponded with .r, then the reverse is true, thus it is valid to use
+                lib:cpf_arc_role() here.
             -->
             <xsl:if test="$is_r_flag and $is_1xx">
-                <!-- We need some fields from the the main C record. Put that C e_name node set in a variable. -->
                 <xsl:variable name="cmain">
                     <xsl:copy-of select="$all_xx/eac:container/eac:e_name[@fn_suffix = 'c']"/>
                 </xsl:variable>
+                <xsl:variable name="cpf_arc_role" select="lib:cpf_arc_role(eac:e_name)"/>
                 <cpfRelation xlink:type="simple"
                              xlink:role="{$etype/eac:value[@key = $cmain/eac:e_name/@entity_type]}"
-                             xlink:arcrole="{$av_associatedWith}">
+                             xlink:arcrole="{$cpf_arc_role}">
                     <relationEntry><xsl:value-of select="$cmain/eac:e_name"/></relationEntry>
                     <descriptiveNote>
                         <p>
@@ -706,13 +720,6 @@
             <xsl:copy-of select="."/>
         </xsl:variable>
 
-        <!-- <xsl:message> -->
-        <!--     <xsl:text>pd: </xsl:text> -->
-        <!--     <xsl:copy-of select="$param_data"/> -->
-        <!--     <xsl:text>&#x0A;</xsl:text> -->
-        <!-- </xsl:message> -->
-
-
         <!--
             Note: the context is a <container> node set. <container><e_name>...</e_name><existDates>...</existDates></container>
         -->
@@ -720,7 +727,7 @@
             <xsl:call-template name="tpt_body">
                 <xsl:with-param name="exist_dates" select="./eac:existDates" as="node()*" />
                 
-                <xsl:with-param name="entity_type" select="eac:e_name/@entity_type" />
+                <xsl:with-param name="entity_type" select="eac:e_name/@cpf_entity_type" />
                 <xsl:with-param name="entity_name" select="eac:e_name"/>
 
                 <xsl:with-param name="leader06" select="$leader06"/>
