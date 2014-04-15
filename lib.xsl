@@ -56,43 +56,16 @@
                                        '-> var exist_dates-> tpt_show_dates
     -->
     
+    <xsl:import href="av.xsl"/>
+
     <!-- 
          Variables for the localType values. The values have changed several times, so now they go into
          variables.  "av_" is mnemonic for Attribute Value.
          
          av_DatabaseName Added Sep 13 2013
     -->
-
     <xsl:variable name="cr" select="'&#x0A;'"/>
 
-    <xsl:variable name="av_DatabaseName" select="'http://socialarchive.iath.virginia.edu/control/term#DatabaseName'"/>
-
-    <xsl:variable name="av_suspiciousDate" select="'http://socialarchive.iath.virginia.edu/control/term#SuspiciousDate'"/>
-    <xsl:variable name="av_active " select="'http://socialarchive.iath.virginia.edu/control/term#Active'"/>
-    <xsl:variable name="av_born" select="'http://socialarchive.iath.virginia.edu/control/term#Birth'"/>
-    <xsl:variable name="av_died" select="'http://socialarchive.iath.virginia.edu/control/term#Death'"/>
-    <xsl:variable name="av_associatedSubject" select="'http://socialarchive.iath.virginia.edu/control/term#AssociatedSubject'"/>
-    <xsl:variable name="av_associatedPlace" select="'http://socialarchive.iath.virginia.edu/control/term#AssociatedPlace'"/>
-    <xsl:variable name="av_extractRecordId" select="'http://socialarchive.iath.virginia.edu/control/term#ExtractedRecordId'"/>
-    <xsl:variable name="av_Leader06" select="'http://socialarchive.iath.virginia.edu/control/term#Leader06'"/>
-    <xsl:variable name="av_Leader07" select="'http://socialarchive.iath.virginia.edu/control/term#Leader07'"/>
-    <xsl:variable name="av_Leader08" select="'http://socialarchive.iath.virginia.edu/control/term#Leader08'"/>
-    <xsl:variable name="av_derivedFromRole" select="'http://socialarchive.iath.virginia.edu/control/term#DerivedFromRole'"/>
-
-    <xsl:variable name="av_CorporateBody" select="'http://socialarchive.iath.virginia.edu/control/term#CorporateBody'"/>
-    <xsl:variable name="av_Family" select="'http://socialarchive.iath.virginia.edu/control/term#Family'"/>
-    <xsl:variable name="av_Person" select="'http://socialarchive.iath.virginia.edu/control/term#Person'"/>
-    <xsl:variable name="av_associatedWith" select="'http://socialarchive.iath.virginia.edu/control/term#associatedWith'"/>
-    <xsl:variable name="av_correspondedWith" select="'http://socialarchive.iath.virginia.edu/control/term#correspondedWith'"/>
-    <xsl:variable name="av_creatorOf" select="'http://socialarchive.iath.virginia.edu/control/term#creatorOf'"/>
-    <xsl:variable name="av_referencedIn" select="'http://socialarchive.iath.virginia.edu/control/term#referencedIn'"/>
-    <xsl:variable name="av_archivalResource" select="'http://socialarchive.iath.virginia.edu/control/term#ArchivalResource'"/>
-
-    <!-- As far as I know these aren't used in any of Tom's XSLT that generates CPF. -->
-    <xsl:variable name="av_mergedRecord" select="'http://socialarchive.iath.virginia.edu/control/term#MergedRecord'"/>
-    <xsl:variable name="av_BibliographicResource" select="'http://socialarchive.iath.virginia.edu/control/term#BibliographicResource'"/>
-    <xsl:variable name="av_mayBeSameAs" select="'http://socialarchive.iath.virginia.edu/control/term#mayBeSameAs'"/>
-    <xsl:variable name="av_sameAs" select="'http://www.w3.org/2002/07/owl#sameAs'"/>
 
     <!--
         When we find the tag <Corporation> we set the locn to 'CorporateBody'. Person and Family are ok.
