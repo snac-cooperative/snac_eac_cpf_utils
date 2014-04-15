@@ -27,6 +27,12 @@
         
         Reads a list of British Library Names xml records and writes out EAC-CFP XML. 
         
+        Run the small QA test data, do not include original data:
+        saxon.sh british_library/qa_file_target.xml bl2cpf.xsl inc_orig=0 > bl.log 2>&1 &
+        
+
+
+        Older, historical command line:
         saxon british_library/name_target.xml bl2cpf.xsl limit=100
 
         See readme.md for details.
@@ -148,33 +154,35 @@
     -->
     <xsl:template name="tpt_main" match="/" xmlns="urn:isbn:1-931666-33-4">
         <xsl:message>
-            <xsl:value-of select="concat('Date today: ', current-dateTime(), '&#x0A;')"/>
+            <xsl:value-of select="concat('                       Date today: ', current-dateTime(), '&#x0A;')"/>
             <xsl:value-of select="concat('Number of geonames places read in: ', count($places/*), '&#x0A;')"/>
-            <xsl:value-of select="concat('Writing output to: ', $output_dir, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default authorizedForm: ', $auth_form, '&#x0A;')"/>
-            <xsl:value-of select="concat('Fallback (default) agency code: ', $fallback_default, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default eventDescription: ', $ev_desc, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default xlink href: ', $xlink_href, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default xlink role: ', $xlink_role, '&#x0A;')"/>
-            <xsl:value-of select="concat('limit: ', $limit, '&#x0A;')"/>
-            <xsl:value-of select="concat('use_bl_alt_name: ' , $use_bl_alt_name, '&#x0A;')"/>
+            <xsl:value-of select="concat('                Writing output to: ', $output_dir, '&#x0A;')"/>
+            <xsl:value-of select="concat('           Default authorizedForm: ', $auth_form, '&#x0A;')"/>
+            <xsl:value-of select="concat('   Fallback (default) agency code: ', $fallback_default, '&#x0A;')"/>
+            <xsl:value-of select="concat('         Default eventDescription: ', $ev_desc, '&#x0A;')"/>
+            <xsl:value-of select="concat('               Default xlink href: ', $xlink_href, '&#x0A;')"/>
+            <xsl:value-of select="concat('               Default xlink role: ', $xlink_role, '&#x0A;')"/>
+            <xsl:value-of select="concat('                            limit: ', $limit, '&#x0A;')"/>
+            <xsl:value-of select="concat('                  use_bl_alt_name: ', $use_bl_alt_name, '&#x0A;')"/>
             <xsl:choose>
                 <xsl:when test="$inc_orig">
-                    <xsl:value-of select="concat('Include original record: yes', '&#x0A;')"/>
+                    <xsl:value-of
+                          select="concat('           Include original record: yes', '&#x0A;')"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="concat('Include original record: no', '&#x0A;')"/>
+                    <xsl:value-of
+                           select="concat('          Include original record: no', '&#x0A;')"/>
                 </xsl:otherwise>
             </xsl:choose>
             
             <xsl:choose>
             <xsl:when test="$use_chunks">
-                <xsl:value-of select="concat('Using chunks: yes', '&#x0A;')"/>
-                <xsl:value-of select="concat('Chunk size XSLT: ', $chunk_size, '&#x0A;')"/>
-                <xsl:value-of select="concat('Chunk dir prefix: ', $chunk_prefix, '&#x0A;')"/>
+                <xsl:value-of select="concat('                   Using chunks: yes', '&#x0A;')"/>
+                <xsl:value-of select="concat('                Chunk size XSLT: ', $chunk_size, '&#x0A;')"/>
+                <xsl:value-of select="concat('               Chunk dir prefix: ', $chunk_prefix, '&#x0A;')"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat('Using chunks: no', '&#x0A;')"/>
+                <xsl:value-of select="concat('                   Using chunks: no', '&#x0A;')"/>
             </xsl:otherwise>
             </xsl:choose>
         </xsl:message>
@@ -782,8 +790,10 @@
                         entity_type_cpf="{$cpf_corp_val}"
                         en_lang="{lib:get-lang($auth_name/*/NameLanguage)}">
                     <!--
+                        corpname
+
                         Use for-each to set context. See lib.xsl for lib:name-cleanse. See
-                        british_library/qa_file_target.xml comments.  Var name_entry eventually becomea
+                        british_library/qa_file_target.xml comments.  Var name_entry eventually becomes
                         nameEntry in eac_cpf.xsl.
                     -->
                     <xsl:for-each select="$all_names/*/*">
@@ -862,6 +872,8 @@
                         entity_type_cpf="{$cpf_pers_val}"
                         en_lang="{lib:get-lang($auth_name/*/NameLanguage)}">
                     <!--
+                        persname 
+
                         Use for-each to set context. See lib.xsl for lib:name-cleanse. See british_library/qa_file_target.xml comments.
 
                         Note the extra concat() to add a trailing dot to person names.
@@ -874,8 +886,11 @@
                         </xsl:variable>
                         <xsl:variable name="tmp_name">
                             <!--
-                                See Note1 above.  This went throught several iterations. We now use all
-                                avaiable fields. name-cleanse() cleans up extra field separator punctuation
+                                persname 
+                                
+                                See Note1 above.  This went throught several iterations. We now use the fields
+                                (below) in the authorizedForm, and an CPF merge pipeline compatible name in
+                                alternativeForm. name-cleanse() cleans up extra field separator punctuation
                                 when one or more fields are empty or missing.
                             -->
                             <xsl:value-of select="lib:name-cleanse(
@@ -890,22 +905,38 @@
                                                   ,1)"/>
                         </xsl:variable>
 
-                        <!-- Print a message when we use the Epithet or Title -->
-
-                        <!-- <xsl:if test="string-length($parsed_date/eac:parsed_date_range) = 0 and -->
-                        <!--               (string-length(Epithet) > 0 or string-length(Title) > 0)"> -->
-                        <!--     <xsl:message> -->
-                        <!--         <xsl:text>ti/epi: </xsl:text> -->
-                        <!--         <xsl:value-of select="normalize-space($tmp_name)"/> -->
-                        <!--     </xsl:message> -->
-                        <!-- </xsl:if> -->
-
                         <name_entry en_lang="{lib:get-lang(NameLanguage)}"
                                     a_form="{$a_form}">
                             <part>
                                 <xsl:value-of select="normalize-space($tmp_name)"/>
                             </part>
                         </name_entry>
+                        <!--
+                            Add alt form for matching pipeline, for internal use only. Apr 11, 2014. Revert to
+                            an older style date also.  Only do this on the authorizedForm name.
+                        -->
+                        <xsl:if test="$a_form = 'authorizedForm'">
+                            <xsl:variable name="revdate">
+                                <xsl:value-of select="replace(
+                                                      replace($parsed_date/eac:parsed_date_range, 'active', 'fl.')
+                                                      , 'approximately', 'ca.')"/>
+                            </xsl:variable>
+                            <name_entry en_lang="{lib:get-lang(NameLanguage)}"
+                                        a_form="alternativeForm"
+                                        localType="{$av_match}">
+                                <part>
+                                    <xsl:value-of select="lib:name-cleanse(
+                                                          concat(
+                                                          lib:capitalize(AdditionalInformation), ' ',
+                                                          Surname, ', ',
+                                                          FirstName, ', ',
+                                                          $revdate)
+                                                          ,1)"/>
+                                </part>
+                            </name_entry>
+                        </xsl:if>
+
+
                         <xsl:if test="$use_bl_alt_name">
                             <name_entry en_lang="{lib:get-lang(NameLanguage)}"
                                         localType="http://socialarchive.iath.virginia.edu/control/term#BLName" 
