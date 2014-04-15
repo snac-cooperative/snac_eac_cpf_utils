@@ -152,7 +152,7 @@
                                     
                                     <xsl:if test="string-length(@a_form) = 0">
                                         <xsl:message>
-                                            <xsl:text>null: </xsl:text>
+                                            <xsl:text>null nameEntry: </xsl:text>
                                             <xsl:copy-of select="."/>
                                             <xsl:text>&#x0A;</xsl:text>
                                         </xsl:message>
