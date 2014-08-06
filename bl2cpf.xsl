@@ -29,8 +29,9 @@
         
         Run the small QA test data, do not include original data:
         saxon.sh british_library/qa_file_target.xml bl2cpf.xsl inc_orig=0 > bl.log 2>&1 &
+        saxon.sh british_library/qa_file_target.xml bl2cpf.xsl inc_orig=0 output_dir=qa_cpf > bl.log 2>&1 &
         
-
+        saxon.sh british_library/file_target.xml bl2cpf.xsl > bl.log 2>&1 &
 
         Older, historical command line:
         saxon british_library/name_target.xml bl2cpf.xsl limit=100
@@ -54,7 +55,6 @@
         mode "copy-no-ns" match="*"
         
         See also lib.xsl, eac_cpf.xsl.
-
         
         What does this do in the XSL header?
         extension-element-prefixes="date"
@@ -177,12 +177,12 @@
             
             <xsl:choose>
             <xsl:when test="$use_chunks">
-                <xsl:value-of select="concat('                   Using chunks: yes', '&#x0A;')"/>
+                <xsl:value-of select="concat('                     Using chunks: yes', '&#x0A;')"/>
                 <xsl:value-of select="concat('                Chunk size XSLT: ', $chunk_size, '&#x0A;')"/>
                 <xsl:value-of select="concat('               Chunk dir prefix: ', $chunk_prefix, '&#x0A;')"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat('                   Using chunks: no', '&#x0A;')"/>
+                <xsl:value-of select="concat('                     Using chunks: no', '&#x0A;')"/>
             </xsl:otherwise>
             </xsl:choose>
         </xsl:message>
@@ -417,6 +417,16 @@
                 </snac_info>
                 
                 <!--
+                    As far as I know, this is not normally used, but there is a branch for it in
+                    eac_cpf.xsl, and the other rrel code keeps a copy of the default xlink_role here. It is
+                    possible (and likely) that some sets of data will put values in each rrel node. That's
+                    fine, and in that case this outer xlink_role will be ignored.
+                -->
+                <xlink_role>
+                    <xsl:value-of select="$xlink_role"/>
+                </xlink_role>
+
+                <!--
                     Calling capitalize() doesn't hurt, but we shouldn't need to capitalized @entity_type
                     because the values are from $pers_val etc. from lib.xsl.
                 -->
@@ -437,14 +447,11 @@
                 <xsl:variable name="entity_type" select="string(eac:e_name/@entity_type)"/>
 
                 <xsl:for-each select="eac:dinfo/*">
-
                     <!-- <xsl:message> -->
                     <!--     <xsl:text>calling radna et: </xsl:text> -->
                     <!--     <xsl:copy-of select="."/> -->
                     <!--     <xsl:text>&#x0A;</xsl:text> -->
                     <!-- </xsl:message> -->
-
-
                     <xsl:call-template name="tpt_radna">
                         <xsl:with-param name="entity_tid" select="$entity_tid"/>
                         <xsl:with-param name="controlfield_001" select="$controlfield_001"/>
@@ -472,7 +479,7 @@
                 <xsl:copy-of select="."/>
 
             </xsl:variable>
-            
+
             <xsl:variable name="file_name" select="concat($output_dir, '/', $ofile)"/>
             
             <xsl:result-document href="{$file_name}" format="xml" >

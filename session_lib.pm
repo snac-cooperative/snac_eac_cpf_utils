@@ -22,8 +22,11 @@ use base qw( Exporter );
 # Create a 2 groups of exported functions :config with all 3 of the necessary subs for app_config and :all
 # with everything including app_config. There are other possible subsets.
 
+# use session_lib qw(:config);
+# use session_lib qw(:all);
+
 %EXPORT_TAGS = (config => [qw(app_config user_config check_config)], 
-                all => [qw(app_config err_stuff get_url version next_fasta get_db_handle commit_handle
+                all => [qw(sqlite_db_handle app_config err_stuff get_url version next_fasta get_db_handle commit_handle
                 clean_db_handles load_average busy check_config untaint capture_file login process_template
                 user_config keep_one run_session save_session update_cookie safe_file init_progress_meter
                 progress_meter multi_string save_upload_file index_url email exists_message final_message
@@ -42,7 +45,7 @@ Exporter::export_ok_tags('all');
 @EXPORT = qw();
 
 # Subs we will export if asked. 
-@EXPORT_OK = qw(app_config err_stuff get_url version next_fasta get_db_handle commit_handle clean_db_handles
+@EXPORT_OK = qw(sqlite_db_handle app_config err_stuff get_url version next_fasta get_db_handle commit_handle clean_db_handles
 	     load_average busy check_config untaint
 	     capture_file login process_template user_config keep_one
 	     run_session save_session update_cookie
@@ -640,6 +643,49 @@ sub get_db_handle
 	    my $str = sprintf("%s Couldn't connect using connect_string: $connect_string\n", (caller(0))[3]);
 	    die "$str\n";
 	}
+    }
+    return $db_handles{$db_alias};
+    my $quiet_compile_warnings = $DBI::err;
+}
+
+
+# Like get_db_handle() but very simple for use with SQLite only. Maybe someday this should be merged with
+# get_db_handle() in some backward compatible way.
+
+# For now the filename is also the alias which is also the key in the %db_handles hash.
+
+sub sqlite_db_handle
+{
+    my $db_file = $_[0];
+    my $db_alias = $db_file; 
+    my $db_user = '';
+    my $db_password = '';
+    
+    if (! exists($db_handles{$db_alias}))
+    {
+        my $connect_string = "dbi:SQLite:dbname=$db_file;host=;port=;";
+        
+        # There was an occasion when transactions broke, and it was due to something disabling
+        # sqlite_use_immediate_transaction. Force it to be enabled.
+        my $dbargs = {sqlite_use_immediate_transaction => 1, AutoCommit => 0, PrintError => 1};
+        
+        $db_handles{$db_alias} =  DBI->connect($connect_string,
+                                               $db_user,
+                                               $db_password,
+                                               $dbargs);
+        
+        # Do not call any of the db-centric write_log subs on error. If
+        # the db connection isn't working, we can't log to the db.
+        
+        if ($db_password)
+        {
+            $connect_string =~ s/$db_password/*******/g;
+        }
+        if ($DBI::err)
+        {
+            my $str = sprintf("%s Couldn't connect using connect_string: $connect_string\n", (caller(0))[3]);
+            die "$str\n";
+        }
     }
     return $db_handles{$db_alias};
     my $quiet_compile_warnings = $DBI::err;

@@ -230,10 +230,14 @@
                                 of the xlink_href base URI. Maybe someday another data set will have multiple
                                 resourceRelations. In any case, the otherwise clause supports all the legacy
                                 XSL script.
+                                
+                                Fix jul 28 2014 BL (and others?) was getting xlink_role from
+                                $param_data/eac:xlink_role, but xlink_role is actually in <rrel> so the actual
+                                path is $param_data/eac:rrel/eac:xlink_role
                             -->
                             <xsl:for-each select="$param_data/eac:rrel">
                             <resourceRelation xlink:arcrole="{eac:arc_role}"
-                                              xlink:role="{$param_data/eac:xlink_role}"
+                                              xlink:role="{eac:xlink_role}"
                                               xlink:type="simple"
                                               xlink:href="{eac:xlink_href}">
                                 <relationEntry><xsl:value-of select="eac:rel_entry"/></relationEntry>
