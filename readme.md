@@ -4,6 +4,7 @@ This is a beta, pre-release version.
 Table of contents
 -----------------
 * [Overview of ead_cpf_utils](#overview-of-ead_cpf_utils)
+* [Related projects](#related-projects)
 * [What you might need to get started](#what-you-might-need-to-get-started)
 * [Getting the code](#getting-the-code)
 * [Getting languages and relators rdf xml](#getting-languages-and-relators-rdf-xml)
@@ -43,6 +44,14 @@ Unless required by applicable law or agreed to in writing, software distributed 
 distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
 the License for the specific language governing permissions and limitations under the License.
 
+
+
+Related projects
+----------------
+
+SNAC XTF search: https://github.com/tingletech/snac2
+
+Python match/merge code for SNAC: https://github.com/snac/snac2
 
 
 What you might need to get started
