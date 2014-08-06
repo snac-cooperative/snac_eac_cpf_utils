@@ -49,6 +49,8 @@ the License for the specific language governing permissions and limitations unde
 Related projects
 ----------------
 
+Extract CPF from EAD: https://github.com/twl8n/snac_ead_to_cpf
+
 SNAC XTF search: https://github.com/tingletech/snac2
 
 Python match/merge code for SNAC: https://github.com/snac/snac2
