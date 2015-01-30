@@ -44,8 +44,8 @@
 
     <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
     <!-- xlink:role The $av_ variables are in lib.xsl. -->
-    <xsl:param name="xlink_role" select="$av_archivalResource"/> 
-    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
+    <xsl:param name="rr_xlink_role" select="$av_archivalResource"/> 
+    <xsl:param name="rr_xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
 
     <xsl:include href="lib.xsl"/>
 

@@ -88,6 +88,8 @@
          *only* use $cpf_pers_val etc. in the CPF entityType in eac_cpf.xsl.
          
          Nov 18 2013 New attribute cpf is used to select the cpf value when we know the "normal" version.
+         
+         Jan 27 2015 New 'organization' for NARA.
     -->
     <xsl:variable name="etype" xmlns="urn:isbn:1-931666-33-4">
         <value key="{$pers_val}">
@@ -100,6 +102,10 @@
             <!-- Added to deal with field books -->
             <xsl:value-of select="$av_CorporateBody"/>
         </value>
+        <value key="'organization'">
+            <!-- Added to deal with NARA DSA orgs -->
+            <xsl:value-of select="$av_CorporateBody"/>
+        </value>
         <value key="{$fami_val}">
             <xsl:value-of  select="$av_Family"/>
         </value>
@@ -108,6 +114,9 @@
             <xsl:value-of select="$cpf_pers_val"/>
         </value>
         <value cpf="{$corp_val}">
+            <xsl:value-of select="$cpf_corp_val"/>
+        </value>
+        <value cpf="'organization'"> <!-- NARA orgs are corporateBody -->
             <xsl:value-of select="$cpf_corp_val"/>
         </value>
         <value cpf="{$fami_val}">
@@ -415,8 +424,6 @@
          
          template tpt_is_cp replaced by improved code.
      -->
-
-
      <xsl:template name="tpt_arc_role">
          <xsl:param name="is_c_flag"  as="xs:boolean"/>
          <xsl:param name="is_r_flag"/>
@@ -433,11 +440,17 @@
              </xsl:when>
              <xsl:otherwise>
                  <!--
-                     Old comment: This can't happen given current logic. New comment: Really? Maybe not for
-                     WorldCat because all those are either is_c_flag or is_r_flag, but the SIA data might get
-                     here.
+                     Newer comment: Can a person be associatedWith an archival resource?
+
+                     Old comment: This can't happen given current logic.
+                     
+                     New comment: Really? Maybe not for WorldCat because all those are either is_c_flag or
+                     is_r_flag, but the SIA data might get here.
                  -->
                  <xsl:value-of select="$av_associatedWith"/>
+                 <xsl:message>
+                     <xsl:value-of select="concat('warning: resourceRelation xlink:arcrole associatedWith ', $av_associatedWith)"/>
+                 </xsl:message>
              </xsl:otherwise>
          </xsl:choose>
      </xsl:template>
@@ -2905,7 +2918,10 @@
                 </xsl:when>
 
                 <xsl:when test="matches(., '^\d+$') and $f_tok = '?'">
-                    <!-- If a numeric token is followed by ? then do a date range. This code carefully avoids "18th cent.?" -->
+                    <!--
+                        If a numeric token is followed by ? then do a date range. This code carefully avoids "18th cent.?"
+                        tags: ? question mark date range notBefore notAfter +1 -1 year unknown not precise
+                    -->
                     <xsl:element name="tok">
                         <xsl:attribute name="notBefore"><xsl:value-of select="number(.) -1"/></xsl:attribute>
                         <xsl:attribute name="notAfter"><xsl:value-of select="number(.) + 1"/></xsl:attribute>

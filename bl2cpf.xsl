@@ -83,8 +83,8 @@
 
     <xsl:param name="ev_desc" select="'Derived from British Library'"/> <!-- eventDescription -->
     <!-- xlink:role The $av_ variables are in lib.xsl. -->
-    <xsl:param name="xlink_role" select="$av_archivalResource"/> 
-    <xsl:param name="xlink_href" select="'http://www.bl.uk/place_holder'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
+    <xsl:param name="rr_xlink_role" select="$av_archivalResource"/> 
+    <xsl:param name="rr_xlink_href" select="'http://www.bl.uk/place_holder'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
     
     <!--
         When we find the tag <Corporation> we set the locn to 'CorporateBody'. Person and Family are ok.
@@ -160,8 +160,8 @@
             <xsl:value-of select="concat('           Default authorizedForm: ', $auth_form, '&#x0A;')"/>
             <xsl:value-of select="concat('   Fallback (default) agency code: ', $fallback_default, '&#x0A;')"/>
             <xsl:value-of select="concat('         Default eventDescription: ', $ev_desc, '&#x0A;')"/>
-            <xsl:value-of select="concat('               Default xlink href: ', $xlink_href, '&#x0A;')"/>
-            <xsl:value-of select="concat('               Default xlink role: ', $xlink_role, '&#x0A;')"/>
+            <xsl:value-of select="concat('               Default xlink href: ', $rr_xlink_href, '&#x0A;')"/>
+            <xsl:value-of select="concat('               Default xlink role: ', $rr_xlink_role, '&#x0A;')"/>
             <xsl:value-of select="concat('                            limit: ', $limit, '&#x0A;')"/>
             <xsl:value-of select="concat('                  use_bl_alt_name: ', $use_bl_alt_name, '&#x0A;')"/>
             <xsl:choose>
@@ -1370,6 +1370,9 @@
                     
                     We send the RelationshipType to tpt_bl_arc_role which filters the value, therefore we can
                     send multiple values. There are only two possible roles: $av_referencedIn, $av_creatorOf.
+                    
+                    Jan 27 2015 change to rr_xlink_href, rr_xlink_role to be consistent with nara_das2cpf and
+                    oclc_marc2cpf.
                 -->
                 <arc_role>
                     <xsl:call-template name="tpt_bl_arc_role">
@@ -1381,12 +1384,12 @@
 
                 <xlink_role><xsl:value-of select="$xlink_role"/></xlink_role>
                 
-                <xlink_href>
+                <rr_xlink_href>
                     <xsl:value-of
                         select="concat('http://searcharchives.bl.uk/primo_library/libweb/action/search.do?srt=rank&amp;ct=search&amp;mode=Basic&amp;indx=1&amp;vl(freeText0)=',
                                 @tid,
                                 '&amp;fn=search&amp;vid=IAMS_VU2')"/>
-                </xlink_href>
+                </rr_xlink_href>
                 <controlfield_001><xsl:value-of select="$controlfield_001"/></controlfield_001>
 
                 <!--

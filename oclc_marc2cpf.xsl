@@ -30,14 +30,16 @@
     -->
 
     <!--
+        oclc_marc2cpf.xsl creates EAC-CPF from MARC21/slim XML. Has some special cases for MARC from the LDS.
         
-        oclc_marc2cpf.xsl creates EAC-CPF from MARC21/slim XML.
+        saxon.sh marc.xml oclc_marc2cpf.xsl
         
-        saxon marc.xml oclc_marc2cpf.xsl
+        This script can be called directly, but is normally called via exec_record.pl using one of the
+        configuration files to determine the various run-time parameters.
 
         For large batches of records, it relies one either of 2 small Perl scripts to turn the WorldCat XML
-        into well-formed XML. The following will write the results of the first 40 records into a directory
-        ./devx_1/.
+        into well-formed XML, and more importantly a chunk of well-formed MARC records. The following will
+        write the results of the first 40 records into a directory ./devx_1/.
         
         get_record.pl file=snac.xml offset=1 limit=40 | saxon.sh -s:- oclc_marc2cpf.xsl chunk_prefix=devx output_dir=. 2>&1
         
@@ -63,7 +65,15 @@
         mode "copy-no-ns" match="*"
         
         See also lib.xsl, eac_cpf.xsl.
+        
+        variable $cr declared in lib.xsl
     -->
+
+    <!--
+        Odd. '&apos;' does not work, although some web sites give that as an example.
+        '''' is too weird to read, so I went with the define a var solution.
+    -->
+    <xsl:variable name="apos">'</xsl:variable>
 
     <xsl:param name="debug" select="false()"/>
 
@@ -76,9 +86,22 @@
     <!-- These three params (variables) are passed to the cpf template eac_cpf.xsl via params to tpt_body. -->
 
     <xsl:param name="ev_desc" select="'Derived from MARC'"/> <!-- eventDescription -->
-    <!-- xlink:role The $av_ variables are in lib.xsl. -->
-    <xsl:param name="xlink_role" select="$av_archivalResource"/> 
-    <xsl:param name="xlink_href" select="'http://www.worldcat.org/oclc'"/> <!-- Not / terminated. Add the / in eac_cpf.xsl. xlink:href -->
+    <!--
+        xlink:role The $av_ variables are in lib.xsl.
+        
+        Note: All (except maybe the original OCLC WorldCat) should use $param_data/eac:rrel or
+        $param_data/eac:use_rrel with $param_data/eac:rr_xlink_href.
+
+        Note: these variable names should reflect the different usages cpfRelation/@xlink:role and
+        resourceRelation/@xlink:role. There have been bugs related to mixing these up.
+        
+        It appears that both of the vars rr_xlink_role and rr_xlink_href are used by resourceRelation.
+        
+        Also note: rr_xlink_href is not / terminated. We add the / and record ID in eac_cpf.xsl. tag: xlink:href
+
+    -->
+    <xsl:param name="rr_xlink_role" select="$av_archivalResource"/> 
+    <xsl:param name="rr_xlink_href" select="'http://www.worldcat.org/oclc'"/> 
 
     <xsl:include href="eac_cpf.xsl"/>
     <xsl:include href="lib.xsl"/>
@@ -147,10 +170,39 @@
             <xsl:choose>
                 <xsl:when test="string-length(normalize-space(marc:controlfield[@tag='001']))>0">
                     <xsl:value-of select="normalize-space(marc:controlfield[@tag='001'])"/>
+                    <xsl:message>
+                        <xsl:text>001 ok: </xsl:text>
+                        <xsl:value-of select="marc:controlfield[@tag='001']"/>
+                    </xsl:message>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="concat('missing001_', position())"/>
+                    <xsl:message>
+                        <xsl:text>001 missing: </xsl:text>
+                        <xsl:value-of select="concat('pos: ', position(), $cr)"/>
+                        <xsl:for-each select="marc:controlfield">
+                            <xsl:value-of select="concat('cf: ', ., ' tag: ', ./@tag)"/>
+                        </xsl:for-each>
+                    </xsl:message>
                 </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:if test="count(marc:datafield[@tag='555']/marc:subfield[@code='u']) > 1">
+            <xsl:message>
+                <xsl:text>multiple urls: </xsl:text>
+                <xsl:copy-of select="marc:datafield[@tag='555']/marc:subfield[@code='u']"/>
+            </xsl:message>
+        </xsl:if>
+
+        <!--
+            Only use the first URL. Unclear why there would be multiple. Logging above will answer that.
+        -->
+        <xsl:variable name="rr_href">
+            <xsl:choose>
+                <xsl:when test="$auth_form='lds' and string-length(marc:datafield[@tag='555'][1]/marc:subfield[@code='u']) > 0">
+                    <xsl:value-of select="normalize-space(marc:datafield[@tag='555'][1]/marc:subfield[@code='u'])"/>
+                </xsl:when>
             </xsl:choose>
         </xsl:variable>
 
@@ -481,20 +533,39 @@
                 </xsl:if>
             </xsl:variable>
 
-            <citation>
-                <xsl:text>From the description of </xsl:text>
-                <xsl:value-of select="$title"/>
-                <xsl:text> (</xsl:text>
-                <xsl:value-of select="$agency_info/eac:agencyName"/>
-                <xsl:value-of select="concat('). ', $archive_name, ' record id: ')"/>
-                <xsl:value-of select="$controlfield_001"/>
-            </citation>
+            <xsl:choose>
+                <xsl:when test="$auth_form='lds'">
+                    <citation>
+                        <xsl:value-of select="concat('From the guide to the ',
+                                              marc:datafield[@tag='090']/marc:subfield[@code='a'],
+                                              ' ', 
+                                              $title,
+                                              ' ',
+                                              '(Church of Jesus Christ of Latter-Day Saints, Church History Library)')"/>
+                    </citation>
+                </xsl:when>
+                <xsl:otherwise>
+                    <citation>
+                        <xsl:text>From the description of </xsl:text>
+                        <xsl:value-of select="$title"/>
+                        <xsl:text> (</xsl:text>
+                        <xsl:value-of select="$agency_info/eac:agencyName"/>
+                        <xsl:value-of select="concat('). ', $archive_name, ' record id: ')"/>
+                        <xsl:value-of select="$controlfield_001"/>
+                    </citation>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
 
         <!--
             tc_data to be consistent with usage inside tpt_container. SNAC is the maintenanceAgency for the CPF data.
             
             This is not the same as the maintenanceAgency of the data that the CPF was extracted from.
+            
+            As far as I can tell, this data gets passed down the template chain, and eventually ends up deep
+            in the code where the final call to result-document() lives. We can put things here we want to go
+            all the way to the final template. The "tc" refers to data that goes into tpt_container, which is
+            a container for each of the entites in the original data, along with necessary meta data.
         -->
         <xsl:variable name="tc_data">
             <snac_info>
@@ -504,6 +575,12 @@
                 <xsl:copy-of select="$agency_info"/>
             </agency_info>
             <xsl:copy-of select="$citation"/>
+            <rr_href>
+                <xsl:value-of select="$rr_href"/>
+            </rr_href>
+            <auth_form>
+                <xsl:value-of select="$auth_form"/>
+            </auth_form>
         </xsl:variable>
 
         <xsl:apply-templates select="$all_xx/eac:container">
@@ -595,10 +672,13 @@
         </xsl:variable>
         
         <!--
-            This would more accurately be name rrel_arc_role since this is for resourceRelation ONLY.
-            It is impossible to correspond with an archival record.
+            Renamed arc_role to wcrr_arc_role (WorldCat Resource Relation) since this is for
+            resourceRelation ONLY. It is impossible to correspond with an archival record.
+            
+            Note that even with multiple resourceRelations, all of them have the same xlink:arcrole
+            value. (This is not true for the nara das2cpf extraction.)
         -->
-        <xsl:variable name="arc_role">
+        <xsl:variable name="wcrr_arc_role">
             <xsl:call-template name="tpt_arc_role">
                 <xsl:with-param name="is_c_flag" select="$is_c_flag" as="xs:boolean"/>
                 <xsl:with-param name="is_r_flag" select="$is_r_flag"/>
@@ -677,15 +757,104 @@
                     </descriptiveNote>
                 </cpfRelation>
             </xsl:if>
-        </xsl:variable>
+        </xsl:variable> <!-- end cpf_relation -->
         
         <!-- 
              New params to tpt_body are in a variable nodeset which is easier to update,
              modify, add to, and delete from, than hard coded params. It should have been like
              this from the start.
+             
+             use_rrel was invented for Smithsonian data (and used somewhat by British Library). It has been
+             ported here to support LDS which seems close enough to OCLC to only need minor changes.
         -->
         
         <xsl:variable name="param_data" xmlns="urn:isbn:1-931666-33-4">
+            <xsl:choose>
+                <xsl:when test="$tc_data/eac:auth_form='lds'">
+                    <use_rrel as="xs:boolean">
+                        <xsl:value-of select="true()"/>
+                    </use_rrel>
+                    <xsl:variable name="ead_fn" select="eac:file_name"/>
+                    <xsl:message>
+                        <xsl:text>recordID: 001: </xsl:text>
+                        <xsl:value-of select="$controlfield_001"/>
+                    </xsl:message>
+                    <xsl:for-each select="$original/marc:record/marc:datafield[@tag='555' and marc:subfield[@code='u']]">
+                        <xsl:variable name="link_base"
+                                      select="normalize-space(
+                                              concat($original/marc:record/marc:datafield[@tag='090']/marc:subfield[@code='a'],
+                                              ', ',
+                                              $rel_entry))"/>
+                        <xsl:variable name="link_text">
+                            <xsl:choose>
+                                <xsl:when test="position() = 1">
+                                    <xsl:value-of select="$link_base"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <!--
+                                        <subfield code="a">View Register for Supplement 4</subfield> Log all
+                                        of these so we can verify that the all will match the
+                                        replace(). Humans tend to make typographical errors.
+                                    -->
+                                    <xsl:value-of select="normalize-space(
+                                                          concat($link_base,
+                                                          ' (',
+                                                          normalize-space(
+                                                          replace(./marc:subfield[@code='a'], 'view register for', '', 'i')
+                                                          ),
+                                                          ')'))"/>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
+                        <xsl:variable name="link_href" select="./marc:subfield[@code='u']"/>
+                        <xsl:message>
+                            <xsl:text>linktext: </xsl:text>
+                            <xsl:value-of select="./marc:subfield[@code='a']"/>
+                            <xsl:value-of select="$cr"/>
+                            <xsl:text>href: </xsl:text>
+                            <xsl:value-of select="$link_href"/>
+                        </xsl:message>
+                        <rrel>
+                            <!--
+                                Note that even with multiple resourceRelations, all of them have the same xlink:arcrole value.
+                            -->
+                            <rrel_arc_role><xsl:value-of select="$wcrr_arc_role"/></rrel_arc_role>
+                            <rr_xlink_role><xsl:value-of select="$xlink_role"/></rr_xlink_role>
+                            <rr_xlink_href>
+                                <xsl:value-of select="$link_href"/>
+                            </rr_xlink_href>
+                            <controlfield_001><xsl:value-of select="$controlfield_001"/></controlfield_001>
+                            <leader06><xsl:value-of select="$leader06"/></leader06>
+                            <leader07><xsl:value-of select="$leader07"/></leader07>
+                            <leader08><xsl:value-of select="$leader08"/></leader08>
+                            <!-- <rel_entry><xsl:value-of select="concat($auth_form, ' ', $ead_fn)"/></rel_entry> -->
+                            <!-- <rel_entry><xsl:value-of select="$rel_entry"/></rel_entry> -->
+                            <rel_entry><xsl:value-of select="$link_text"/></rel_entry>
+                            <mods>
+                                <!--
+                                    See lib.xsl for tpt_mods. I think this is a mods record for related resources and
+                                    thus the controlfield_001 is the record id of the .c record, or whatever the
+                                    related record is. For all the marc extracts, the controlfield_001 aka record_id
+                                    is the same for .c and .rxx files.
+                                -->
+                                <xsl:call-template name="tpt_mods">
+                                    <xsl:with-param name="all_xx" select="$all_xx"/>
+                                    <!-- jan 9 2015 I hope $tc_data/eac:agency_info is the same as $agency_info -->
+                                    <!-- <xsl:with-param name="agency_info" select="$agency_info"/> -->
+                                    <xsl:with-param name="agency_info" select="$tc_data/eac:agency_info"/>
+                                    <xsl:with-param name="controlfield_001" select="$ead_fn"/>
+                                    <xsl:with-param name="archive_agency" select="$auth_form"/>
+                                </xsl:call-template>
+                            </mods>
+                        </rrel>
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:otherwise>
+                    <rr_xlink_href>
+                        <xsl:value-of select="$rr_xlink_href"/>
+                    </rr_xlink_href>
+                </xsl:otherwise>
+            </xsl:choose>
             <inc_orig>
                 <xsl:copy-of select="$inc_orig" />
             </inc_orig>
@@ -698,9 +867,6 @@
             <rules>
                 <xsl:value-of select="$rules"/>
             </rules>
-            <xlink_href>
-                <xsl:value-of select="$xlink_href"/>
-            </xlink_href>
             <xlink_role>
                 <xsl:value-of select="$xlink_role"/>
             </xlink_role>
@@ -735,7 +901,7 @@
                 <xsl:with-param name="leader08" select="$leader08"/>
                 <xsl:with-param name="mods" select="$mods"/>
                 <xsl:with-param name="rel_entry" select="$rel_entry"/>
-                <xsl:with-param name="arc_role" select="$arc_role"/>
+                <xsl:with-param name="wcrr_arc_role" select="$wcrr_arc_role"/>
                 <xsl:with-param name="controlfield_001" select="$controlfield_001"/>
                 <xsl:with-param name="is_c_flag" select="$is_c_flag"/>
                 <xsl:with-param name="is_r_flag" select="$is_r_flag"/>
@@ -780,7 +946,7 @@
 
     <xsl:template name="catch_all" match="*">
         <xsl:message terminate="no">
-            <xsl:text>Unmatched element: </xsl:text>
+            <xsl:text>Warning: unmatched element: </xsl:text>
             <xsl:value-of select="namespace-uri()"/>
             <xsl:text>:</xsl:text>
             <xsl:value-of select="local-name()"/>
@@ -820,6 +986,14 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+
+        <!--
+            Jan 13 2015 This exists primarily so we can run grep | wc -l on the log to make sure the count of
+            records processed matches the expected number.
+        -->
+        <xsl:message>
+            <xsl:value-of select="concat('printable recordID: ', $precord_id)"/>
+        </xsl:message>
 
         <xsl:choose>
             <xsl:when test="count(marc:datafield[matches(@tag, '1(00|10|11)')]) &gt; 1">
@@ -877,31 +1051,31 @@
     -->
     <xsl:template name="tpt_main" match="/">
         <xsl:message>
-            <xsl:value-of select="concat('Date today: ', current-dateTime(), '&#x0A;')"/>
-            <xsl:value-of select="concat('Number of geonames places read in: ', count($places/*), '&#x0A;')"/>
-            <xsl:value-of select="concat('Writing output to: ', $output_dir, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default authorizedForm: ', $auth_form, '&#x0A;')"/>
-            <xsl:value-of select="concat('Fallback (default) agency code: ', $fallback_default, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default eventDescription: ', $ev_desc, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default xlink href: ', $xlink_href, '&#x0A;')"/>
-            <xsl:value-of select="concat('Default xlink role: ', $xlink_role, '&#x0A;')"/>
+            <xsl:value-of select="concat('                       Date today: ', current-dateTime(), $cr)"/>
+            <xsl:value-of select="concat('Number of geonames places read in: ', count($places/*), $cr)"/>
+            <xsl:value-of select="concat('                Writing output to: ', $output_dir, $cr)"/>
+            <xsl:value-of select="concat('           Default authorizedForm: ', $auth_form, $cr)"/>
+            <xsl:value-of select="concat('   Fallback (default) agency code: ', $fallback_default, $cr)"/>
+            <xsl:value-of select="concat('         Default eventDescription: ', $ev_desc, $cr)"/>
+            <xsl:value-of select="concat('               Default xlink href: ', $rr_xlink_href, $cr)"/>
+            <xsl:value-of select="concat('               Default xlink role: ', $rr_xlink_role, $cr)"/>
             <xsl:choose>
                 <xsl:when test="$inc_orig">
-                    <xsl:value-of select="concat('Include original record: yes', '&#x0A;')"/>
+                    <xsl:value-of select="concat('          Include original record: yes', $cr)"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="concat('Include original record: no', '&#x0A;')"/>
+                    <xsl:value-of select="concat('          Include original record: no', $cr)"/>
                 </xsl:otherwise>
             </xsl:choose>
             
             <xsl:choose>
             <xsl:when test="$use_chunks">
-                <xsl:value-of select="concat('Using chunks: yes', '&#x0A;')"/>
-                <xsl:value-of select="concat('Chunk size XSLT: ', $chunk_size, '&#x0A;')"/>
-                <xsl:value-of select="concat('Chunk dir prefix: ', $chunk_prefix, '&#x0A;')"/>
+                <xsl:value-of select="concat('                     Using chunks: yes', $cr)"/>
+                <xsl:value-of select="concat('                  Chunk size XSLT: ', $chunk_size, $cr)"/>
+                <xsl:value-of select="concat('                 Chunk dir prefix: ', $chunk_prefix, $cr)"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="concat('Using chunks: no', '&#x0A;')"/>
+                <xsl:value-of select="concat('                     Using chunks: no', $cr)"/>
             </xsl:otherwise>
             </xsl:choose>
         </xsl:message>

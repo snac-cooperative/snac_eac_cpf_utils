@@ -66,8 +66,12 @@ sub main
         die "Can't find config file: $ch{config}\n";
     }
     
+    # jan 9 2015 add auth_form. Unclear why all the %cf values are put into intermediate vars. It isn't
+    # necessary for most of them, and $cf comes from a trusted source (the config file). It isn't like this is
+    # web data that can't be trusted and must be untainted, etc.
+
     my %cf = user_config($ch{config});
-    check_config(\%cf, "use_args,xsl_script,file,offset,chunk,iterations,log_file,chunk_prefix,output_dir,xsl_chunk_size");
+    check_config(\%cf, "auth_form,use_args,xsl_script,file,offset,chunk,iterations,log_file,chunk_prefix,output_dir,xsl_chunk_size");
 
     # the file name of the xslt script to run
     my $xsl_script = $cf{xsl_script};
@@ -121,11 +125,12 @@ sub main
     # Now that we've passed the sanity checks, write out some time/date and
     # config info to the log file for posterity's sake.
     {
-        my $config_str = "starting " . scalar(localtime()) . "\n";
-        $config_str .= "config file: $ch{config}\n";
+        my $fmt = "% 20s %s\n";
+        my $config_str = sprintf($fmt, "starting:", scalar(localtime()));
+        $config_str .= sprintf($fmt, "config file:", $ch{config});
         foreach my $key (sort(keys(%cf)))
         {
-            $config_str .= "$key: $cf{$key}\n";
+            $config_str .= sprintf($fmt, "$key:", $cf{$key});
         }
         log_message($log_file, $config_str);
     }
@@ -175,24 +180,31 @@ sub main
     {
         my $fc_text;
         my $pipe; 
-        # Reset these two vars to something false since they are also used as
-        # booleans to keep the while loop going.
+
+        # Reset these two vars to something false since they are also used as booleans to keep the while loop
+        # going.
         $found_rec = 0;
         $offset = 0;
 
-        # Could fork here and run the child(ren) in the background, although we
-        # would have to track the number of active children so we didn't
-        # overload the server.
+        # We could fork here and run the child(ren) in the background, although we would have to track the
+        # number of active children so we didn't overload the server.
 
-        # Exciting. Open the pipe to XSLT processor, and leave it open for an
-        # entire chunk. Code below keeps sending records, and after the
-        # for() loop, the pipe is finally closed.
+        # Exciting. Open a pipe to Saxon (the XSLT processor), and leave it open for an entire
+        # chunk. We create an XML file on the fly, sending that XML through the pipe. The for loop
+        # below keeps sending records, and after the for() loop, the pipe is finally closed.
 
-        # open($pipe, "|-", "xsltproc oclc_marc2cpf.xsl - > /uva-working/twl8n/$fc_text.xml");
+        # Just a reminder: my $saxon_fmt = "saxon.sh -s:%s %s";
 
         if ($use_args)
         {
-            my $args = sprintf("use_chunks=1 chunk_prefix=$chunk_prefix output_dir=$output_dir chunk_size=$xsl_chunk_size offset=%d", $recs_processed+1);
+            my $args = "use_chunks=1 ";
+            $args .= "chunk_prefix=$chunk_prefix ";
+            $args .= "output_dir=$output_dir ";
+            $args .= "chunk_size=$xsl_chunk_size ";
+            $args .= "auth_form=$cf{auth_form} ";
+
+            $args .= sprintf("offset=%d", $recs_processed+1);
+
             my $cmd = sprintf("$saxon_fmt  $args >> $log_file 2>&1", '-',  $xsl_script);
             log_message($log_file, $cmd);
             open($pipe, "|-", $cmd) || die "Cannot open pipe for command $cmd\n";
@@ -203,7 +215,6 @@ sub main
             log_message($log_file, $cmd);
             open($pipe, "|-", $cmd) || die "Cannot open pipe for $cmd\n";
         }
-
 
         print $pipe "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         print $pipe "\n<marc:collection xmlns:marc=\"http://www.loc.gov/MARC21/slim\"\n";

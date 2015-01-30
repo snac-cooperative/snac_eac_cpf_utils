@@ -37,7 +37,7 @@
         <xsl:param name="mods"/>
         <xsl:param name="rel_entry"/>
         <xsl:param name="local_affiliation"/>
-        <xsl:param name="arc_role"/>
+        <xsl:param name="wcrr_arc_role"/>
         <xsl:param name="controlfield_001"/>
         <xsl:param name="is_r_flag" as="xs:boolean"/>
         <xsl:param name="is_c_flag" as="xs:boolean"/>
@@ -100,7 +100,7 @@
                     </maintenanceEvent>
                 </maintenanceHistory>
                 <sources>
-                    <source xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}"
+                    <source xlink:href="{$param_data/eac:rr_xlink_href}/{$controlfield_001}"
                             xlink:type="simple">
                         <!--
                             Defaults to true. inc_orig=0 on the command line will make it false. We can't
@@ -149,7 +149,6 @@
                                     </xsl:if>
                                     <xsl:copy-of select="./*"/>
                                     <!-- authorizedForm or alternateForm -->
-                                    
                                     <xsl:if test="string-length(@a_form) = 0">
                                         <xsl:message>
                                             <xsl:text>null nameEntry: </xsl:text>
@@ -220,30 +219,64 @@
                 </xsl:if>
 
                 <relations>
-                    <xsl:copy-of select="$cpf_relation"/>
-
+                    <xsl:choose>
+                        <!--
+                            New template-ish cpfRelation used by NARA. The classic cpfRelation was XML built
+                            elsewhere and just inserted here as an xsl:copy-of the variable.
+                        -->
+                        <xsl:when test="$param_data/eac:use_cpf_rel">
+                            <xsl:if test="count($param_data/eac:cpf_relation) > 0">
+                                <xsl:message>
+                                    <xsl:text>cpfrel: </xsl:text>
+                                    <xsl:value-of select="$cr"/>
+                                    <xsl:copy-of select="$param_data/eac:cpf_relation"/>
+                                </xsl:message>
+                            </xsl:if>
+                            <xsl:for-each select="$param_data/eac:cpf_relation">
+                                <xsl:variable name="en_type" select="@en_type"/>
+                                <cpfRelation xlink:type="simple"
+                                             xlink:role="{$etype/eac:value[@key = $en_type]}"
+                                             xlink:arcrole="{@cpf_arc_role}">
+                                    <relationEntry><xsl:value-of select="."/></relationEntry>
+                                    <descriptiveNote>
+                                        <p>
+                                            <span localType="{$av_extractRecordId}">
+                                                <xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/>
+                                            </span>
+                                        </p>
+                                    </descriptiveNote>
+                                </cpfRelation>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:copy-of select="$cpf_relation"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:choose>
                         <xsl:when test="count($param_data/eac:rrel) > 0  or $param_data/eac:use_rrel = true()">
                             <!--
-                                NYSA could have multiple resourceRelations, so we put a nodeset with all the
-                                info into $param_data. rrel also allows us to not include a slash at the end
-                                of the xlink_href base URI. Maybe someday another data set will have multiple
+                                NYSA agency histories (and perhaps SIA agency histories?) could have multiple
+                                resourceRelations, so we put a nodeset with all the info into
+                                $param_data. rrel also allows us to not include a slash at the end of the
+                                rr_xlink_href base URI. Maybe someday another data set will have multiple
                                 resourceRelations. In any case, the otherwise clause supports all the legacy
                                 XSL script.
                                 
                                 Fix jul 28 2014 BL (and others?) was getting xlink_role from
                                 $param_data/eac:xlink_role, but xlink_role is actually in <rrel> so the actual
-                                path is $param_data/eac:rrel/eac:xlink_role
+                                path is $param_data/eac:rrel/eac:xlink_role. 
                             -->
                             <xsl:for-each select="$param_data/eac:rrel">
-                            <resourceRelation xlink:arcrole="{eac:arc_role}"
-                                              xlink:role="{eac:xlink_role}"
+                            <resourceRelation xlink:arcrole="{eac:rrel_arc_role}"
+                                              xlink:role="{eac:rr_xlink_role}"
                                               xlink:type="simple"
-                                              xlink:href="{eac:xlink_href}">
+                                              xlink:href="{eac:rr_xlink_href}">
                                 <relationEntry><xsl:value-of select="eac:rel_entry"/></relationEntry>
                                 <xsl:copy-of select="eac:mods/*"/>
                                 <xsl:copy-of select="eac:object_xml/*"/>
-                                <xsl:if test="string-length(eac:leader06)>0 or string-length(eac:leader07)>0 or string-length(eac:leader08)>0">
+                                <xsl:if test="string-length(eac:leader06)>0 or
+                                              string-length(eac:leader07)>0 or
+                                              string-length(eac:leader08)>0">
         		            <descriptiveNote>
 			                <p>
 				            <span localType="{$param_data/eac:av_Leader06}"><xsl:value-of select="eac:leader06"/></span>
@@ -260,10 +293,10 @@
                                 The classic, legacy single resourceRelation version with the included slash
                                 character. Use rrel (above) if you don't want the slash.
                             -->
-                            <resourceRelation xlink:arcrole="{$arc_role}"
+                            <resourceRelation xlink:arcrole="{$wcrr_arc_role}"
                                               xlink:role="{$param_data/eac:xlink_role}"
                                               xlink:type="simple"
-                                              xlink:href="{$param_data/eac:xlink_href}/{$controlfield_001}">
+                                              xlink:href="{$param_data/eac:rr_xlink_href}/{$controlfield_001}">
                                 <relationEntry><xsl:value-of select="$rel_entry"/></relationEntry>
                                 <xsl:copy-of select="$mods"/>
 
@@ -283,5 +316,31 @@
                 </relations>
             </cpfDescription>
         </eac-cpf>
-    </xsl:template>
+</xsl:template>
+
+<xsl:template match="*" mode="serialize">
+    <xsl:param name="tabs"/>
+    <xsl:value-of select="concat($cr,$tabs)"/>
+    <xsl:element name="{name()}">
+        <xsl:for-each select="@*">
+            <xsl:attribute name="{name()}" select="."/>
+        </xsl:for-each>
+        <xsl:choose>
+            <xsl:when test="node()">
+                <xsl:apply-templates mode="serialize">
+                    <xsl:with-param name="tabs">
+                        <xsl:value-of select="concat($tabs, '&#9;')"/>
+                    </xsl:with-param>
+                </xsl:apply-templates>
+            </xsl:when>
+        </xsl:choose>
+    </xsl:element>
+</xsl:template>
+
+<xsl:template match="text()" mode="serialize">
+    <xsl:param name="tabs"/>
+    <xsl:value-of select="concat($cr,$tabs)"/>
+    <xsl:value-of select="."/>
+</xsl:template>
+
 </xsl:stylesheet>
