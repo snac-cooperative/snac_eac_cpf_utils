@@ -819,7 +819,7 @@
                                 Note that even with multiple resourceRelations, all of them have the same xlink:arcrole value.
                             -->
                             <rrel_arc_role><xsl:value-of select="$wcrr_arc_role"/></rrel_arc_role>
-                            <rr_xlink_role><xsl:value-of select="$xlink_role"/></rr_xlink_role>
+                            <rr_xlink_role><xsl:value-of select="$rr_xlink_role"/></rr_xlink_role>
                             <rr_xlink_href>
                                 <xsl:value-of select="$link_href"/>
                             </rr_xlink_href>
@@ -868,7 +868,7 @@
                 <xsl:value-of select="$rules"/>
             </rules>
             <xlink_role>
-                <xsl:value-of select="$xlink_role"/>
+                <xsl:value-of select="$rr_xlink_role"/>
             </xlink_role>
             <av_Leader06>
                 <xsl:value-of select="$av_Leader06"/>

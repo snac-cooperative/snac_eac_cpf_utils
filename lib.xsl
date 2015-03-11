@@ -423,6 +423,10 @@
          Nov 18 2013. This should only be used for 6xx, per new email from Daniel.
          
          template tpt_is_cp replaced by improved code.
+         
+         This is resourceRelation/@xlink:arcrole. 
+         
+         See function lib:cpf_arc_role for cpfRelation/@xlink:arcrole.
      -->
      <xsl:template name="tpt_arc_role">
          <xsl:param name="is_c_flag"  as="xs:boolean"/>
@@ -431,6 +435,7 @@
              I think this probably ends up in /eac-cpf/cpfDescription/relations/resourceRelation in the output
              template eac_cpf.xsl.
          --> 
+
          <xsl:choose>
              <xsl:when test="$is_c_flag or (eac:e_name/@is_creator=true())">
                  <xsl:value-of select="$av_creatorOf"/>
@@ -447,7 +452,7 @@
                      New comment: Really? Maybe not for WorldCat because all those are either is_c_flag or
                      is_r_flag, but the SIA data might get here.
                  -->
-                 <xsl:value-of select="$av_associatedWith"/>
+                 <xsl:value-of select="concat('rr:',$av_associatedWith)"/>
                  <xsl:message>
                      <xsl:value-of select="concat('warning: resourceRelation xlink:arcrole associatedWith ', $av_associatedWith)"/>
                  </xsl:message>
@@ -916,7 +921,7 @@
                     <xsl:value-of select="false()"/>
                 </xsl:otherwise>
             </xsl:choose>
-        </xsl:variable>
+        </xsl:variable> <!-- end name="is_unparsed" -->
         
         <xsl:variable name="show_one">
             <xsl:choose>
@@ -1192,11 +1197,13 @@
                 </xsl:when>
 
                 <!--
-                    No hyphen and only one number so this is a single date.  New: active is active. Old: If we
-                    have an 'active' token then $av_active.  Oct 8 via email Daniel says these are active, at
-                    least when applied to a person. If we have a CPF entity then force this to be active. Date
-                    parsing could happen for dates from archival materials (and heaven only knows what else)
-                    so we should not assume that the date we've been given was a C, P, or F.
+                    No hyphen and only one number so this is a single date.  New: active is active. (Feb 2
+                    2015: Really single date, no hyphens for a person is active, no matter what?)
+                    
+                    Old: If we have an 'active' token then $av_active.  Oct 8 via email Daniel says these are
+                    active, at least when applied to a person. If we have a CPF entity then force this to be
+                    active. Date parsing could happen for dates from archival materials (and heaven only knows
+                    what else) so we should not assume that the date we've been given was a C, P, or F.
                 -->
                 <xsl:when test="count($tokens/tok[text() = '-']) = 0 and count($tokens/tok[text() = 'num']) = 1">
                     <xsl:variable name="curr_tok" select="$tokens/tok[text() = 'num']"/>
@@ -1329,7 +1336,7 @@
                 <xsl:copy-of select="$show_one"/>
             </xsl:otherwise>
         </xsl:choose>
-    </xsl:template> <!-- end tpt_show_date -->
+    </xsl:template> <!-- end tpt_show_date active entity_type -->
 
     
     <xsl:template name="tpt_simple_date_range" xmlns="urn:isbn:1-931666-33-4">
@@ -1884,11 +1891,13 @@
         <xsl:param name="record_position"/>
         <xsl:param name="record_id"/>
         <!-- 
-             The "name entry" is the name in $a plus other fields. Thus
-             "Lansdown, Andrew, 1954-" is considred different from "Lansdown,
-             Andrew, 1?54-". There could be even more extreme examples that
-             differ by only one subfield, rather than differing by a date-typo
-             as in this example.
+             Feb 5 2015. A comment in oclc_marc2cpf.xsl suggests: Interestingly, I don't think this is
+             used. It may be a historical artifact. All the entities are in the $all_xx variable as a node
+             list where each node has all the entity info necessary to fill in the CPF template.
+
+             The "name entry" is the name in $a plus other fields. Thus "Lansdown, Andrew, 1954-" is considred
+             different from "Lansdown, Andrew, 1?54-". There could be even more extreme examples that differ
+             by only one subfield, rather than differing by a date-typo as in this example.
         -->
 
         <xsl:variable name="has_n">
@@ -3540,6 +3549,8 @@
         <xsl:param name="aname"/>
         <xsl:param name="has_trailing_dot"/>
         <!--
+            As of approximately Sep 26 2013 stop doing the trailing dot on names.
+            
             Called from tpt_name_info in bl2cpf.xsl. Used for proper names. Remove strange punctuation caused
             by empty elements leaving behind just field separators. This is simpler than some complex
             conditionals that detect empty elements.
@@ -3875,6 +3886,8 @@
         <!--
             cp_count is count of 6xx/$v matches 'correspondence' and it part of every container/e_name
             element. Greater than or equal to 1 means we have some sort of correspondent.
+            
+            This becomes cpfRelation/@xlink:arcrole.
         -->
         <xsl:variable name="result">
             <xsl:choose>
@@ -3888,5 +3901,29 @@
         </xsl:variable>
         <xsl:value-of select="$result"/>
     </xsl:function>
+
+    <!--
+        This seems to be a pretty printer for xsl:message (after being modified with its own mode). Created by
+        John Morgan. From http://www.dpawson.co.uk/xsl/sect2/pretty.html
+    -->
+    
+    <xsl:param name="indent-increment" select="'  '"/>
+
+    <xsl:template match="*" mode="pretty">
+        <xsl:param name="indent" select="'&#xA;'"/>
+
+        <xsl:value-of select="$indent"/>
+        <xsl:copy>
+            <xsl:copy-of select="@*" />
+            <xsl:apply-templates mode="pretty">
+                <xsl:with-param name="indent"
+                                select="concat($indent, $indent-increment)"/>
+            </xsl:apply-templates>
+            <xsl:if test="*">
+                <xsl:value-of select="$indent"/>
+            </xsl:if>
+        </xsl:copy>
+    </xsl:template>
+
     
 </xsl:stylesheet>

@@ -68,7 +68,7 @@
             <control>
                 <xsl:choose>
                     <xsl:when test="$param_data/eac:cpf_record_id/text()">
-                        <!-- Newer code: BL -->
+                        <!-- Newer code: BL, NARA -->
                         <recordId><xsl:value-of select="$param_data/eac:cpf_record_id"/></recordId>
                     </xsl:when>
                     <xsl:otherwise>
@@ -84,7 +84,9 @@
                 <maintenanceHistory>
                     <maintenanceEvent>
                         <eventType>created</eventType>
-                        <eventDateTime standardDateTime="{$date}"/>
+                        <eventDateTime standardDateTime="{$date}">
+                            <xsl:value-of select="$date"/>
+                        </eventDateTime>
                         <agentType>machine</agentType>
                         <agent>
                             <xsl:text>XSLT </xsl:text>
@@ -139,7 +141,9 @@
                             </nameEntry>
                         </xsl:when>
                         <xsl:otherwise>
-                            <!-- See bl2cpf.xsl for element construction esp. tpt_name_info and $param_data. -->
+                            <!-- 
+                                 See bl2cpf.xsl for element construction esp. tpt_name_info and $param_data.
+                            -->
                             <xsl:for-each select="$param_data/eac:e_name/eac:name_entry">
                                 <nameEntry xml:lang="{@en_lang}">
                                     <xsl:if test="@localType">
@@ -223,25 +227,38 @@
                         <!--
                             New template-ish cpfRelation used by NARA. The classic cpfRelation was XML built
                             elsewhere and just inserted here as an xsl:copy-of the variable.
+                            
+                            Feb 24 2015 Add a when check for @fn_suffix not an empty string. Don't concat() a
+                            dot and nothing. We only want the dot when there's a suffix.
                         -->
                         <xsl:when test="$param_data/eac:use_cpf_rel">
-                            <xsl:if test="count($param_data/eac:cpf_relation) > 0">
-                                <xsl:message>
-                                    <xsl:text>cpfrel: </xsl:text>
-                                    <xsl:value-of select="$cr"/>
-                                    <xsl:copy-of select="$param_data/eac:cpf_relation"/>
-                                </xsl:message>
-                            </xsl:if>
+                            <!-- <xsl:if test="count($param_data/eac:cpf_relation) > 0"> -->
+                            <!--     <xsl:message> -->
+                            <!--         <xsl:text>cpfrel: </xsl:text> -->
+                            <!--         <xsl:value-of select="$cr"/> -->
+                            <!--         <xsl:copy-of select="$param_data/eac:cpf_relation"/> -->
+                            <!--     </xsl:message> -->
+                            <!-- </xsl:if> -->
                             <xsl:for-each select="$param_data/eac:cpf_relation">
                                 <xsl:variable name="en_type" select="@en_type"/>
                                 <cpfRelation xlink:type="simple"
                                              xlink:role="{$etype/eac:value[@key = $en_type]}"
                                              xlink:arcrole="{@cpf_arc_role}">
+                                    <xsl:if test="./@href">
+                                        <xsl:attribute name="xlink:href" select="./@href"/>
+                                    </xsl:if>
                                     <relationEntry><xsl:value-of select="."/></relationEntry>
                                     <descriptiveNote>
                                         <p>
                                             <span localType="{$av_extractRecordId}">
-                                                <xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/>
+                                                <xsl:choose>
+                                                    <xsl:when test="string-length(./@fn_suffix) > 0">
+                                                        <xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/>
+                                                    </xsl:when>
+                                                    <xsl:otherwise>
+                                                        <xsl:value-of select="./@record_id"/>
+                                                    </xsl:otherwise>
+                                                </xsl:choose>
                                             </span>
                                         </p>
                                     </descriptiveNote>
@@ -277,7 +294,7 @@
                                 <xsl:if test="string-length(eac:leader06)>0 or
                                               string-length(eac:leader07)>0 or
                                               string-length(eac:leader08)>0">
-        		            <descriptiveNote>
+                                    <descriptiveNote>
 			                <p>
 				            <span localType="{$param_data/eac:av_Leader06}"><xsl:value-of select="eac:leader06"/></span>
 				            <span localType="{$param_data/eac:av_Leader07}"><xsl:value-of select="eac:leader07"/></span>
