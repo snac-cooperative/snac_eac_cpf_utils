@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<relatorList xmlns="http://example.com/relators">
+    <relator code="act">Actor</relator>
+    
+    <relator code="anl">Analyst</relator>
+    <relator code="anm">Animator</relator>
+
+    
+    <relator code="arc">Architect</relator>
+    <relator code="arr">Arranger</relator>
+    <relator code="acp">Art copyist</relator>
+    <relator code="art">Artist</relator>
+    <relator code="ard">Artistic director</relator>
+
+    <relator code="auc">Auctioneer</relator>
+    
+    <relator code="bnd">Binder</relator>
+    <relator code="bdd">Binding designer</relator>
+
+    <relator code="bkd">Book designer</relator>
+    <relator code="bkp">Book producer</relator>
+    <relator code="bjd">Bookjacket designer</relator>
+    <relator code="bpd">Bookplate designer</relator>
+    <relator code="bsl">Bookseller</relator>
+    <relator code="cll">Calligrapher</relator>
+    <relator code="ctg">Cartographer</relator>
+
+    <relator code="chr">Choreographer</relator>
+    <relator code="cng">Cinematographer</relator>
+
+    <relator code="col">Collector</relator><!-- this is not quite an occupation in many cases; but it is a significant role -->
+    <relator code="clt">Collotyper</relator>
+    <relator code="clr">Colorist</relator>
+
+    <relator code="cmp">Composer</relator>
+    <relator code="cmt">Compositor</relator>
+
+    <relator code="cnd">Conductor</relator>
+    <relator code="con">Conservator</relator>
+
+    <relator code="cst">Costume designer</relator>
+
+    <relator code="dnc">Dancer</relator>
+
+    <relator code="dsr">Designer</relator>
+    <relator code="drt">Director</relator>
+    
+    <relator code="drm">Draftsman</relator>
+
+    <relator code="edt">Editor</relator>
+    <relator code="elg">Electrician</relator>
+    <relator code="elt">Electrotyper</relator>
+    <relator code="eng">Engineer</relator>
+    <relator code="egr">Engraver</relator>
+    <relator code="etr">Etcher</relator>
+
+
+    <relator code="fac">Facsimilist</relator>
+
+    <relator code="flm">Film editor</relator>
+
+    <relator code="gis">Geographic information specialist</relator>
+
+    <relator code="ilu">Illuminator</relator>
+    <relator code="ill">Illustrator</relator>
+
+    <relator code="itr">Instrumentalist</relator>
+
+    <relator code="inv">Inventor</relator>
+
+    <relator code="ldr">Laboratory director</relator>
+
+    <relator code="lsa">Landscape architect</relator>
+
+    <relator code="lbt">Librettist</relator>
+
+    <relator code="lgd">Lighting designer</relator>
+    <relator code="ltg">Lithographer</relator>
+    <relator code="lyr">Lyricist</relator>
+    <relator code="mfr">Manufacturer</relator>
+    <relator code="mte">Metal-engraver</relator>
+
+    <relator code="mcp">Music copyist</relator>
+    <relator code="msd">Musical director</relator>
+    <relator code="mus">Musician</relator>
+    <relator code="nrt">Narrator</relator>
+
+    <relator code="ppm">Papermaker</relator>
+
+    <relator code="prf">Performer</relator>
+
+    <relator code="pht">Photographer</relator>
+    <relator code="plt">Platemaker</relator>
+    <relator code="prt">Printer</relator>
+    <relator code="pop">Printer of plates</relator>
+    <relator code="prm">Printmaker</relator>
+
+    <relator code="pro">Producer</relator>
+    <relator code="pmm">Production manager</relator>
+
+    <relator code="prg">Programmer</relator>
+    <relator code="pdr">Project director</relator>
+
+    <relator code="pbl">Publisher</relator>
+    <relator code="pbd">Publishing director</relator>
+    <relator code="ppt">Puppeteer</relator>
+
+    <relator code="rce">Recording engineer</relator>
+
+    <relator code="rps">Repository</relator>
+
+    <relator code="res">Researcher</relator>
+
+    <relator code="rbr">Rubricator</relator>
+    <relator code="sce">Scenarist</relator>
+    <relator code="sad">Scientific advisor</relator>
+    <relator code="scr">Scribe</relator>
+    <relator code="scl">Sculptor</relator>
+
+
+    <relator code="std">Set designer</relator>
+
+    <relator code="sng">Singer</relator>
+    <relator code="sds">Sound designer</relator>
+
+    <relator code="stm">Stage manager</relator>
+
+    <relator code="str">Stereotyper</relator>
+
+    <relator code="srv">Surveyor</relator>
+    <relator code="tch">Teacher</relator>
+    <relator code="tcd">Technical director</relator>
+
+    <relator code="trl">Translator</relator>
+    <relator code="tyd">Type designer</relator>
+    <relator code="tyg">Typographer</relator>
+
+    <relator code="vdg">Videographer</relator>
+    <relator code="voc">Vocalist</relator>
+
+    <relator code="wde">Wood-engraver</relator>
+    <relator code="wdc">Woodcutter</relator>
+
+</relatorList>
