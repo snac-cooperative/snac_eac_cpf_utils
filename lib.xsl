@@ -3925,5 +3925,11 @@
         </xsl:copy>
     </xsl:template>
 
+    <xsl:template match="comment()|processing-instruction()" mode="pretty">
+        <xsl:copy />
+    </xsl:template>
+
+    <!-- WARNING: this is dangerous. Handle with care -->
+    <xsl:template match="text()[normalize-space(.)='']" mode="pretty"/>
     
 </xsl:stylesheet>

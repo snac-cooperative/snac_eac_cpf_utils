@@ -9,7 +9,7 @@
                 xmlns:lib="http://example.com/"
                 xmlns:eac="urn:isbn:1-931666-33-4"
                 xmlns="urn:isbn:1-931666-33-4"
-                xmlns:xlink="http://www.w3.org/1999/xlink" 
+                xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns:saxon="http://saxon.sf.net/"
                 exclude-result-prefixes="xsl date xs functx marc lib eac saxon xlink"
                 >

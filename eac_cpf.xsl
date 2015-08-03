@@ -102,8 +102,29 @@
                     </maintenanceEvent>
                 </maintenanceHistory>
                 <sources>
-                    <source xlink:href="{$param_data/eac:rr_xlink_href}/{$controlfield_001}"
-                            xlink:type="simple">
+                    <source>
+                        <xsl:choose>
+                            <xsl:when test="$param_data/eac:use_source_href = false()">
+                                <!--
+                                    NYSA is a MARC-based extraction where the source href doesn't work for the
+                                    the MARC records.
+                                    
+                                    Apr 2 2015 SIA FB Fix. Probably best to have something in the source, but
+                                    we don't have a true href, so just go with the record id aka
+                                    $controlfield_001.
+                                -->
+                                <xsl:attribute name="xlink:href"
+                                               select="$controlfield_001"/>
+                                <xsl:attribute name="xlink:type"
+                                               select="'simple'"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:attribute name="xlink:href"
+                                               select="concat($param_data/eac:rr_xlink_href, '/', $controlfield_001)"/>
+                                <xsl:attribute name="xlink:type"
+                                               select="'simple'"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                         <!--
                             Defaults to true. inc_orig=0 on the command line will make it false. We can't
                             simply test the value because xlst can't grok the truthiness of node values the
@@ -230,15 +251,17 @@
                             
                             Feb 24 2015 Add a when check for @fn_suffix not an empty string. Don't concat() a
                             dot and nothing. We only want the dot when there's a suffix.
+                            
+                            jun 23 2015 If @href then must not have descriptiveNote. @href is for external
+                            cpfRelations, while descriptiveNote is used exclusively for cpfRelations inside
+                            SNAC. sameAs cpfRelations will have @href, and we assume that relation is reliable
+                            enough that we won't test xlink:role for $av_sameAs.
+                            
+                            Use an xsl:choose so we can have an else and create log entries so non-obvious
+                            bugs are more obvious. XSL boolean tests are fragile and unreliable, so more
+                            logging is better than less logging.
                         -->
                         <xsl:when test="$param_data/eac:use_cpf_rel">
-                            <!-- <xsl:if test="count($param_data/eac:cpf_relation) > 0"> -->
-                            <!--     <xsl:message> -->
-                            <!--         <xsl:text>cpfrel: </xsl:text> -->
-                            <!--         <xsl:value-of select="$cr"/> -->
-                            <!--         <xsl:copy-of select="$param_data/eac:cpf_relation"/> -->
-                            <!--     </xsl:message> -->
-                            <!-- </xsl:if> -->
                             <xsl:for-each select="$param_data/eac:cpf_relation">
                                 <xsl:variable name="en_type" select="@en_type"/>
                                 <cpfRelation xlink:type="simple"
@@ -248,20 +271,30 @@
                                         <xsl:attribute name="xlink:href" select="./@href"/>
                                     </xsl:if>
                                     <relationEntry><xsl:value-of select="."/></relationEntry>
-                                    <descriptiveNote>
-                                        <p>
-                                            <span localType="{$av_extractRecordId}">
-                                                <xsl:choose>
-                                                    <xsl:when test="string-length(./@fn_suffix) > 0">
-                                                        <xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/>
-                                                    </xsl:when>
-                                                    <xsl:otherwise>
-                                                        <xsl:value-of select="./@record_id"/>
-                                                    </xsl:otherwise>
-                                                </xsl:choose>
-                                            </span>
-                                        </p>
-                                    </descriptiveNote>
+                                    <xsl:choose>
+                                    <xsl:when test="not(./@href)">
+                                        <descriptiveNote>
+                                            <p>
+                                                <span localType="{$av_extractRecordId}">
+                                                    <xsl:choose>
+                                                        <xsl:when test="string-length(./@fn_suffix) > 0">
+                                                            <xsl:value-of select="concat(./@record_id, '.', ./@fn_suffix)"/>
+                                                        </xsl:when>
+                                                        <xsl:otherwise>
+                                                            <xsl:value-of select="./@record_id"/>
+                                                        </xsl:otherwise>
+                                                    </xsl:choose>
+                                                </span>
+                                            </p>
+                                        </descriptiveNote>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:message>
+                                            <xsl:text>warning: (this is usually intentional) no descriptiveNote: due to @href</xsl:text>
+                                            <xsl:value-of select="./@href"/>
+                                        </xsl:message>
+                                    </xsl:otherwise>
+                                    </xsl:choose>
                                 </cpfRelation>
                             </xsl:for-each>
                         </xsl:when>
@@ -271,6 +304,9 @@
                     </xsl:choose>
                     <xsl:choose>
                         <xsl:when test="count($param_data/eac:rrel) > 0  or $param_data/eac:use_rrel = true()">
+                            <xsl:message>
+                                <xsl:text>have use_rrel</xsl:text>
+                            </xsl:message>
                             <!--
                                 NYSA agency histories (and perhaps SIA agency histories?) could have multiple
                                 resourceRelations, so we put a nodeset with all the info into
@@ -281,13 +317,15 @@
                                 
                                 Fix jul 28 2014 BL (and others?) was getting xlink_role from
                                 $param_data/eac:xlink_role, but xlink_role is actually in <rrel> so the actual
-                                path is $param_data/eac:rrel/eac:xlink_role. 
+                                path is $param_data/eac:rrel/eac:rr_xlink_role.
+
+                                Note: <use_rrel as="xs:boolean">
                             -->
                             <xsl:for-each select="$param_data/eac:rrel">
-                            <resourceRelation xlink:arcrole="{eac:rrel_arc_role}"
-                                              xlink:role="{eac:rr_xlink_role}"
-                                              xlink:type="simple"
-                                              xlink:href="{eac:rr_xlink_href}">
+                                <resourceRelation xlink:arcrole="{eac:rrel_arc_role}"
+                                                  xlink:role="{eac:rr_xlink_role}"
+                                                  xlink:type="simple"
+                                                  xlink:href="{eac:rr_xlink_href}">
                                 <relationEntry><xsl:value-of select="eac:rel_entry"/></relationEntry>
                                 <xsl:copy-of select="eac:mods/*"/>
                                 <xsl:copy-of select="eac:object_xml/*"/>
@@ -308,7 +346,10 @@
                         <xsl:otherwise>
                             <!--
                                 The classic, legacy single resourceRelation version with the included slash
-                                character. Use rrel (above) if you don't want the slash.
+                                character. Use rrel (above) if you don't want the slash.  
+                                
+                                jul 21 2015 Note: the classic may still be using eac:xlink_role and not the
+                                newer eac:rr_xlink_role used in rrel.
                             -->
                             <resourceRelation xlink:arcrole="{$wcrr_arc_role}"
                                               xlink:role="{$param_data/eac:xlink_role}"

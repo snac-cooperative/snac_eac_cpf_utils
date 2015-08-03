@@ -417,14 +417,16 @@
                 </snac_info>
                 
                 <!--
+                    jul 21 2015 <xlink_role> is not used when rrel is used. See tpt_radna and rrel below.
+
                     As far as I know, this is not normally used, but there is a branch for it in
                     eac_cpf.xsl, and the other rrel code keeps a copy of the default xlink_role here. It is
                     possible (and likely) that some sets of data will put values in each rrel node. That's
                     fine, and in that case this outer xlink_role will be ignored.
                 -->
-                <xlink_role>
-                    <xsl:value-of select="$xlink_role"/>
-                </xlink_role>
+                <!-- <xlink_role> -->
+                <!--     <xsl:value-of select="$xlink_role"/> -->
+                <!-- </xlink_role> -->
                 
                 <!--
                     Calling capitalize() doesn't hurt, but we shouldn't need to capitalized @entity_type
@@ -1378,6 +1380,8 @@
                     
                     Jan 27 2015 change to rr_xlink_href, rr_xlink_role to be consistent with nara_das2cpf and
                     oclc_marc2cpf.
+                    
+                    jul 21 2015 Fix variable to be $rr_xlink_role and element to be <rr_xlink_role>
                 -->
                 <arc_role>
                     <xsl:call-template name="tpt_bl_arc_role">
@@ -1387,7 +1391,7 @@
                     </xsl:call-template>
                 </arc_role>
                 
-                <xlink_role><xsl:value-of select="$xlink_role"/></xlink_role>
+                <rr_xlink_role><xsl:value-of select="$rr_xlink_role"/></rr_xlink_role>
                 
                 <rr_xlink_href>
                     <xsl:value-of
