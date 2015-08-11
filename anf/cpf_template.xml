@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://socialarchive.iath.virginia.edu/shared/cpf.rng" type="xml"?>        
+<eac-cpf xmlns="urn:isbn:1-931666-33-4" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <control>
+        <recordId>[% cpf_record_id %]</recordId>
+        <maintenanceStatus>new</maintenanceStatus>
+        <maintenanceAgency>
+            <agencyName>SNAC: Social Networks and Archival Context Project</agencyName>
+        </maintenanceAgency>
+        <languageDeclaration>
+            <language languageCode="fre">Français</language>
+            <script scriptCode="Latn"/>
+        </languageDeclaration>
+        <maintenanceHistory>
+            <maintenanceEvent>
+                <eventType>created</eventType>
+                <eventDateTime standardDateTime="[% date %]">[% date %]</eventDateTime>
+                <agentType>machine</agentType>
+                <agent>[% agent %]</agent>
+                <eventDescription>[% event_description %]</eventDescription>
+            </maintenanceEvent>
+        </maintenanceHistory>
+        <sources>
+            <source>
+                <objectXMLWrap>
+                    <container xmlns="">
+                        [% foreach file in source_files %]
+                        <file>[% file %]</file>
+                        [% end %]
+                    </container>
+                </objectXMLWrap>
+            </source>
+        </sources>
+    </control>
+    <cpfDescription>
+        <identity>
+            <entityType>[% entity_type %]</entityType>
+            <nameEntry xml:lang="[% name_entry_lang %]">
+                <part>[% entity_name %]</part>
+                <authorizedForm>[% authorized_form %]</authorizedForm>
+            </nameEntry>
+            [% descriptive_note %]
+        </identity>
+        <description>
+            [% if date_range and date_range.std_from or date_range.std_to %]
+            <existDates>
+                [% if date_range and date_range.std_from and date_range.std_to %]
+                <dateRange>
+                    [% if date_range.std_from %]
+                    <fromDate localType="[% date_range.from_type %]" standardDate="[% date_range.std_from %]">[% if date_range.from_is_active %]active [% end %][% date_range.from_date %]</fromDate>
+                    [% else %]
+                    <fromDate></fromDate>
+                    [% end %]
+                    [% if date_range.std_to %]
+                    <toDate localType="[% date_range.to_type %]" standardDate="[% date_range.std_to %]">[% if date_range.to_is_active %]active [% end %][% date_range.to_date %]</toDate>
+                    [% else %]
+                    <toDate></toDate>
+                    [% end %]
+                </dateRange>
+                [% else %]
+                <date localType="[% date_range.from_type %]" standardDate="[% date_range.std_from %]">[% date_range.from_date %]</date>
+                [% end %]
+            </existDates>
+            [% end %]
+            [% occupations %] [% functions %] [% local_affilation %] [% topical_subject %]
+            [% geographic_subject %] [% language %]
+            [% if tag_545 %]
+            <biogHist>
+                [% tag_545 %]
+                [% citation %]
+            </biogHist>
+            [% end %]
+        </description>
+        <relations>
+            [% foreach cpf in cpf_rel %]
+            [% if cpf.href %]
+            <cpfRelation xlink:type="simple"
+                         xlink:role="[% cpf.role %]"
+                         xlink:arcrole="[% cpf.arc_role %]"
+                         xlink:href="[% cpf.href %]">
+                <relationEntry>[% cpf.relation_entry %]</relationEntry>
+                [% if cpf.date_range and cpf.date_range.std_from or cpf.date_range.std_to %]
+                [% if cpf.date_range and cpf.date_range.std_from and cpf.date_range.std_to %]
+                <dateRange>
+                    [% if cpf.date_range.std_from %]
+                    <fromDate localType="[% cpf.date_range.from_type %]" standardDate="[% cpf.date_range.std_from %]">[% if cpf.date_range.from_is_active %]active [% end %][% cpf.date_range.from_date %]</fromDate>
+                    [% else %]
+                    <fromDate></fromDate>
+                    [% end %]
+                    [% if cpf.date_range.std_to %]
+                    <toDate localType="[% cpf.date_range.to_type %]" standardDate="[% cpf.date_range.std_to %]">[% if cpf.date_range.to_is_active %]active [% end %][% cpf.date_range.to_date %]</toDate>
+                    [% else %]
+                    <toDate></toDate>
+                    [% end %]
+                </dateRange>
+                [% else %]
+                <date localType="[% cpf.date_range.from_type %]" standardDate="[% cpf.date_range.std_from %]">[% cpf.date_range.from_date %]</date>
+                [% end %]
+                [% end %]                
+            </cpfRelation>
+            [% else %]
+            <cpfRelation xlink:type="simple"
+                         xlink:role="[% cpf.role %]"
+                         xlink:arcrole="[% cpf.arc_role %]">
+                <relationEntry>[% cpf.relation_entry %]</relationEntry>
+                [% if cpf.date_range and cpf.date_range.std_from or cpf.date_range.std_to %]
+                [% if cpf.date_range and cpf.date_range.std_from and cpf.date_range.std_to %]
+                <dateRange>
+                    [% if cpf.date_range.std_from %]
+                    <fromDate localType="[% cpf.date_range.from_type %]" standardDate="[% cpf.date_range.std_from %]">[% if cpf.date_range.from_is_active %]active [% end %][% cpf.date_range.from_date %]</fromDate>
+                    [% else %]
+                    <fromDate></fromDate>
+                    [% end %]
+                    [% if cpf.date_range.std_to %]
+                    <toDate localType="[% cpf.date_range.to_type %]" standardDate="[% cpf.date_range.std_to %]">[% if cpf.date_range.to_is_active %]active [% end %][% cpf.date_range.to_date %]</toDate>
+                    [% else %]
+                    <toDate></toDate>
+                    [% end %]
+                </dateRange>
+                [% else %]
+                <date localType="[% cpf.date_range.from_type %]" standardDate="[% cpf.date_range.std_from %]">[% cpf.date_range.from_date %]</date>
+                [% end %]
+                [% end %]
+                <descriptiveNote>
+                    <p>
+                        <span localType="[% cpf.av_extractRecordId %]">[% cpf.record_id %]</span>
+                    </p>
+                </descriptiveNote>
+            </cpfRelation>
+            [% end %]
+            [% end %]
+            [% foreach rr in rrel %]
+            <resourceRelation xlink:arcrole="[% rr.arc_role %]"
+                              xlink:role="[% rr.role %]"
+                              xlink:type="simple"
+                              xlink:href="[% rr.href %]">
+                <relationEntry>[% rr.rel_entry %]</relationEntry>
+                [% if rr.object_xml %]
+                <objectXMLWrap>
+                    <p>[% rr.object_xml %]</p>
+                </objectXMLWrap>
+                [% end %]
+                [% if have_any_leader %]
+                <descriptiveNote>
+                    <p>
+                        <span localType="[% av_Leader06 %]">[% leader06 %]</span>
+                        <span localType="[% av_Leader07 %]">[% leader07 %]</span>
+                        <span localType="[% av_Leader08 %]">[% leader08 %]</span>
+                    </p>
+                </descriptiveNote>
+                [% end %]
+            </resourceRelation>
+            [% end %]
+        </relations>
+    </cpfDescription>
+</eac-cpf>
