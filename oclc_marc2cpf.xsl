@@ -30,6 +30,12 @@
     -->
 
     <!--
+        In practice, this file is never directly run. See exec_record.pl which reads a configuration file, and
+        appropriately runs this xslt script.
+        
+        ./exec_record.pl config=all_eac.cfg &
+        ./exec_record.pl config=config_files/foo_all.cfg &
+
         oclc_marc2cpf.xsl creates EAC-CPF from MARC21/slim XML. Has some special cases for MARC from the LDS.
         
         saxon.sh marc.xml oclc_marc2cpf.xsl
