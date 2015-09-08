@@ -1981,6 +1981,32 @@
             </xsl:if>
         </xsl:variable>
 
+        <!--
+            aug 14 2015 Quick fix to add hard-coded source holding info for LDS. 
+        -->
+
+        <xsl:variable name="recordContentSource">
+            <xsl:choose>
+                <xsl:when test="$auth_form = 'lds'">
+                    <xsl:value-of select="'ISIL: US-uslc'"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$agency_info/eac:agencyCode"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="namePart">
+            <xsl:choose>
+                <xsl:when test="$auth_form = 'lds'">
+                    <xsl:value-of select="'LDS Church History Library.'"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$agency_info/eac:agencyName"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
         <!-- 
              In the code below, we include an e_name in the MODS <name> if it is 1xx or
              is_creator(). It turns out that over in tpt_all_xx (lib.xsl) we set is_creator true
@@ -1994,7 +2020,7 @@
             <mods xmlns="http://www.loc.gov/mods/v3">
 	        <recordInfo>
                     <recordOrigin><xsl:value-of select="concat($archive_agency, ':', $controlfield_001)"/></recordOrigin>
-                    <recordContentSource>ISIL:<xsl:value-of select="$agency_info/eac:agencyCode"/></recordContentSource>
+                    <recordContentSource>ISIL:<xsl:value-of select="$recordContentSource"/></recordContentSource>
                 </recordInfo>
                 <xsl:for-each select="$all_xx/eac:container/eac:e_name[matches(@tag, '1(00|10|11)') or @is_creator=true()]">
                     <name>
@@ -2017,7 +2043,7 @@
                 </xsl:if>
                 <xsl:if test="string-length($agency_info/eac:agencyName) > 0">
                     <name>
-                        <namePart><xsl:value-of select="$agency_info/eac:agencyName"/></namePart>
+                        <namePart><xsl:value-of select="$namePart"/></namePart>
                         <role>
                             <roleTerm valueURI="http://id.loc.gov/vocabulary/relators/rps">Repository</roleTerm>
                         </role>
